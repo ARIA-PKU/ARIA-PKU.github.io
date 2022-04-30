@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-    <title>404 Not Found | Aria&#39;s Blog</title>
+    <title>文章分类1 | Aria&#39;s Blog</title>
 
     
 
@@ -17,13 +17,13 @@
 
 <meta name="generator" content="Hugo 0.98.0" />
 
-<link rel="canonical" href="https://surfaroundtheworld.top/404.html" />
+<link rel="canonical" href="https://surfaroundtheworld.top/categories/%E6%96%87%E7%AB%A0%E5%88%86%E7%B1%BB1/" />
 
 
-<meta property="og:title" content="404 Page not found" />
+<meta property="og:title" content="文章分类1" />
 <meta property="og:description" content="Aria 的生活记录~" />
 <meta property="og:type" content="website" />
-<meta property="og:url" content="https://surfaroundtheworld.top/404.html" /><meta property="og:image" content="https://surfaroundtheworld.top/me/background.jpg"/>
+<meta property="og:url" content="https://surfaroundtheworld.top/categories/%E6%96%87%E7%AB%A0%E5%88%86%E7%B1%BB1/" /><meta property="og:image" content="https://surfaroundtheworld.top/me/background.jpg"/>
 
 
 
@@ -31,7 +31,7 @@
 <meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:image" content="https://surfaroundtheworld.top/me/background.jpg"/>
 
-<meta name="twitter:title" content="404 Page not found"/>
+<meta name="twitter:title" content="文章分类1"/>
 <meta name="twitter:description" content="Aria 的生活记录~"/>
 
 
@@ -116,18 +116,112 @@
         <section class="front">
           <div class="dream-max-width">
             
-<div class="dream-404-container">
-  <div class="ui basic center aligned segment">
+
+<header class="ui basic very padded segment dream-header">
+  
+  <div class="ui small circular image">
+    <img src="/me/avatar.jpeg" alt="avatar" />
+  </div>
+  
+
+  <div class="content">
+    <h1 class="ui medium header">Aria&#39;s Blog<span class="sub header">今天不做的事情，今后也不会去做。</span>
+    </h1>
+
+    <article class="ui horizontal list">
+      
+      <a class="item" href="/posts">
+        <i class="archive icon" title="归档"></i>
+      </a>
+      
+      <a class="item" href="/categories">
+        <i class="th list icon" title="所有分类"></i>
+      </a>
+      <a class="item" href="/tags">
+        <i class="tags icon" title="所有标签"></i>
+      </a>
+    </article>
+
     
-      <h1 class="ui header">
-        Oops...You are lost in dream.
-        <span class="sub header">Don't worry though, click the button below to wake up.</span>
-      </h1>
-      <p>
-        <button class="ui secondary button" onclick="window.location.href = 'https:\/\/surfaroundtheworld.top\/'">返回首页</button>
-      </p>
+    
+    
+    
+    
+      
+    
+      
+    
+    
+
+    
+
+    
+    
+    
+          <div class="dream-tags">
+          
+          
+          
+            <a class="ui label" href="/tags/%E6%96%87%E7%AB%A0%E6%A0%87%E7%AD%BE1/" title="文章标签1">
+              文章标签1
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/%E6%96%87%E7%AB%A0%E6%A0%87%E7%AD%BE2/" title="文章标签2">
+              文章标签2
+            </a>
+          
+          </div>
+    
+
     
   </div>
+</header>
+
+
+<div class="ui relaxed grid dream-grid">
+  
+  
+  <div class="sixteen wide mobile eight wide tablet eight wide computer four wide large screen four wide widescreen column dream-column">
+    <article class="ui attached segment card dream-card">
+  
+  <a class="image" href="https://surfaroundtheworld.top/posts/%E7%AC%AC%E4%B8%80%E7%AF%87%E5%8D%9A%E6%96%87%E6%B5%8B%E8%AF%95/">
+    
+    <img src="/me/background1.jpg" alt="MySQL基础架构" />
+    
+  </a>
+  
+
+  
+  <div class="content">
+  
+    <h2 class="ui medium header">
+      <a href="/posts/%E7%AC%AC%E4%B8%80%E7%AF%87%E5%8D%9A%E6%96%87%E6%B5%8B%E8%AF%95/">MySQL基础架构</a>
+    </h2>
+    <div class="meta">
+      <p class="date">
+        
+          <span data-format="luxon">2022-04-29T17:54:08&#43;08:00</span>
+        
+      </p>
+    </div>
+    <div class="description">
+      本篇文章会分析下一个 sql 语句在 MySQL 中的执行流程，包括 sql 的查询在 MySQL 内部会怎么流转，sql 语句的更新是怎么完成的。 在分析之前我会先带着你看看 MySQL 的基础
+    </div>
+  </div>
+
+  <div class="extra content">
+    <div class="author">@&nbsp;Aria</div>
+    <div class="reading-time">
+      <i class="clock icon"></i>8 分钟阅读</div>
+  </div>
+</article>
+
+  </div>
+  
+
+  
 </div>
 
 
@@ -327,7 +421,28 @@
 <script src="/js/main.js"></script>
 <script src="/js/theme.js"></script>
 
-     
+    
+
+
+<script src="https://cdn.jsdelivr.net/npm/luxon@1.26.0" integrity="sha256-4sbTzmCCW9LGrIh5OsN8V5Pfdad1F1MwhLAOyXKnsE0=" crossorigin="anonymous"></script>
+<script>
+  format()
+
+  function format() {
+    $('span[data-format="luxon"]').each(function () {
+      var date = $(this).text()
+
+      $(this).text(luxon.DateTime.fromISO(date, { locale: "zh" }).toFormat("yyyy年MM月dd日"))
+    })
+  }
+</script>
+
+
+
+<script src="/js/imagesloaded.pkgd.min.js"></script>
+<script src="/js/masonry.pkgd.min.js"></script>
+<script src="/js/grid.js"></script>
+
 
     
 

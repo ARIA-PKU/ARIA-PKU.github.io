@@ -2,4 +2,4 @@
 
   
 
-[{"categories":null,"description":"本篇文章会分析下一个 sql 语句在 MySQL 中的执行流程，包括 sql 的查询在 MySQL 内部会怎么流转，sql 语句的更新是怎么完成的。 在分析之前我会先带着你看看 MySQL 的基础","tags":null,"title":"MySQL基础架构","url":"https://surfaroundtheworld.top/posts/%E7%AC%AC%E4%B8%80%E7%AF%87%E5%8D%9A%E6%96%87%E6%B5%8B%E8%AF%95/"}]
+[{"categories":["文章分类1","文章分类2"],"description":"本篇文章会分析下一个 sql 语句在 MySQL 中的执行流程，包括 sql 的查询在 MySQL 内部会怎么流转，sql 语句的更新是怎么完成的。 在分析之前我会先带着你看看 MySQL 的基础","tags":["文章标签1","文章标签2"],"title":"MySQL基础架构","url":"https://surfaroundtheworld.top/posts/%E7%AC%AC%E4%B8%80%E7%AF%87%E5%8D%9A%E6%96%87%E6%B5%8B%E8%AF%95/"}]
