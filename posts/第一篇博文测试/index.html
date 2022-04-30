@@ -17,13 +17,13 @@
 
 <meta name="generator" content="Hugo 0.98.0" />
 
-<link rel="canonical" href="https://surfaroundtheworld.top/posts/%E7%AC%AC%E4%B8%80%E7%AF%87%E5%8D%9A%E6%96%87%E6%B5%8B%E8%AF%95/" />
+<link rel="canonical" href="https://blog.surfaroundtheworld.top/posts/%E7%AC%AC%E4%B8%80%E7%AF%87%E5%8D%9A%E6%96%87%E6%B5%8B%E8%AF%95/" />
 
 
 <meta property="og:title" content="MySQL基础架构" />
 <meta property="og:description" content="本篇文章会分析下一个 sql 语句在 MySQL 中的执行流程，包括 sql 的查询在 MySQL 内部会怎么流转，sql 语句的更新是怎么完成的。 在分析之前我会先带着你看看 MySQL 的基础" />
 <meta property="og:type" content="article" />
-<meta property="og:url" content="https://surfaroundtheworld.top/posts/%E7%AC%AC%E4%B8%80%E7%AF%87%E5%8D%9A%E6%96%87%E6%B5%8B%E8%AF%95/" /><meta property="og:image" content="https://surfaroundtheworld.top/me/background.jpg"/><meta property="article:section" content="posts" />
+<meta property="og:url" content="https://blog.surfaroundtheworld.top/posts/%E7%AC%AC%E4%B8%80%E7%AF%87%E5%8D%9A%E6%96%87%E6%B5%8B%E8%AF%95/" /><meta property="og:image" content="https://blog.surfaroundtheworld.top/me/background.jpg"/><meta property="article:section" content="posts" />
 <meta property="article:published_time" content="2022-04-29T17:54:08+08:00" />
 <meta property="article:modified_time" content="2022-04-29T17:54:08+08:00" />
 
@@ -31,7 +31,7 @@
 
 
 <meta name="twitter:card" content="summary_large_image"/>
-<meta name="twitter:image" content="https://surfaroundtheworld.top/me/background.jpg"/>
+<meta name="twitter:image" content="https://blog.surfaroundtheworld.top/me/background.jpg"/>
 
 <meta name="twitter:title" content="MySQL基础架构"/>
 <meta name="twitter:description" content="本篇文章会分析下一个 sql 语句在 MySQL 中的执行流程，包括 sql 的查询在 MySQL 内部会怎么流转，sql 语句的更新是怎么完成的。 在分析之前我会先带着你看看 MySQL 的基础"/>
@@ -104,7 +104,7 @@
   <a class="item dream-flip-toggle" title="翻转！">
     <i class="large link bullseye icon"></i>
   </a>
-  <a class="item" href="https://surfaroundtheworld.top/" title="首页">
+  <a class="item" href="https://blog.surfaroundtheworld.top/" title="首页">
     <i class="large link home icon"></i>
   </a>
   
@@ -187,10 +187,10 @@
   <a href="#" class="save-as-image" title="保存为图片" onclick="savePostAsImg()">
     <i class="save icon"></i>
   </a>
-  <a href="https://twitter.com/intent/tweet?text=MySQL%e5%9f%ba%e7%a1%80%e6%9e%b6%e6%9e%84&url=https%3a%2f%2fsurfaroundtheworld.top%2fposts%2f%25E7%25AC%25AC%25E4%25B8%2580%25E7%25AF%2587%25E5%258D%259A%25E6%2596%2587%25E6%25B5%258B%25E8%25AF%2595%2f" title="Twitter">
+  <a href="https://twitter.com/intent/tweet?text=MySQL%e5%9f%ba%e7%a1%80%e6%9e%b6%e6%9e%84&url=https%3a%2f%2fblog.surfaroundtheworld.top%2fposts%2f%25E7%25AC%25AC%25E4%25B8%2580%25E7%25AF%2587%25E5%258D%259A%25E6%2596%2587%25E6%25B5%258B%25E8%25AF%2595%2f" title="Twitter">
     <i class="twitter icon"></i>
   </a>
-  <a href="https://facebook.com/sharer/sharer.php?u=https%3a%2f%2fsurfaroundtheworld.top%2fposts%2f%25E7%25AC%25AC%25E4%25B8%2580%25E7%25AF%2587%25E5%258D%259A%25E6%2596%2587%25E6%25B5%258B%25E8%25AF%2595%2f" title="Facebook">
+  <a href="https://facebook.com/sharer/sharer.php?u=https%3a%2f%2fblog.surfaroundtheworld.top%2fposts%2f%25E7%25AC%25AC%25E4%25B8%2580%25E7%25AF%2587%25E5%258D%259A%25E6%2596%2587%25E6%25B5%258B%25E8%25AF%2595%2f" title="Facebook">
     <i class="facebook icon"></i>
   </a>
 </span>
@@ -486,7 +486,7 @@ b.先找出学生中年龄 18 岁的学生，然后再查询姓名为“张三�
 </div>
 <script>
   $(document).ready(function () {
-    $.getJSON('https:\/\/surfaroundtheworld.top\//index.json', function (data) {
+    $.getJSON('https:\/\/blog.surfaroundtheworld.top\//index.json', function (data) {
       $('.ui.search').search({
         source: data,
         searchFields: ['title'],

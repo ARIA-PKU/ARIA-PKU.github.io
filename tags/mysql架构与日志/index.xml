@@ -2,18 +2,18 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>mysql架构与日志 on Aria&#39;s Blog</title>
-    <link>https://surfaroundtheworld.top/tags/mysql%E6%9E%B6%E6%9E%84%E4%B8%8E%E6%97%A5%E5%BF%97/</link>
+    <link>https://blog.surfaroundtheworld.top/tags/mysql%E6%9E%B6%E6%9E%84%E4%B8%8E%E6%97%A5%E5%BF%97/</link>
     <description>Recent content in mysql架构与日志 on Aria&#39;s Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-Hans</language>
     <copyright>&lt;a rel=&#34;license&#34; href=&#34;http://creativecommons.org/licenses/by-nc-sa/4.0/&#34;&gt;&lt;img alt=&#34;知识共享许可协议&#34; style=&#34;border-width:0&#34; src=&#34;https://i.creativecommons.org/l/by-nc-sa/4.0/88x31.png&#34; /&gt;&lt;/a&gt;&lt;br /&gt;本作品采用&lt;a rel=&#34;license&#34; href=&#34;http://creativecommons.org/licenses/by-nc-sa/4.0/&#34;&gt;知识共享署名-非商业性使用-相同方式共享 4.0 国际许可协议&lt;/a&gt;进行许可。&lt;br /&gt;&lt;br /&gt;背景使用了 &lt;a href=&#34;https://www.pexels.com/zh-cn/&#34; target=&#34;_blank&#34;&gt;Pexels&lt;/a&gt; 上 &lt;a href=&#34;https://www.pexels.com/zh-cn/@minan1398&#34; target=&#34;_blank&#34;&gt;Min An&lt;/a&gt; 拍摄的&lt;a href=&#34;https://www.pexels.com/zh-cn/photo/1454794/&#34; target=&#34;_blank&#34;&gt;图片&lt;/a&gt;。</copyright>
-    <lastBuildDate>Fri, 29 Apr 2022 17:54:08 +0800</lastBuildDate><atom:link href="https://surfaroundtheworld.top/tags/mysql%E6%9E%B6%E6%9E%84%E4%B8%8E%E6%97%A5%E5%BF%97/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Fri, 29 Apr 2022 17:54:08 +0800</lastBuildDate><atom:link href="https://blog.surfaroundtheworld.top/tags/mysql%E6%9E%B6%E6%9E%84%E4%B8%8E%E6%97%A5%E5%BF%97/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>MySQL基础架构</title>
-      <link>https://surfaroundtheworld.top/posts/%E7%AC%AC%E4%B8%80%E7%AF%87%E5%8D%9A%E6%96%87%E6%B5%8B%E8%AF%95/</link>
+      <link>https://blog.surfaroundtheworld.top/posts/%E7%AC%AC%E4%B8%80%E7%AF%87%E5%8D%9A%E6%96%87%E6%B5%8B%E8%AF%95/</link>
       <pubDate>Fri, 29 Apr 2022 17:54:08 +0800</pubDate>
       
-      <guid>https://surfaroundtheworld.top/posts/%E7%AC%AC%E4%B8%80%E7%AF%87%E5%8D%9A%E6%96%87%E6%B5%8B%E8%AF%95/</guid>
+      <guid>https://blog.surfaroundtheworld.top/posts/%E7%AC%AC%E4%B8%80%E7%AF%87%E5%8D%9A%E6%96%87%E6%B5%8B%E8%AF%95/</guid>
       <description>本篇文章会分析下一个 sql 语句在 MySQL 中的执行流程，包括 sql 的查询在 MySQL 内部会怎么流转，sql 语句的更新是怎么完成的。 在分析之前我会先带着你看看 MySQL 的基础</description>
     </item>
     
