@@ -4,26 +4,26 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-    <title>Posts | Aria&#39;s Blog</title>
+    <title>Docker | Aria&#39;s Blog</title>
 
     
 
 
 
 <meta name="author" content="Aria" />
-<meta name="description" content="" />
+<meta name="description" content="Aria 的生活记录~" />
 
 
 
 <meta name="generator" content="Hugo 0.98.0" />
 
-<link rel="canonical" href="https://surfaroundtheworld.top/posts/" />
+<link rel="canonical" href="https://surfaroundtheworld.top/categories/docker/" />
 
 
-<meta property="og:title" content="Posts" />
+<meta property="og:title" content="Docker" />
 <meta property="og:description" content="Aria 的生活记录~" />
 <meta property="og:type" content="website" />
-<meta property="og:url" content="https://surfaroundtheworld.top/posts/" /><meta property="og:image" content="https://surfaroundtheworld.top/me/background.jpg"/>
+<meta property="og:url" content="https://surfaroundtheworld.top/categories/docker/" /><meta property="og:image" content="https://surfaroundtheworld.top/me/background.jpg"/>
 
 
 
@@ -31,7 +31,7 @@
 <meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:image" content="https://surfaroundtheworld.top/me/background.jpg"/>
 
-<meta name="twitter:title" content="Posts"/>
+<meta name="twitter:title" content="Docker"/>
 <meta name="twitter:description" content="Aria 的生活记录~"/>
 
 
@@ -180,28 +180,48 @@
 </header>
 
 
-<div class="ui container">
-  <article class="ui segment dream-posts-section">
-    <h2 class="ui header">
-      Posts
-      <span class="ui grey sub header"></span>
-    </h2>
+<div class="ui relaxed grid dream-grid">
+  
+  
+  <div class="sixteen wide mobile eight wide tablet eight wide computer four wide large screen four wide widescreen column dream-column">
+    <article class="ui attached segment card dream-card">
+  
+  <a class="image" href="https://surfaroundtheworld.top/posts/docker%E5%B8%B8%E7%94%A8%E6%93%8D%E4%BD%9C/">
+    
+    <img src="/me/acm.jpg" alt="Docker常用操作" />
+    
+  </a>
+  
 
-    
-    <h3 class="ui header">2022</h3>
-    <ul>
-      
-      <li>
-        <a href="https://surfaroundtheworld.top/posts/docker%E5%B8%B8%E7%94%A8%E6%93%8D%E4%BD%9C/">Docker常用操作</a>
-      </li>
-      
-      <li>
-        <a href="https://surfaroundtheworld.top/posts/%E7%AC%AC%E4%B8%80%E7%AF%87%E5%8D%9A%E6%96%87%E6%B5%8B%E8%AF%95/">MySQL基础架构</a>
-      </li>
-      
-    </ul>
-    
-  </article>
+  
+  <div class="content">
+  
+    <h2 class="ui medium header">
+      <a href="/posts/docker%E5%B8%B8%E7%94%A8%E6%93%8D%E4%BD%9C/">Docker常用操作</a>
+    </h2>
+    <div class="meta">
+      <p class="date">
+        
+          <span data-format="luxon">2022-04-30T20:32:39&#43;08:00</span>
+        
+      </p>
+    </div>
+    <div class="description">
+      Cut out summary from your post content here. Docker 常用操作 一、将当前用户添加到docker用户组 为了避免每次使用docker命令都需要加上sudo权限，可以将当前用户加入安
+    </div>
+  </div>
+
+  <div class="extra content">
+    <div class="author">@&nbsp;Author Name</div>
+    <div class="reading-time">
+      <i class="clock icon"></i>3 分钟阅读</div>
+  </div>
+</article>
+
+  </div>
+  
+
+  
 </div>
 
 
@@ -401,7 +421,28 @@
 <script src="/js/main.js"></script>
 <script src="/js/theme.js"></script>
 
-     
+    
+
+
+<script src="https://cdn.jsdelivr.net/npm/luxon@1.26.0" integrity="sha256-4sbTzmCCW9LGrIh5OsN8V5Pfdad1F1MwhLAOyXKnsE0=" crossorigin="anonymous"></script>
+<script>
+  format()
+
+  function format() {
+    $('span[data-format="luxon"]').each(function () {
+      var date = $(this).text()
+
+      $(this).text(luxon.DateTime.fromISO(date, { locale: "zh" }).toFormat("yyyy年MM月dd日"))
+    })
+  }
+</script>
+
+
+
+<script src="/js/imagesloaded.pkgd.min.js"></script>
+<script src="/js/masonry.pkgd.min.js"></script>
+<script src="/js/grid.js"></script>
+
 
     
 
