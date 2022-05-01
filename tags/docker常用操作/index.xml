@@ -14,7 +14,7 @@
       <pubDate>Sat, 30 Apr 2022 20:32:39 +0800</pubDate>
       
       <guid>https://blog.surfaroundtheworld.top/posts/docker%E5%B8%B8%E7%94%A8%E6%93%8D%E4%BD%9C/</guid>
-      <description>Docker 常用操作 一、将当前用户添加到docker用户组 为了避免每次使用docker命令都需要加上sudo权限，可以将当前用户加入安装中自动创建的d</description>
+      <description>&lt;p&gt;Docker常用命令整理&lt;/p&gt;</description>
     </item>
     
   </channel>
