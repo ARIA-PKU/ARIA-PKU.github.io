@@ -14,8 +14,16 @@
       <pubDate>Sun, 01 May 2022 19:04:23 +0800</pubDate>
       
       <guid>https://blog.surfaroundtheworld.top/posts/tmux/</guid>
-      <description>&lt;p&gt;Cut out summary from your post content here.&lt;/p&gt;
-&lt;p&gt;整理了tmux命令常用的操作&lt;/p&gt;</description>
+      <description>&lt;p&gt;整理了tmux命令常用的操作&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>Vim的常用操作</title>
+      <link>https://blog.surfaroundtheworld.top/posts/vim/</link>
+      <pubDate>Sun, 01 May 2022 19:04:18 +0800</pubDate>
+      
+      <guid>https://blog.surfaroundtheworld.top/posts/vim/</guid>
+      <description>&lt;p&gt;整理了vim的常用命令&lt;/p&gt;</description>
     </item>
     
   </channel>

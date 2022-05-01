@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-    <title>所有分类 | Aria&#39;s Blog</title>
+    <title>Vim的常用操作 | Aria&#39;s Blog</title>
 
     
 <link href="/header/icon.gif" rel="shortcut icon" type="image/x-icon" />
@@ -13,19 +13,22 @@
 
 
 <meta name="author" content="Aria" />
-<meta name="description" content="Aria 的生活记录~" />
+<meta name="description" content="整理了vim的常用命令
+" />
 
 
 
 <meta name="generator" content="Hugo 0.98.0" />
 
-<link rel="canonical" href="https://blog.surfaroundtheworld.top/categories/" />
+<link rel="canonical" href="https://blog.surfaroundtheworld.top/posts/vim/" />
 
 
-<meta property="og:title" content="Categories" />
-<meta property="og:description" content="Aria 的生活记录~" />
-<meta property="og:type" content="website" />
-<meta property="og:url" content="https://blog.surfaroundtheworld.top/categories/" /><meta property="og:image" content="https://blog.surfaroundtheworld.top/me/background.jpg"/>
+<meta property="og:title" content="Vim的常用操作" />
+<meta property="og:description" content="整理了vim的常用命令" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://blog.surfaroundtheworld.top/posts/vim/" /><meta property="og:image" content="https://blog.surfaroundtheworld.top/me/background.jpg"/><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2022-05-01T19:04:18+08:00" />
+<meta property="article:modified_time" content="2022-05-01T19:04:18+08:00" />
 
 
 
@@ -33,8 +36,8 @@
 <meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:image" content="https://blog.surfaroundtheworld.top/me/background.jpg"/>
 
-<meta name="twitter:title" content="Categories"/>
-<meta name="twitter:description" content="Aria 的生活记录~"/>
+<meta name="twitter:title" content="Vim的常用操作"/>
+<meta name="twitter:description" content="整理了vim的常用命令"/>
 
 
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.css" integrity="sha256-UXesixbeLkB/UYxVTzuj/gg3+LMzgwAmg3zD+C4ZASQ=" crossorigin="anonymous">
@@ -84,7 +87,13 @@
 </style>
 
 
-     
+    
+
+
+
+
+
+
 
     
     <link rel="stylesheet" href="/css/custom.css" />
@@ -118,161 +127,160 @@
         <section class="front">
           <div class="dream-max-width">
             
-
-<header class="ui basic very padded segment dream-header">
+<div class="ui relaxed centered grid dream-grid dream-grid-single">
   
-  <div class="ui small circular image">
-    <img src="/me/avatar.jpeg" alt="avatar" />
-  </div>
+  
+  
   
 
-  <div class="content">
-    <h1 class="ui medium header">Aria&#39;s Blog<span class="sub header">今天不做的事情，今后也不会去做。</span>
-    </h1>
+  
+  <aside class="sixteen wide mobile sixteen wide tablet three wide computer column dream-single-aside">
+    
+    <div class="ui segment toc">
+      <nav id="TableOfContents">
+  <ul>
+    <li><a href="#功能">功能</a></li>
+    <li><a href="#模式">模式</a></li>
+    <li><a href="#操作">操作</a></li>
+  </ul>
+</nav>
+    </div>
+    
 
-    <article class="ui horizontal list">
-      
-      <a class="item" href="/posts">
-        <i class="archive icon" title="归档"></i>
-      </a>
-      
-      <a class="item" href="/categories">
-        <i class="th list icon" title="所有分类"></i>
-      </a>
-      <a class="item" href="/tags">
-        <i class="tags icon" title="所有标签"></i>
-      </a>
+    
+  </aside>
+  
+  <div class="sixteen wide mobile sixteen wide tablet ten wide computer column markdown-body dream-single" id="dream-save-post-as-img">
+    <section class="ui segment">
+      <header>
+        <h1 class="ui large header">Vim的常用操作<span class="sub header">
+            <span class="left">
+              @
+              
+                Aria
+              
+
+              | 
+                  <span data-format="luxon">2022-05-01T19:04:18&#43;08:00</span>
+                
+
+              | 3 分钟阅读
+
+              
+              | 更新于
+                
+                  <span data-format="luxon">2022-05-01T19:04:18&#43;08:00</span>
+                
+              
+            </span>
+
+            
+            <span class="dream-share">
+  <a href="#" class="save-as-image" title="保存为图片" onclick="savePostAsImg()">
+    <i class="save icon"></i>
+  </a>
+  <a href="https://twitter.com/intent/tweet?text=Vim%e7%9a%84%e5%b8%b8%e7%94%a8%e6%93%8d%e4%bd%9c&url=https%3a%2f%2fblog.surfaroundtheworld.top%2fposts%2fvim%2f" title="Twitter">
+    <i class="twitter icon"></i>
+  </a>
+  <a href="https://facebook.com/sharer/sharer.php?u=https%3a%2f%2fblog.surfaroundtheworld.top%2fposts%2fvim%2f" title="Facebook">
+    <i class="facebook icon"></i>
+  </a>
+</span>
+
+            
+          </span>
+        </h1>
+      </header>
+
+      <article class="main">
+        
+        <img class="cover" src="/cover/vim.jpg" />
+        
+
+        <p>整理了vim的常用命令</p>
+<h2 id="功能">功能</h2>
+<p>​    (1) 命令行模式下的文本编辑器。
+​    (2) 根据文件扩展名自动判别编程语言。支持代码缩进、代码高亮等功能。
+​    (3) 使用方式：vim filename
+​        如果已有该文件，则打开它。
+​        如果没有该文件，则打开个一个新的文件，并命名为filename</p>
+<h2 id="模式">模式</h2>
+<p>​    (1) 一般命令模式
+​        默认模式。命令输入方式：类似于打游戏放技能，按不同字符，即可进行不同操作。可以复制、粘贴、删除文本等。
+​    (2) 编辑模式
+​        在一般命令模式里按下i，会进入编辑模式。
+​        按下ESC会退出编辑模式，返回到一般命令模式。
+​    (3) 命令行模式
+​        在一般命令模式里按下:/?三个字母中的任意一个，会进入命令行模式。命令行在最下面。
+​        可以查找、替换、保存、退出、配置编辑器等。</p>
+<h2 id="操作">操作</h2>
+<p>​    (1) i：进入编辑模式
+​    (2) ESC：进入一般命令模式
+​    (3) h 或 左箭头键：光标向左移动一个字符
+​    (4) j 或 向下箭头：光标向下移动一个字符
+​    (5) k 或 向上箭头：光标向上移动一个字符
+​    (6) l 或 向右箭头：光标向右移动一个字符
+​    (7) n<Space>：n表示数字，按下数字后再按空格，光标会向右移动这一行的n个字符
+​    (8) 0 或 功能键[Home]：光标移动到本行开头
+​    (9) $ 或 功能键[End]：光标移动到本行末尾
+​    (10) G：光标移动到最后一行
+​    (11) :n 或 nG：n为数字，光标移动到第n行
+​    (12) gg：光标移动到第一行，相当于1G
+​    (13) n<Enter>：n为数字，光标向下移动n行
+​    (14) /word：向光标之下寻找第一个值为word的字符串。
+​    (15) ?word：向光标之上寻找第一个值为word的字符串。
+​    (16) n：重复前一个查找操作
+​    (17) N：反向重复前一个查找操作
+​    (18) :n1,n2s/word1/word2/g：n1与n2为数字，在第n1行与n2行之间寻找word1这个字符串，并将该字符串替换为word2
+​    (19) :1,$s/word1/word2/g：将全文的word1替换为word2
+​    (20) :1,​$s/word1/word2/gc：将全文的word1替换为word2，且在替换前要求用户确认。
+​    (21) v：选中文本
+​    (22) d：删除选中的文本
+​    (23) dd: 删除当前行
+​    (24) y：复制选中的文本
+​    (25) yy: 复制当前行
+​    (26) p: 将复制的数据在光标的下一行/下一个位置粘贴
+​    (27) u：撤销
+​    (28) Ctrl + r：取消撤销
+​    (29) 大于号 &gt;：将选中的文本整体向右缩进一次
+​    (30) 小于号 &lt;：将选中的文本整体向左缩进一次
+​    (31) :w 保存
+​    (32) :w! 强制保存
+​    (33) :q 退出
+​    (34) :q! 强制退出
+​    (35) :wq 保存并退出
+​    (36) :set paste 设置成粘贴模式，取消代码自动缩进
+​    (37) :set nopaste 取消粘贴模式，开启代码自动缩进
+​    (38) :set nu 显示行号
+​    (39) :set nonu 隐藏行号
+​    (40) gg=G：将全文代码格式化
+​    (41) :noh 关闭查找关键词高亮
+​    (42) Ctrl + q：当vim卡死时，可以取消当前正在执行的命令
+异常处理：
+​    每次用vim编辑文件时，会自动创建一个.filename.swp的临时文件。
+​    如果打开某个文件时，该文件的swp文件已存在，则会报错。此时解决办法有两种：
+​        (1) 找到正在打开该文件的程序，并退出
+​        (2) 直接删掉该swp文件即可</p>
+      </article>
+    </section>
+
+    
+
+    
+    <article class="ui segment utterances-comments" data-html2canvas-ignore>
+      <script
+        src="https://utteranc.es/client.js"
+        repo="ARIA-PKU/ARIA-PKU.github.io"
+        issue-term="og:title"
+        theme="github-light"
+        crossorigin="anonymous"
+        async>
+      </script>
     </article>
-
-    
-    
-    
-    
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-    
-
-    
-
-    
-    
-    
-          <div class="dream-tags">
-          
-          
-          
-            <a class="ui label" href="/tags/docker%E5%B8%B8%E7%94%A8%E6%93%8D%E4%BD%9C/" title="Docker常用操作">
-              Docker常用操作
-            </a>
-          
-          
-          
-            <a class="ui label" href="/tags/linux/" title="Linux">
-              Linux
-            </a>
-          
-          
-          
-            <a class="ui label" href="/tags/mysql%E6%9E%B6%E6%9E%84%E4%B8%8E%E6%97%A5%E5%BF%97/" title="mysql架构与日志">
-              mysql架构与日志
-            </a>
-          
-          
-          
-            <a class="ui label" href="/tags/tmux/" title="tmux">
-              tmux
-            </a>
-          
-          
-          
-            <a class="ui label" href="/tags/vim/" title="vim">
-              vim
-            </a>
-          
-          
-          
-            <a class="ui label" href="/tags/%E4%BA%8C%E5%88%86%E5%9B%BE/" title="二分图">
-              二分图
-            </a>
-          
-          
-          
-            <a class="ui label" href="/tags/%E7%AE%97%E6%B3%95%E9%A2%98/" title="算法题">
-              算法题
-            </a>
-          
-          </div>
     
 
     
   </div>
-</header>
-
-
-<div class="ui container">
-  <article class="ui segment dream-categories-section">
-    <h2 class="ui header">所有分类<span class="ui grey sub header">4 分类</span>
-    </h2>
-
-    
-    <h3 class="ui header">
-      <a href="/categories/docker/">Docker</a>&nbsp;1篇文章</h3>
-    <ul>
-      
-      <li>
-        <a href="/posts/docker%E5%B8%B8%E7%94%A8%E6%93%8D%E4%BD%9C/">Docker常用操作</a>
-      </li>
-      
-    </ul>
-    
-    <h3 class="ui header">
-      <a href="/categories/linux%E5%B8%B8%E7%94%A8%E7%9F%A5%E8%AF%86/">Linux常用知识</a>&nbsp;2篇文章</h3>
-    <ul>
-      
-      <li>
-        <a href="/posts/tmux/">tmux常用操作</a>
-      </li>
-      
-      <li>
-        <a href="/posts/vim/">Vim的常用操作</a>
-      </li>
-      
-    </ul>
-    
-    <h3 class="ui header">
-      <a href="/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/">数据库</a>&nbsp;1篇文章</h3>
-    <ul>
-      
-      <li>
-        <a href="/posts/mysql%E5%9F%BA%E7%A1%80%E6%9E%B6%E6%9E%84%E4%B8%8E%E6%89%A7%E8%A1%8C%E6%B5%81%E7%A8%8B/">MySQL基础架构与执行流程</a>
-      </li>
-      
-    </ul>
-    
-    <h3 class="ui header">
-      <a href="/categories/%E7%AE%97%E6%B3%95%E5%91%A8%E8%B5%9B%E9%A2%98/">算法周赛题</a>&nbsp;1篇文章</h3>
-    <ul>
-      
-      <li>
-        <a href="/posts/acwing_4415%E7%82%B9%E7%9A%84%E8%B5%8B%E5%80%BC/">算法题——点的赋值</a>
-      </li>
-      
-    </ul>
-    
-  </article>
 </div>
 
 
@@ -512,7 +520,31 @@
 <script src="/js/main.js"></script>
 <script src="/js/theme.js"></script>
 
-     
+    
+
+
+<script src="https://cdn.jsdelivr.net/npm/luxon@1.26.0" integrity="sha256-4sbTzmCCW9LGrIh5OsN8V5Pfdad1F1MwhLAOyXKnsE0=" crossorigin="anonymous"></script>
+<script>
+  format()
+
+  function format() {
+    $('span[data-format="luxon"]').each(function () {
+      var date = $(this).text()
+
+      $(this).text(luxon.DateTime.fromISO(date, { locale: "zh" }).toFormat("yyyy年MM月dd日"))
+    })
+  }
+</script>
+
+
+
+<script src="/js/scrollToTop.js"></script>
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.0.0-rc.1/dist/html2canvas.min.js" integrity="sha256-uacRffSSMP9qpvNWhVmYLykBv9YKMA1d/VSIN1AmfyQ=" crossorigin="anonymous"></script>
+<script src="/js/post.js" defer></script>
+
 
     
 
