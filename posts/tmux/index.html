@@ -13,7 +13,7 @@
 
 
 <meta name="author" content="Aria" />
-<meta name="description" content="整理了tmux命令常用的操作
+<meta name="description" content="整理了tmux命令常用的操作。封面来自pivix的チャイ画师，内容整理自y总课程。
 " />
 
 
@@ -24,7 +24,7 @@
 
 
 <meta property="og:title" content="tmux常用操作" />
-<meta property="og:description" content="整理了tmux命令常用的操作" />
+<meta property="og:description" content="整理了tmux命令常用的操作。封面来自pivix的チャイ画师，内容整理自y总课程。" />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://blog.surfaroundtheworld.top/posts/tmux/" /><meta property="og:image" content="https://blog.surfaroundtheworld.top/me/background.jpg"/><meta property="article:section" content="posts" />
 <meta property="article:published_time" content="2022-05-01T19:04:23+08:00" />
@@ -37,7 +37,7 @@
 <meta name="twitter:image" content="https://blog.surfaroundtheworld.top/me/background.jpg"/>
 
 <meta name="twitter:title" content="tmux常用操作"/>
-<meta name="twitter:description" content="整理了tmux命令常用的操作"/>
+<meta name="twitter:description" content="整理了tmux命令常用的操作。封面来自pivix的チャイ画师，内容整理自y总课程。"/>
 
 
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.css" integrity="sha256-UXesixbeLkB/UYxVTzuj/gg3+LMzgwAmg3zD+C4ZASQ=" crossorigin="anonymous">
@@ -197,53 +197,53 @@
         <img class="cover" src="/cover/tmux.jpg" />
         
 
-        <p>整理了tmux命令常用的操作</p>
+        <p>整理了tmux命令常用的操作。封面来自pivix的<a href="https://www.pixiv.net/users/1096811">チャイ</a>画师，内容整理自y总课程。</p>
 <h2 id="功能">功能</h2>
-<p>​    (1) 分屏。
-​    (2) 允许断开Terminal连接后，继续运行进程。</p>
+<p>​    (1) 分屏。</p>
+<p>​    (2) 允许断开Terminal连接后，继续运行进程。</p>
 <h2 id="结构">结构</h2>
 <p>​    一个tmux可以包含多个session，一个session可以包含多个window，一个window可以包含多个pane。
 ​    实例：
-​        tmux:
-​            session 0:
-​                window 0:
-​                    pane 0
-​                    pane 1
-​                    pane 2
-​                    &hellip;
-​                window 1
-​                window 2
-​                &hellip;
-​            session 1
-​            session 2
-​            &hellip;</p>
+​        tmux:</p>
+<p>​            session 0:</p>
+<p>​                window 0:</p>
+<p>​                    pane 0</p>
+<p>​                    pane 1</p>
+<p>​                    pane 2</p>
+<p>​                    &hellip;
+​                window 1</p>
+<p>​                window 2</p>
+<p>​                &hellip;</p>
+<p>​            session 1</p>
+<p>​            session 2</p>
+<p>​            &hellip;</p>
 <h2 id="操作">操作</h2>
-<p>（ps：初始版本的tmux以下的Ctrl + a 均为Ctrl + b，考虑到改成a会更符合操作，所以在</p>
-<p>​    (1) tmux：新建一个session，其中包含一个window，window中包含一个pane，pane里打开了一个shell对话框。
-​    (2) 按下Ctrl + a后手指松开，然后按%：将当前pane左右平分成两个pane。
-​    (3) 按下Ctrl + a后手指松开，然后按&quot;（注意是双引号&quot;）：将当前pane上下平分成两个pane。
-​    (4) Ctrl + d：关闭当前pane；如果当前window的所有pane均已关闭，则自动关闭window；如果当前session的所有window均已关闭，则自动关闭session。
-​    (5) 鼠标点击可以选pane。
-​    (6) 按下ctrl + a后手指松开，然后按方向键：选择相邻的pane。
-​    (7) 鼠标拖动pane之间的分割线，可以调整分割线的位置。
-​    (8) 按住ctrl + a的同时按方向键，可以调整pane之间分割线的位置。
-​    (9) 按下ctrl + a后手指松开，然后按z：将当前pane全屏/取消全屏。
-​    (10) 按下ctrl + a后手指松开，然后按d：挂起当前session。
-​    (11) tmux a：打开之前挂起的session。
-​    (12) 按下ctrl + a后手指松开，然后按s：选择其它session。
-​        方向键 —— 上：选择上一项 session/window/pane
-​        方向键 —— 下：选择下一项 session/window/pane
-​        方向键 —— 右：展开当前项 session/window
-​        方向键 —— 左：闭合当前项 session/window
-​    (13) 按下Ctrl + a后手指松开，然后按c：在当前session中创建一个新的window。
-​    (14) 按下Ctrl + a后手指松开，然后按w：选择其他window，操作方法与(12)完全相同。
-​    (15) 按下Ctrl + a后手指松开，然后按PageUp：翻阅当前pane内的内容。
-​    (16) 鼠标滚轮：翻阅当前pane内的内容。
-​    (17) 在tmux中选中文本时，需要按住shift键。（仅支持Windows和Linux，不支持Mac，不过该操作并不是必须的，因此影响不大）
-​    (18) tmux中复制/粘贴文本的通用方式：
-​        (1) 按下Ctrl + a后松开手指，然后按[
-​        (2) 用鼠标选中文本，被选中的文本会被自动复制到tmux的剪贴板
-​        (3) 按下Ctrl + a后松开手指，然后按]，会将剪贴板中的内容粘贴到光标处</p>
+<p>（ps：初始版本的tmux以下的Ctrl + a 均为Ctrl + b，考虑到改成a会更符合操作，所以在.tmux中进行了修改）</p>
+<p>(1) tmux：新建一个session，其中包含一个window，window中包含一个pane，pane里打开了一个shell对话框。</p>
+<p>(2) 按下Ctrl + a后手指松开，然后按%：将当前pane左右平分成两个pane。</p>
+<p>(3) 按下Ctrl + a后手指松开，然后按&quot;（注意是双引号&quot;）：将当前pane上下平分成两个pane。</p>
+<p>(4) Ctrl + d：关闭当前pane；如果当前window的所有pane均已关闭，则自动关闭window；如果当前session的所有window均已关闭，则自动关闭session。</p>
+<p>(5) 鼠标点击可以选pane。</p>
+<p>(6) 按下ctrl + a后手指松开，然后按方向键：选择相邻的pane。</p>
+<p>(7) 鼠标拖动pane之间的分割线，可以调整分割线的位置。</p>
+<p>(8) 按住ctrl + a的同时按方向键，可以调整pane之间分割线的位置。</p>
+<p>(9) 按下ctrl + a后手指松开，然后按z：将当前pane全屏/取消全屏。</p>
+<p>(10) 按下ctrl + a后手指松开，然后按d：挂起当前session。</p>
+<p>(11) tmux a：打开之前挂起的session。</p>
+<p>(12) 按下ctrl + a后手指松开，然后按s：选择其它session。</p>
+<p>​		方向键 —— 上：选择上一项 session/window/pane</p>
+<p>​		方向键 —— 下：选择下一项 session/window/pane</p>
+<p>​		方向键 —— 右：展开当前项 session/window</p>
+<p>​		方向键 —— 左：闭合当前项 session/window</p>
+<p>(13) 按下Ctrl + a后手指松开，然后按c：在当前session中创建一个新的window。</p>
+<p>(14) 按下Ctrl + a后手指松开，然后按w：选择其他window，操作方法与(12)完全相同。</p>
+<p>(15) 按下Ctrl + a后手指松开，然后按PageUp：翻阅当前pane内的内容。</p>
+<p>(16) 鼠标滚轮：翻阅当前pane内的内容。</p>
+<p>(17) 在tmux中选中文本时，需要按住shift键。（仅支持Windows和Linux，不支持Mac，不过该操作并不是必须的，因此影响不大）</p>
+<p>(18) tmux中复制/粘贴文本的通用方式：</p>
+<p>​        1） 按下Ctrl + a后松开手指，然后按[</p>
+<p>​        2）用鼠标选中文本，被选中的文本会被自动复制到tmux的剪贴板</p>
+<p>​        3）按下Ctrl + a后松开手指，然后按]，会将剪贴板中的内容粘贴到光标处</p>
       </article>
     </section>
 
