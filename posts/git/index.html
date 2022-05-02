@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-    <title>算法周赛题 | Aria&#39;s Blog</title>
+    <title>git的常用操作 | Aria&#39;s Blog</title>
 
     
 <link href="/header/icon.gif" rel="shortcut icon" type="image/x-icon" />
@@ -12,20 +12,23 @@
 
 
 
-<meta name="author" content="Aria" />
-<meta name="description" content="Aria 的生活记录~" />
+<meta name="author" content="Author Name" />
+<meta name="description" content="整理了git的命令常用的操作。封面来自pivix的チャイ画师，内容整理自y总课程。
+" />
 
 
 
 <meta name="generator" content="Hugo 0.98.0" />
 
-<link rel="canonical" href="https://blog.surfaroundtheworld.top/categories/%E7%AE%97%E6%B3%95%E5%91%A8%E8%B5%9B%E9%A2%98/" />
+<link rel="canonical" href="https://blog.surfaroundtheworld.top/posts/git/" />
 
 
-<meta property="og:title" content="算法周赛题" />
-<meta property="og:description" content="Aria 的生活记录~" />
-<meta property="og:type" content="website" />
-<meta property="og:url" content="https://blog.surfaroundtheworld.top/categories/%E7%AE%97%E6%B3%95%E5%91%A8%E8%B5%9B%E9%A2%98/" /><meta property="og:image" content="https://blog.surfaroundtheworld.top/me/background.jpg"/>
+<meta property="og:title" content="git的常用操作" />
+<meta property="og:description" content="整理了git的命令常用的操作。封面来自pivix的チャイ画师，内容整理自y总课程。" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://blog.surfaroundtheworld.top/posts/git/" /><meta property="og:image" content="https://blog.surfaroundtheworld.top/me/background.jpg"/><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2022-05-02T15:12:22+08:00" />
+<meta property="article:modified_time" content="2022-05-02T15:12:22+08:00" />
 
 
 
@@ -33,8 +36,8 @@
 <meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:image" content="https://blog.surfaroundtheworld.top/me/background.jpg"/>
 
-<meta name="twitter:title" content="算法周赛题"/>
-<meta name="twitter:description" content="Aria 的生活记录~"/>
+<meta name="twitter:title" content="git的常用操作"/>
+<meta name="twitter:description" content="整理了git的命令常用的操作。封面来自pivix的チャイ画师，内容整理自y总课程。"/>
 
 
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.css" integrity="sha256-UXesixbeLkB/UYxVTzuj/gg3+LMzgwAmg3zD+C4ZASQ=" crossorigin="anonymous">
@@ -84,7 +87,13 @@
 </style>
 
 
-     
+    
+
+
+
+
+
+
 
     
     <link rel="stylesheet" href="/css/custom.css" />
@@ -118,160 +127,144 @@
         <section class="front">
           <div class="dream-max-width">
             
-
-<header class="ui basic very padded segment dream-header">
-  
-  <div class="ui small circular image">
-    <img src="/me/avatar.jpeg" alt="avatar" />
-  </div>
-  
-
-  <div class="content">
-    <h1 class="ui medium header">Aria&#39;s Blog<span class="sub header">今天不做的事情，今后也不会去做。</span>
-    </h1>
-
-    <article class="ui horizontal list">
-      
-      <a class="item" href="/posts">
-        <i class="archive icon" title="归档"></i>
-      </a>
-      
-      <a class="item" href="/categories">
-        <i class="th list icon" title="所有分类"></i>
-      </a>
-      <a class="item" href="/tags">
-        <i class="tags icon" title="所有标签"></i>
-      </a>
-    </article>
-
-    
-    
-    
-    
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-    
-
-    
-
-    
-    
-    
-          <div class="dream-tags">
-          
-          
-          
-            <a class="ui label" href="/tags/docker%E5%B8%B8%E7%94%A8%E6%93%8D%E4%BD%9C/" title="Docker常用操作">
-              Docker常用操作
-            </a>
-          
-          
-          
-            <a class="ui label" href="/tags/git/" title="git">
-              git
-            </a>
-          
-          
-          
-            <a class="ui label" href="/tags/linux/" title="Linux">
-              Linux
-            </a>
-          
-          
-          
-            <a class="ui label" href="/tags/mysql%E6%9E%B6%E6%9E%84%E4%B8%8E%E6%97%A5%E5%BF%97/" title="mysql架构与日志">
-              mysql架构与日志
-            </a>
-          
-          
-          
-            <a class="ui label" href="/tags/tmux/" title="tmux">
-              tmux
-            </a>
-          
-          
-          
-            <a class="ui label" href="/tags/vim/" title="vim">
-              vim
-            </a>
-          
-          
-          
-            <a class="ui label" href="/tags/%E4%BA%8C%E5%88%86%E5%9B%BE/" title="二分图">
-              二分图
-            </a>
-          
-          
-          
-            <a class="ui label" href="/tags/%E7%AE%97%E6%B3%95%E9%A2%98/" title="算法题">
-              算法题
-            </a>
-          
-          </div>
-    
-
-    
-  </div>
-</header>
-
-
-<div class="ui relaxed grid dream-grid">
+<div class="ui relaxed centered grid dream-grid dream-grid-single">
   
   
-  <div class="sixteen wide mobile eight wide tablet eight wide computer four wide large screen four wide widescreen column dream-column">
-    <article class="ui attached segment card dream-card">
   
-  <a class="image" href="https://blog.surfaroundtheworld.top/posts/acwing_4415%E7%82%B9%E7%9A%84%E8%B5%8B%E5%80%BC/">
+  
+
+  
+  <aside class="sixteen wide mobile sixteen wide tablet three wide computer column dream-single-aside">
     
-    <img src="/cover/acwing_4415.jpg" alt="算法题——点的赋值" />
+    <div class="ui segment toc">
+      <nav id="TableOfContents">
+  <ul>
+    <li><a href="#11-git基本概念">1.1. git基本概念</a></li>
+    <li><a href="#12-git常用命令">1.2 git常用命令</a></li>
+  </ul>
+</nav>
+    </div>
     
+
+    
+  </aside>
+  
+  <div class="sixteen wide mobile sixteen wide tablet ten wide computer column markdown-body dream-single" id="dream-save-post-as-img">
+    <section class="ui segment">
+      <header>
+        <h1 class="ui large header">git的常用操作<span class="sub header">
+            <span class="left">
+              @
+              
+                
+                  Author Name
+                
+              
+
+              | 
+                  <span data-format="luxon">2022-05-02T15:12:22&#43;08:00</span>
+                
+
+              | 3 分钟阅读
+
+              
+              | 更新于
+                
+                  <span data-format="luxon">2022-05-02T15:12:22&#43;08:00</span>
+                
+              
+            </span>
+
+            
+            <span class="dream-share">
+  <a href="#" class="save-as-image" title="保存为图片" onclick="savePostAsImg()">
+    <i class="save icon"></i>
   </a>
-  
+  <a href="https://twitter.com/intent/tweet?text=git%e7%9a%84%e5%b8%b8%e7%94%a8%e6%93%8d%e4%bd%9c&url=https%3a%2f%2fblog.surfaroundtheworld.top%2fposts%2fgit%2f" title="Twitter">
+    <i class="twitter icon"></i>
+  </a>
+  <a href="https://facebook.com/sharer/sharer.php?u=https%3a%2f%2fblog.surfaroundtheworld.top%2fposts%2fgit%2f" title="Facebook">
+    <i class="facebook icon"></i>
+  </a>
+</span>
 
-  
-  <div class="content">
-  
-    <h2 class="ui medium header">
-      <a href="/posts/acwing_4415%E7%82%B9%E7%9A%84%E8%B5%8B%E5%80%BC/">算法题——点的赋值</a>
-    </h2>
-    <div class="meta">
-      <p class="date">
+            
+          </span>
+        </h1>
+      </header>
+
+      <article class="main">
         
-          <span data-format="luxon">2022-04-30T22:16:19&#43;08:00</span>
+        <img class="cover" src="/cover/git.jpg" />
         
-      </p>
-    </div>
-    <div class="description">
-      <p>周赛算法题总结，封面来自pivix的防人画师。</p>
-    </div>
-  </div>
 
-  <div class="extra content">
-    <div class="author">@&nbsp;Aria</div>
-    <div class="reading-time">
-      <i class="clock icon"></i>2 分钟阅读</div>
-  </div>
-</article>
+        <p>整理了git的命令常用的操作。封面来自pivix的<a href="https://www.pixiv.net/users/1096811">チャイ</a>画师，内容整理自y总课程。</p>
+<h2 id="11-git基本概念">1.1. git基本概念</h2>
+<p>工作区：仓库的目录。工作区是独立于各个分支的。</p>
+<p>暂存区：数据暂时存放的区域，类似于工作区写入版本库前的缓存区。暂存区是独立于各个分支的。</p>
+<p>版本库：存放所有已经提交到本地仓库的代码版本</p>
+<p>版本结构：树结构，树中每个节点代表一个代码版本。</p>
+<h2 id="12-git常用命令">1.2 git常用命令</h2>
+<ol>
+<li>git config &ndash;global user.name xxx：设置全局用户名，信息记录在~/.gitconfig文件中</li>
+<li>git config &ndash;global user.email <a href="mailto:xxx@xxx.com">xxx@xxx.com</a>：设置全局邮箱地址，信息记录在~/.gitconfig文件中</li>
+<li>git init：将当前目录配置成git仓库，信息记录在隐藏的.git文件夹中</li>
+<li>git add XX：将XX文件添加到暂存区</li>
+<li>git add .：将所有待加入暂存区的文件加入暂存区</li>
+<li>git rm &ndash;cached XX：将文件从仓库索引目录中删掉</li>
+<li>git commit -m &ldquo;给自己看的备注信息&rdquo;：将暂存区的内容提交到当前分支</li>
+<li>git status：查看仓库状态</li>
+<li>git diff XX：查看XX文件相对于暂存区修改了哪些内容</li>
+<li>git log：查看当前分支的所有版本</li>
+<li>git reflog：查看HEAD指针的移动历史（包括被回滚的版本）</li>
+<li>git reset &ndash;hard HEAD^ 或 git reset &ndash;hard HEAD~：将代码库回滚到上一个版本</li>
+<li>git reset &ndash;hard HEAD^^：往上回滚两次，以此类推</li>
+<li>git reset &ndash;hard HEAD~100：往上回滚100个版本</li>
+<li>git reset &ndash;hard 版本号：回滚到某一特定版本</li>
+<li>git checkout — XX或git restore XX：将XX文件尚未加入暂存区的修改全部撤销</li>
+<li>git remote add origin <a href="mailto:git@github.com">git@github.com</a>:ARIA-PKU/webapp.git：将本地仓库关联到远程仓库</li>
+<li>git push -u (第一次需要-u以后不需要)：将当前分支推送到远程仓库</li>
+<li>git push origin branch_name：将本地的某个分支推送到远程仓库</li>
+<li>git clone <a href="mailto:git@github.com">git@github.com</a>:ARIA-PKU/webapp.git：将远程仓库XXX下载到当前目录下</li>
+<li>git checkout -b branch_name：创建并切换到branch_name这个分支</li>
+<li>git branch：查看所有分支和当前所处分支</li>
+<li>git checkout branch_name：切换到branch_name这个分支</li>
+<li>git merge branch_name：将分支branch_name合并到当前分支上</li>
+<li>git branch -d branch_name：删除本地仓库的branch_name分支</li>
+<li>git branch branch_name：创建新分支</li>
+<li>git push &ndash;set-upstream origin branch_name：设置本地的branch_name分支对应远程仓库的branch_name分支</li>
+<li>git push -d origin branch_name：删除远程仓库的branch_name分支</li>
+<li>git pull：将远程仓库的当前分支与本地仓库的当前分支合并</li>
+<li>git pull origin branch_name：将远程仓库的branch_name分支与本地仓库的当前分支合并</li>
+<li>git branch &ndash;set-upstream-to=origin/branch_name1 branch_name2：将远程的branch_name1分支与本地的branch_name2分支对应</li>
+<li>git checkout -t origin/branch_name 将远程的branch_name分支拉取到本地</li>
+<li>git stash：将工作区和暂存区中尚未提交的修改存入栈中</li>
+<li>git stash apply：将栈顶存储的修改恢复到当前分支，但不删除栈顶元素</li>
+<li>git stash drop：删除栈顶存储的修改</li>
+<li>git stash pop：将栈顶存储的修改恢复到当前分支，同时删除栈顶元素</li>
+<li>git stash list：查看栈中所有元素</li>
+<li>git rebase 多人协同同一个分支的时候会使用，会合并之前的commit历史。优点在于得到更简洁的项目历史，去掉了merge commit，但是需要手动处理版本冲突。</li>
+</ol>
+      </article>
+    </section>
 
-  </div>
-  
+    
 
-  
+    
+    <article class="ui segment utterances-comments" data-html2canvas-ignore>
+      <script
+        src="https://utteranc.es/client.js"
+        repo="ARIA-PKU/ARIA-PKU.github.io"
+        issue-term="og:title"
+        theme="github-light"
+        crossorigin="anonymous"
+        async>
+      </script>
+    </article>
+    
+
+    
+  </div>
 </div>
 
 
@@ -537,9 +530,12 @@
 
 
 
-<script src="/js/imagesloaded.pkgd.min.js"></script>
-<script src="/js/masonry.pkgd.min.js"></script>
-<script src="/js/grid.js"></script>
+<script src="/js/scrollToTop.js"></script>
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.0.0-rc.1/dist/html2canvas.min.js" integrity="sha256-uacRffSSMP9qpvNWhVmYLykBv9YKMA1d/VSIN1AmfyQ=" crossorigin="anonymous"></script>
+<script src="/js/post.js" defer></script>
 
 
     

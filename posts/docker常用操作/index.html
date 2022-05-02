@@ -142,6 +142,7 @@
     <li><a href="#一将当前用户添加到docker用户组">一、将当前用户添加到docker用户组</a></li>
     <li><a href="#二镜像images">二、镜像（images）</a></li>
     <li><a href="#三容器container">三、容器(container)</a></li>
+    <li><a href="#四注意事项">四、注意事项</a></li>
   </ul>
 </nav>
     </div>
@@ -216,26 +217,68 @@
 </ol>
 <h2 id="三容器container">三、容器(container)</h2>
 <ol>
-<li>docker [container] create -it ubuntu:20.04：利用镜像ubuntu:20.04创建一个容器。</li>
-<li>docker ps -a：查看本地的所有容器</li>
-<li>docker [container] start CONTAINER：启动容器</li>
-<li>docker [container] stop CONTAINER：停止容器</li>
-<li>docker [container] restart CONTAINER：重启容器</li>
-<li>docker [contaienr] run -itd ubuntu:20.04：创建并启动一个容器</li>
-<li>docker [container] attach CONTAINER：进入容器
-先按Ctrl-p，再按Ctrl-q可以挂起容器（这里用Ctrl-d是直接退出并关闭容器）</li>
-<li>docker [container] exec CONTAINER COMMAND：在容器中执行命令</li>
-<li>docker [container] rm CONTAINER：删除容器</li>
-<li>docker container prune：删除所有已停止的容器</li>
-<li>docker export -o xxx.tar CONTAINER：将容器CONTAINER导出到本地文件xxx.tar中</li>
-<li>docker import xxx.tar image_name:tag：将本地文件xxx.tar导入成镜像，并将镜像命名为image_name:tag</li>
-<li>docker export/import与docker save/load的区别： export/import会丢弃历史记录和元数据信息，仅保存容器当时的快照状save/load会保存完整记录，体积更大</li>
-<li>docker top CONTAINER：查看某个容器内的所有进程</li>
-<li>docker stats：查看所有容器的统计信息，包括CPU、内存、存储、网络等信息</li>
-<li>docker cp xxx CONTAINER:xxx 或 docker cp CONTAINER:xxx xxx：在本地和容器间复制文件</li>
-<li>docker rename CONTAINER1 CONTAINER2：重命名容器</li>
-<li>docker update CONTAINER &ndash;memory 500MB：修改容器限制</li>
+<li>
+<p>docker [container] create -it ubuntu:20.04：利用镜像ubuntu:20.04创建一个容器。</p>
+</li>
+<li>
+<p>docker ps -a：查看本地的所有容器</p>
+</li>
+<li>
+<p>docker [container] start CONTAINER：启动容器</p>
+</li>
+<li>
+<p>docker [container] stop CONTAINER：停止容器</p>
+</li>
+<li>
+<p>docker [container] restart CONTAINER：重启容器</p>
+</li>
+<li>
+<p>docker [contaienr] run -itd ubuntu:20.04：创建并启动一个容器</p>
+<p>e.g. docker run -p 20000:22 -p 8000:8000 &ndash;name django_project  -itd django_lesson 其中-p为端口映射，django_lesson:1.0为镜像，django_project为项目名称</p>
+</li>
+<li>
+<p>docker [container] attach CONTAINER：进入容器
+先按Ctrl-p，再按Ctrl-q可以挂起容器（这里用Ctrl-d是直接退出并关闭容器）</p>
+</li>
+<li>
+<p>docker [container] exec CONTAINER COMMAND：在容器中执行命令</p>
+</li>
+<li>
+<p>docker [container] rm CONTAINER：删除容器</p>
+</li>
+<li>
+<p>docker container prune：删除所有已停止的容器</p>
+</li>
+<li>
+<p>docker export -o xxx.tar CONTAINER：将容器CONTAINER导出到本地文件xxx.tar中</p>
+</li>
+<li>
+<p>docker import xxx.tar image_name:tag：将本地文件xxx.tar导入成镜像，并将镜像命名为image_name:tag</p>
+</li>
+<li>
+<p>docker export/import与docker save/load的区别： export/import会丢弃历史记录和元数据信息，仅保存容器当时的快照状save/load会保存完整记录，体积更大</p>
+</li>
+<li>
+<p>docker top CONTAINER：查看某个容器内的所有进程</p>
+</li>
+<li>
+<p>docker stats：查看所有容器的统计信息，包括CPU、内存、存储、网络等信息</p>
+</li>
+<li>
+<p>docker cp xxx CONTAINER:xxx 或 docker cp CONTAINER:xxx xxx：在本地和容器间复制文件</p>
+</li>
+<li>
+<p>docker rename CONTAINER1 CONTAINER2：重命名容器</p>
+</li>
+<li>
+<p>docker update CONTAINER &ndash;memory 500MB：修改容器限制</p>
+</li>
 </ol>
+<h2 id="四注意事项">四、注意事项</h2>
+<p>考虑到权限问题容易引发的问题，和linux用户创建一样，创建一个root以外的用户，并赋给其sudo权限：</p>
+<p>adduser aria # 创建普通用户aria</p>
+<p>usermod -aG sudo aria # 给用户aria分配sudo权限</p>
+<p>su -aria# 可切换到用户aria中</p>
       </article>
     </section>
 
@@ -316,6 +359,8 @@
     
       
     
+      
+    
     
 
     
@@ -329,6 +374,12 @@
           
             <a class="ui label" href="/tags/docker%E5%B8%B8%E7%94%A8%E6%93%8D%E4%BD%9C/" title="Docker常用操作">
               Docker常用操作
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/git/" title="git">
+              git
             </a>
           
           

@@ -202,23 +202,25 @@
 <p>​    (1) 分屏。</p>
 <p>​    (2) 允许断开Terminal连接后，继续运行进程。</p>
 <h2 id="结构">结构</h2>
-<p>​    一个tmux可以包含多个session，一个session可以包含多个window，一个window可以包含多个pane。
-​    实例：
-​        tmux:</p>
-<p>​            session 0:</p>
-<p>​                window 0:</p>
-<p>​                    pane 0</p>
-<p>​                    pane 1</p>
-<p>​                    pane 2</p>
-<p>​                    &hellip;
-​                window 1</p>
-<p>​                window 2</p>
-<p>​                &hellip;</p>
-<p>​            session 1</p>
-<p>​            session 2</p>
-<p>​            &hellip;</p>
+<pre><code>一个tmux可以包含多个session，一个session可以包含多个window，一个window可以包含多个pane。
+</code></pre>
+<p>​    实例：</p>
+<pre><code>        tmux:
+            session 0:
+                window 0:
+                    pane 0
+                    pane 1
+                    pane 2
+                    ...
+                window 1
+                window 2
+                ...
+            session 1
+            session 2
+            ...
+</code></pre>
 <h2 id="操作">操作</h2>
-<p>（ps：初始版本的tmux以下的Ctrl + a 均为Ctrl + b，考虑到改成a会更符合操作，所以在.tmux中进行了修改）</p>
+<p>（ps：初始版本的tmux以下的Ctrl + a 均为Ctrl + b，考虑到改成a会更符合操作，所以在.tmux.conf中进行了修改）</p>
 <p>(1) tmux：新建一个session，其中包含一个window，window中包含一个pane，pane里打开了一个shell对话框。</p>
 <p>(2) 按下Ctrl + a后手指松开，然后按%：将当前pane左右平分成两个pane。</p>
 <p>(3) 按下Ctrl + a后手指松开，然后按&quot;（注意是双引号&quot;）：将当前pane上下平分成两个pane。</p>
@@ -324,6 +326,8 @@
     
       
     
+      
+    
     
 
     
@@ -337,6 +341,12 @@
           
             <a class="ui label" href="/tags/docker%E5%B8%B8%E7%94%A8%E6%93%8D%E4%BD%9C/" title="Docker常用操作">
               Docker常用操作
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/git/" title="git">
+              git
             </a>
           
           

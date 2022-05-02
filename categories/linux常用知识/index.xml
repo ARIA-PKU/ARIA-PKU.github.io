@@ -7,7 +7,16 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-Hans</language>
     <copyright>&lt;a rel=&#34;license&#34; href=&#34;http://creativecommons.org/licenses/by-nc-sa/4.0/&#34;&gt;&lt;img alt=&#34;知识共享许可协议&#34; style=&#34;border-width:0&#34; src=&#34;https://i.creativecommons.org/l/by-nc-sa/4.0/88x31.png&#34; /&gt;&lt;/a&gt;&lt;br /&gt;本作品采用&lt;a rel=&#34;license&#34; href=&#34;http://creativecommons.org/licenses/by-nc-sa/4.0/&#34;&gt;知识共享署名-非商业性使用-相同方式共享 4.0 国际许可协议&lt;/a&gt;进行许可。&lt;br /&gt;&lt;br /&gt;背景使用了 &lt;a href=&#34;https://www.pexels.com/zh-cn/&#34; target=&#34;_blank&#34;&gt;Pexels&lt;/a&gt; 上 &lt;a href=&#34;https://www.pexels.com/zh-cn/@minan1398&#34; target=&#34;_blank&#34;&gt;Min An&lt;/a&gt; 拍摄的&lt;a href=&#34;https://www.pexels.com/zh-cn/photo/1454794/&#34; target=&#34;_blank&#34;&gt;图片&lt;/a&gt;。</copyright>
-    <lastBuildDate>Sun, 01 May 2022 19:04:23 +0800</lastBuildDate><atom:link href="https://blog.surfaroundtheworld.top/categories/linux%E5%B8%B8%E7%94%A8%E7%9F%A5%E8%AF%86/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Mon, 02 May 2022 15:12:22 +0800</lastBuildDate><atom:link href="https://blog.surfaroundtheworld.top/categories/linux%E5%B8%B8%E7%94%A8%E7%9F%A5%E8%AF%86/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>git的常用操作</title>
+      <link>https://blog.surfaroundtheworld.top/posts/git/</link>
+      <pubDate>Mon, 02 May 2022 15:12:22 +0800</pubDate>
+      
+      <guid>https://blog.surfaroundtheworld.top/posts/git/</guid>
+      <description>&lt;p&gt;整理了git的命令常用的操作。封面来自pivix的&lt;a href=&#34;https://www.pixiv.net/users/1096811&#34;&gt;チャイ&lt;/a&gt;画师，内容整理自y总课程。&lt;/p&gt;</description>
+    </item>
+    
     <item>
       <title>tmux常用操作</title>
       <link>https://blog.surfaroundtheworld.top/posts/tmux/</link>
