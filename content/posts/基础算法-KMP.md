@@ -1,0 +1,24 @@
+---
+title: 基础算法 KMP
+date: 2022-05-22T10:18:13+08:00
+lastmod: 2022-05-22T10:18:13+08:00
+author: Author Name
+# avatar: /img/author.jpg
+# authorlink: https://author.site
+cover: /img/cover.jpg
+# images:
+#   - /img/cover.jpg
+categories:
+  - category1
+tags:
+  - tag1
+  - tag2
+# nolastmod: true
+draft: true
+---
+
+Cut out summary from your post content here.
+
+<!--more-->
+
+The remaining content of your post.
