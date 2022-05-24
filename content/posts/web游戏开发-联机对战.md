@@ -2,7 +2,7 @@
 title: Web游戏开发
 date: 2022-05-16T22:01:27+08:00
 lastmod: 2022-05-16T22:01:27+08:00
-author: Author Name
+# author: Author Name
 # avatar: /img/author.jpg
 # authorlink: https://author.site
 cover: /img/cover.jpg
