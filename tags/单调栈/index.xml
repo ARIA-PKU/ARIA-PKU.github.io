@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>单调栈 on Aria&#39;s Blog</title>
+    <link>https://blog.surfaroundtheworld.top/tags/%E5%8D%95%E8%B0%83%E6%A0%88/</link>
+    <description>Recent content in 单调栈 on Aria&#39;s Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-Hans</language>
+    <copyright>&lt;a rel=&#34;license&#34; href=&#34;http://creativecommons.org/licenses/by-nc-sa/4.0/&#34;&gt;&lt;img alt=&#34;知识共享许可协议&#34; style=&#34;border-width:0&#34; src=&#34;https://i.creativecommons.org/l/by-nc-sa/4.0/88x31.png&#34; /&gt;&lt;/a&gt;&lt;br /&gt;本作品采用&lt;a rel=&#34;license&#34; href=&#34;http://creativecommons.org/licenses/by-nc-sa/4.0/&#34;&gt;知识共享署名-非商业性使用-相同方式共享 4.0 国际许可协议&lt;/a&gt;进行许可。&lt;br /&gt;&lt;br /&gt;背景使用了 &lt;a href=&#34;https://www.pexels.com/zh-cn/&#34; target=&#34;_blank&#34;&gt;Pexels&lt;/a&gt; 上 &lt;a href=&#34;https://www.pexels.com/zh-cn/@minan1398&#34; target=&#34;_blank&#34;&gt;Min An&lt;/a&gt; 拍摄的&lt;a href=&#34;https://www.pexels.com/zh-cn/photo/1454794/&#34; target=&#34;_blank&#34;&gt;图片&lt;/a&gt;。</copyright>
+    <lastBuildDate>Sun, 22 May 2022 15:59:00 +0800</lastBuildDate><atom:link href="https://blog.surfaroundtheworld.top/tags/%E5%8D%95%E8%B0%83%E6%A0%88/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>周赛294 LeetCode2281</title>
+      <link>https://blog.surfaroundtheworld.top/posts/%E5%91%A8%E8%B5%9B294-leetcode2281/</link>
+      <pubDate>Sun, 22 May 2022 15:59:00 +0800</pubDate>
+      
+      <guid>https://blog.surfaroundtheworld.top/posts/%E5%91%A8%E8%B5%9B294-leetcode2281/</guid>
+      <description>&lt;p&gt;单调栈的套路常见，前缀和的找规律不熟，而且要注意边界细节&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>基础算法 单调栈、单调队列</title>
+      <link>https://blog.surfaroundtheworld.top/posts/%E5%9F%BA%E7%A1%80%E7%AE%97%E6%B3%95-%E5%8D%95%E8%B0%83%E6%A0%88%E5%8D%95%E8%B0%83%E9%98%9F%E5%88%97/</link>
+      <pubDate>Sun, 22 May 2022 10:18:01 +0800</pubDate>
+      
+      <guid>https://blog.surfaroundtheworld.top/posts/%E5%9F%BA%E7%A1%80%E7%AE%97%E6%B3%95-%E5%8D%95%E8%B0%83%E6%A0%88%E5%8D%95%E8%B0%83%E9%98%9F%E5%88%97/</guid>
+      <description>&lt;p&gt;单调栈和单调队列的整理&lt;/p&gt;</description>
+    </item>
+    
+  </channel>
+</rss>
