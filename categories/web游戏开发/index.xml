@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>web游戏开发 on Aria&#39;s Blog</title>
+    <link>https://blog.surfaroundtheworld.top/categories/web%E6%B8%B8%E6%88%8F%E5%BC%80%E5%8F%91/</link>
+    <description>Recent content in web游戏开发 on Aria&#39;s Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-Hans</language>
+    <copyright>&lt;a rel=&#34;license&#34; href=&#34;http://creativecommons.org/licenses/by-nc-sa/4.0/&#34;&gt;&lt;img alt=&#34;知识共享许可协议&#34; style=&#34;border-width:0&#34; src=&#34;https://i.creativecommons.org/l/by-nc-sa/4.0/88x31.png&#34; /&gt;&lt;/a&gt;&lt;br /&gt;本作品采用&lt;a rel=&#34;license&#34; href=&#34;http://creativecommons.org/licenses/by-nc-sa/4.0/&#34;&gt;知识共享署名-非商业性使用-相同方式共享 4.0 国际许可协议&lt;/a&gt;进行许可。&lt;br /&gt;&lt;br /&gt;背景使用了 &lt;a href=&#34;https://www.pexels.com/zh-cn/&#34; target=&#34;_blank&#34;&gt;Pexels&lt;/a&gt; 上 &lt;a href=&#34;https://www.pexels.com/zh-cn/@minan1398&#34; target=&#34;_blank&#34;&gt;Min An&lt;/a&gt; 拍摄的&lt;a href=&#34;https://www.pexels.com/zh-cn/photo/1454794/&#34; target=&#34;_blank&#34;&gt;图片&lt;/a&gt;。</copyright>
+    <lastBuildDate>Tue, 10 May 2022 14:59:42 +0800</lastBuildDate><atom:link href="https://blog.surfaroundtheworld.top/categories/web%E6%B8%B8%E6%88%8F%E5%BC%80%E5%8F%91/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>web游戏开发(四)</title>
+      <link>https://blog.surfaroundtheworld.top/posts/web%E6%B8%B8%E6%88%8F%E5%BC%80%E5%8F%91%E5%9B%9B/</link>
+      <pubDate>Tue, 10 May 2022 14:59:42 +0800</pubDate>
+      
+      <guid>https://blog.surfaroundtheworld.top/posts/web%E6%B8%B8%E6%88%8F%E5%BC%80%E5%8F%91%E5%9B%9B/</guid>
+      <description>&lt;p&gt;web游戏开发日志&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>web游戏开发（二）</title>
+      <link>https://blog.surfaroundtheworld.top/posts/web%E6%B8%B8%E6%88%8F%E5%BC%80%E5%8F%91%E4%BA%8C/</link>
+      <pubDate>Mon, 09 May 2022 22:35:40 +0800</pubDate>
+      
+      <guid>https://blog.surfaroundtheworld.top/posts/web%E6%B8%B8%E6%88%8F%E5%BC%80%E5%8F%91%E4%BA%8C/</guid>
+      <description>&lt;p&gt;web游戏开发日志&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>Web游戏开发（一）</title>
+      <link>https://blog.surfaroundtheworld.top/posts/web%E6%B8%B8%E6%88%8F%E5%BC%80%E5%8F%91%E4%B8%80/</link>
+      <pubDate>Sun, 01 May 2022 21:11:54 +0800</pubDate>
+      
+      <guid>https://blog.surfaroundtheworld.top/posts/web%E6%B8%B8%E6%88%8F%E5%BC%80%E5%8F%91%E4%B8%80/</guid>
+      <description>&lt;p&gt;web游戏开发日志&lt;/p&gt;</description>
+    </item>
+    
+  </channel>
+</rss>
