@@ -5,7 +5,7 @@ lastmod: 2022-05-20T16:53:05+08:00
 # author: Author Name
 # avatar: /img/author.jpg
 # authorlink: https://author.site
-cover: /img/cover.jpg
+cover: /cover/lonely plannet.jpg
 # images:
 #   - /img/cover.jpg
 categories:

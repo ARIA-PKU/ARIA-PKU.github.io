@@ -1,11 +1,11 @@
 ---
-title: Web5
+title: Web游戏开发 账号系统
 date: 2022-05-11T21:59:15+08:00
 lastmod: 2022-05-11T21:59:15+08:00
 # author: Author Name
 # avatar: /img/author.jpg
 # authorlink: https://author.site
-cover: /img/cover.jpg
+cover: /cover/lonely plannet.jpg
 # images:
 #   - /img/cover.jpg
 categories:

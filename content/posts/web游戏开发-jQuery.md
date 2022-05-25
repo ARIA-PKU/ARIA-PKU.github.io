@@ -1,11 +1,11 @@
 ---
-title: web游戏开发(三)
+title: web游戏开发 jquery
 date: 2022-05-10T14:59:42+08:00
 lastmod: 2022-05-10T14:59:42+08:00
 # author: Author Name
 # avatar: /img/author.jpg
 # authorlink: https://author.site
-cover: /img/cover.jpg
+cover: /cover/lonely plannet.jpg
 # images:
 #   - /img/cover.jpg
 categories:

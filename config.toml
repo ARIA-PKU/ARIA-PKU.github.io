@@ -1,0 +1,95 @@
+baseURL = "https://blog.surfaroundtheworld.top/" # 你的域名，很重要，错误的话部署到线上将页面异常
+languageCode = "zh-Hans"
+defaultContentLanguage = "zh"
+title = "Aria's Blog" # 你的博客名称
+theme = "dream" # 设置主题
+
+copyright = '<a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"><img alt="知识共享许可协议" style="border-width:0" src="https://i.creativecommons.org/l/by-nc-sa/4.0/88x31.png" /></a><br />本作品采用<a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/">知识共享署名-非商业性使用-相同方式共享 4.0 国际许可协议</a>进行许可。<br /><br />背景使用了 <a href="https://www.pexels.com/zh-cn/" target="_blank">Pexels</a> 上 <a href="https://www.pexels.com/zh-cn/@minan1398" target="_blank">Min An</a> 拍摄的<a href="https://www.pexels.com/zh-cn/photo/1454794/" target="_blank">图片</a>。'
+
+enableRobotsTXT = true # 详见 Dream 作者 docs 目录下文档
+enableEmoji = true    
+hasCJKLanguage = true
+
+[outputs]
+  home = ["HTML", "RSS", "JSON"]
+
+# https://gohugo.io/news/0.60.0-relnotes/
+[markup]
+  [markup.goldmark]
+    [markup.goldmark.renderer]
+      unsafe = true
+      # 缺省值为false，值为true时，md文件可使用html和js语法monokai
+
+    # 以下设置代码高亮样式
+    [markup.highlight]
+      codeFences = true
+      guessSyntax = true
+      hl_Lines = ""
+      lineNoStart = 1
+      lineNos = true
+      lineNumbersInTable = true
+      noClasses = true
+      style = "dracula"
+      tabWidth = 4
+ 
+[params]
+  background = "#fff"
+  backgroundImage = "/cover/background.jpg"
+  linkColor = "seagreen"
+
+  # dark mode
+  # defaultDark = true
+  # backgroundDark = "#222"
+  backgroundImageDark = "/me/background.jpg"
+  darkLinkColor = "darkseagreen"
+  darkNav = true
+  dark404 = true
+
+  images = ["me/background.jpg"]
+  author = "Aria"
+  description = "Aria 的生活记录~"
+  avatar = "/me/cool.jpg" # 设置头像
+  headerTitle = "Aria's Blog"
+  motto = "今天不做的事情，今后也不会去做。"
+  maxTags = 8
+  # categoriesLimitInHeader = 6 # deprecated
+  # headerBottomText = "" # deprecated
+  # footerBottomText = ""
+  rss = true
+  utterancesRepo = "ARIA-PKU/ARIA-PKU.github.io" # 评论系统
+
+  # 以下设置社交链接
+  # email = ""
+  # twitter = ""
+  # facebook = ""
+  # instagram = ""
+  # mastodon = ""
+  # linkedin = ""
+  # mastodon = ""
+  # linkedin = ""
+  # github = ""
+  # stackoverflow = ""
+  # codepen = ""
+
+  # 网站建站年份
+  siteStartYear = 2022
+
+  # 配置网站标签页上的 icon
+  favicon = "/header/a.jpg"
+
+  # search
+  enableSearch = true
+
+  # options
+  showSummaryCoverInPost = true
+  # hasTwitterEmbed = true
+  # reversePostAndAside = true
+  # shareInAside = true
+
+  [params.advanced]
+    customCSS = ["css/custom.css"]
+    customJS = []
+  [params.experimental]
+    jsDate = true
+    jsDateFormat = "yyyy年MM月dd日"
+    # jsDateFormat = "yyyy年MM月dd日，cccc"

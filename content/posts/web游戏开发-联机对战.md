@@ -1,11 +1,11 @@
 ---
-title: Web游戏开发
+title: Web游戏开发 Python的异步编程
 date: 2022-05-16T22:01:27+08:00
 lastmod: 2022-05-16T22:01:27+08:00
 # author: Author Name
 # avatar: /img/author.jpg
 # authorlink: https://author.site
-cover: /img/cover.jpg
+cover: /cover/lonely plannet.jpg
 # images:
 #   - /img/cover.jpg
 categories:
