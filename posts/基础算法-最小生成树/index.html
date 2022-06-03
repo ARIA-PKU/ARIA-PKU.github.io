@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-    <title>Web游戏开发 WebSocket | Aria&#39;s Blog</title>
+    <title>最小生成树 | Aria&#39;s Blog</title>
 
     
 <link href="/header/a.jpg" rel="shortcut icon" type="image/x-icon" />
@@ -12,23 +12,23 @@
 
 
 
-<meta name="author" content="Author Name" />
-<meta name="description" content="web游戏开发日志，对于多人联机对战中websocket的使用
+<meta name="author" content="Aria" />
+<meta name="description" content="最小生成树的两种方法，prim和kruskal算法整理
 " />
 
 
 
 <meta name="generator" content="Hugo 0.98.0" />
 
-<link rel="canonical" href="https://blog.surfaroundtheworld.top/posts/web%E6%B8%B8%E6%88%8F%E5%BC%80%E5%8F%91-websocket/" />
+<link rel="canonical" href="https://blog.surfaroundtheworld.top/posts/%E5%9F%BA%E7%A1%80%E7%AE%97%E6%B3%95-%E6%9C%80%E5%B0%8F%E7%94%9F%E6%88%90%E6%A0%91/" />
 
 
-<meta property="og:title" content="Web游戏开发 WebSocket" />
-<meta property="og:description" content="web游戏开发日志，对于多人联机对战中websocket的使用" />
+<meta property="og:title" content="最小生成树" />
+<meta property="og:description" content="最小生成树的两种方法，prim和kruskal算法整理" />
 <meta property="og:type" content="article" />
-<meta property="og:url" content="https://blog.surfaroundtheworld.top/posts/web%E6%B8%B8%E6%88%8F%E5%BC%80%E5%8F%91-websocket/" /><meta property="og:image" content="https://blog.surfaroundtheworld.top/me/background.jpg"/><meta property="article:section" content="posts" />
-<meta property="article:published_time" content="2022-05-16T20:53:26+08:00" />
-<meta property="article:modified_time" content="2022-05-16T20:53:26+08:00" />
+<meta property="og:url" content="https://blog.surfaroundtheworld.top/posts/%E5%9F%BA%E7%A1%80%E7%AE%97%E6%B3%95-%E6%9C%80%E5%B0%8F%E7%94%9F%E6%88%90%E6%A0%91/" /><meta property="og:image" content="https://blog.surfaroundtheworld.top/me/background.jpg"/><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2022-05-26T00:41:33+08:00" />
+<meta property="article:modified_time" content="2022-05-26T00:41:33+08:00" />
 
 
 
@@ -36,8 +36,8 @@
 <meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:image" content="https://blog.surfaroundtheworld.top/me/background.jpg"/>
 
-<meta name="twitter:title" content="Web游戏开发 WebSocket"/>
-<meta name="twitter:description" content="web游戏开发日志，对于多人联机对战中websocket的使用"/>
+<meta name="twitter:title" content="最小生成树"/>
+<meta name="twitter:description" content="最小生成树的两种方法，prim和kruskal算法整理"/>
 
 
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.css" integrity="sha256-UXesixbeLkB/UYxVTzuj/gg3+LMzgwAmg3zD+C4ZASQ=" crossorigin="anonymous">
@@ -134,46 +134,26 @@
   
 
   
-  <aside class="sixteen wide mobile sixteen wide tablet three wide computer column dream-single-aside">
-    
-    <div class="ui segment toc">
-      <nav id="TableOfContents">
-  <ul>
-    <li><a href="#1websocket的使用场景">1、WebSocket的使用场景</a></li>
-    <li><a href="#2与http的区别">2、与http的区别</a></li>
-    <li><a href="#3ws的原理">3、WS的原理</a></li>
-    <li><a href="#4ws和socket的区别与联系">4、WS和Socket的区别与联系</a></li>
-    <li><a href="#5ws在js中的方法">5、WS在JS中的方法</a></li>
-  </ul>
-</nav>
-    </div>
-    
-
-    
-  </aside>
-  
   <div class="sixteen wide mobile sixteen wide tablet ten wide computer column markdown-body dream-single" id="dream-save-post-as-img">
     <section class="ui segment">
       <header>
-        <h1 class="ui large header">Web游戏开发 WebSocket<span class="sub header">
+        <h1 class="ui large header">最小生成树<span class="sub header">
             <span class="left">
               @
               
-                
-                  Author Name
-                
+                Aria
               
 
               | 
-                  <span data-format="luxon">2022-05-16T20:53:26&#43;08:00</span>
+                  <span data-format="luxon">2022-05-26T00:41:33&#43;08:00</span>
                 
 
-              | 4 分钟阅读
+              | 3 分钟阅读
 
               
               | 更新于
                 
-                  <span data-format="luxon">2022-05-16T20:53:26&#43;08:00</span>
+                  <span data-format="luxon">2022-05-26T00:41:33&#43;08:00</span>
                 
               
             </span>
@@ -183,10 +163,10 @@
   <a href="#" class="save-as-image" title="保存为图片" onclick="savePostAsImg()">
     <i class="save icon"></i>
   </a>
-  <a href="https://twitter.com/intent/tweet?text=Web%e6%b8%b8%e6%88%8f%e5%bc%80%e5%8f%91%20WebSocket&url=https%3a%2f%2fblog.surfaroundtheworld.top%2fposts%2fweb%25E6%25B8%25B8%25E6%2588%258F%25E5%25BC%2580%25E5%258F%2591-websocket%2f" title="Twitter">
+  <a href="https://twitter.com/intent/tweet?text=%e6%9c%80%e5%b0%8f%e7%94%9f%e6%88%90%e6%a0%91&url=https%3a%2f%2fblog.surfaroundtheworld.top%2fposts%2f%25E5%259F%25BA%25E7%25A1%2580%25E7%25AE%2597%25E6%25B3%2595-%25E6%259C%2580%25E5%25B0%258F%25E7%2594%259F%25E6%2588%2590%25E6%25A0%2591%2f" title="Twitter">
     <i class="twitter icon"></i>
   </a>
-  <a href="https://facebook.com/sharer/sharer.php?u=https%3a%2f%2fblog.surfaroundtheworld.top%2fposts%2fweb%25E6%25B8%25B8%25E6%2588%258F%25E5%25BC%2580%25E5%258F%2591-websocket%2f" title="Facebook">
+  <a href="https://facebook.com/sharer/sharer.php?u=https%3a%2f%2fblog.surfaroundtheworld.top%2fposts%2f%25E5%259F%25BA%25E7%25A1%2580%25E7%25AE%2597%25E6%25B3%2595-%25E6%259C%2580%25E5%25B0%258F%25E7%2594%259F%25E6%2588%2590%25E6%25A0%2591%2f" title="Facebook">
     <i class="facebook icon"></i>
   </a>
 </span>
@@ -198,32 +178,25 @@
 
       <article class="main">
         
-        <img class="cover" src="/cover/lonely%20plannet.jpg" />
+        <img class="cover" src="/cover/clock.jpg" />
         
 
-        <p>web游戏开发日志，对于多人联机对战中websocket的使用</p>
-<h1 id="websocket的总结整理">WebSocket的总结整理</h1>
-<h2 id="1websocket的使用场景">1、WebSocket的使用场景</h2>
-<p>WebSocket的一大特性就是高实时性，项目中准备利用ws实现玩家对战和游戏界面聊天的功能，其应用的场景有：</p>
-<p>1）IM，即时通信的软件；</p>
-<p>2）弹幕，例如A站、B站以及各大直播平台的弹幕功能；</p>
-<p>3）多玩家游戏，项目即将实现的功能；</p>
-<p>4）协同编辑，像是石墨，腾讯文档等；</p>
-<p>5）视频会议；</p>
-<p>6）股票、体育实况更新；</p>
-<h2 id="2与http的区别">2、与http的区别</h2>
-<p>在以上的特定场景中是基本不会使用http的，无论是http1.0的短链接还是http1.1的长连接，都需要请求方发送request才能收到更新的内容，这个过程最快也需要$2*RSS$的时间，http2.0的推送功能也不能直接让应用程序感知，需要通过SSE（Server Sent Event）来实现，因此还是会采用ws来实现。关于http的各个版本会在单独写一遍博客进行总结。</p>
-<h2 id="3ws的原理">3、WS的原理</h2>
-<p>Websocket是一个应用层协议，它必须依赖 HTTP 协议进行一次握手 ，握手成功后，数据就直接从 TCP 通道传输，与 HTTP 无关了。</p>
-<p>Websocket的数据传输是frame形式传输的，比如会将一条消息分为几个frame，按照先后顺序传输出去。这样做会有几个好处：</p>
-<ol>
-<li>
-<p>大数据的传输可以分片传输，不用考虑到数据大小导致的长度标志位不足够的情况。</p>
-</li>
-<li>
-<p>和http的chunk一样，可以边生成数据边传递消息，即提高传输效率。</p>
-</li>
-</ol>
+        <p>最小生成树的两种方法，prim和kruskal算法整理</p>
+<p>最小生成树的经典题型就是城市修路、铺设管道最小花费的问题。这里整理一下基本思想，实现方式一般都是这两种，以后再遇到了总结比较经典的题目。</p>
+<p><strong>例题</strong></p>
+<p>给定一个 n 个点 m 条边的无向图，图中可能存在重边和自环，边权可能为负数。</p>
+<p>求最小生成树的树边权重之和，如果最小生成树不存在则输出 <code>impossible</code>。</p>
+<p>给定一张边带权的无向图 $G=(V,E)$，其中 V 表示图中点的集合，E 表示图中边的集合，$n=|V|$，$m=|E|$。</p>
+<p>由 V 中的全部 n 个顶点和 E 中 n−1 条边构成的无向连通子图被称为 G 的一棵生成树，其中边的权值之和最小的生成树被称为无向图 G 的最小生成树。</p>
+<p><strong>输入格式</strong></p>
+<p>第一行包含两个整数 n 和 m。</p>
+<p>接下来 m 行，每行包含三个整数 u,v,w，表示点 u 和点 v 之间存在一条权值为 w 的边。</p>
+<p><strong>输出格式</strong></p>
+<p>共一行，若存在最小生成树，则输出一个整数，表示最小生成树的树边权重之和，如果最小生成树不存在则输出 <code>impossible</code>。</p>
+<h1 id="prim算法">Prim算法</h1>
+<p>适用于稠密图，时间复杂度 $O(n^2)$。</p>
+<p>核心思想：每次挑一条与当前集合相连的最短边。</p>
+<p>在实现方式上与dijkstra很类似（好像很多都和它类似，比如spfa？），所以也有堆优化的方法，但是稀疏图可以直接用kruskal算法，所以堆优化的方式一般不会用。</p>
 <div class="highlight"><div style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
 <table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
 <pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
@@ -256,69 +229,175 @@
 </span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">28
 </span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">29
 </span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">30
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">31
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">32
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">33
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">34
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">35
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">36
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">37
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">38
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">39
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">40
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">41
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">42
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">43
 </span></code></pre></td>
 <td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-ruby" data-lang="ruby"><span style="display:flex;"><span> <span style="color:#bd93f9">0</span>                   <span style="color:#bd93f9">1</span>                   <span style="color:#bd93f9">2</span>                   <span style="color:#bd93f9">3</span>
-</span></span><span style="display:flex;"><span> <span style="color:#bd93f9">0</span> <span style="color:#bd93f9">1</span> <span style="color:#bd93f9">2</span> <span style="color:#bd93f9">3</span> <span style="color:#bd93f9">4</span> <span style="color:#bd93f9">5</span> <span style="color:#bd93f9">6</span> <span style="color:#bd93f9">7</span> <span style="color:#bd93f9">8</span> <span style="color:#bd93f9">9</span> <span style="color:#bd93f9">0</span> <span style="color:#bd93f9">1</span> <span style="color:#bd93f9">2</span> <span style="color:#bd93f9">3</span> <span style="color:#bd93f9">4</span> <span style="color:#bd93f9">5</span> <span style="color:#bd93f9">6</span> <span style="color:#bd93f9">7</span> <span style="color:#bd93f9">8</span> <span style="color:#bd93f9">9</span> <span style="color:#bd93f9">0</span> <span style="color:#bd93f9">1</span> <span style="color:#bd93f9">2</span> <span style="color:#bd93f9">3</span> <span style="color:#bd93f9">4</span> <span style="color:#bd93f9">5</span> <span style="color:#bd93f9">6</span> <span style="color:#bd93f9">7</span> <span style="color:#bd93f9">8</span> <span style="color:#bd93f9">9</span> <span style="color:#bd93f9">0</span> <span style="color:#bd93f9">1</span>
-</span></span><span style="display:flex;"><span> <span style="color:#ff79c6">+-+-+-+-+-------+-+-------------+-------------------------------+</span>
-</span></span><span style="display:flex;"><span> <span style="color:#ff79c6">|</span>F<span style="color:#ff79c6">|</span>R<span style="color:#ff79c6">|</span>R<span style="color:#ff79c6">|</span>R<span style="color:#ff79c6">|</span> opcode<span style="color:#ff79c6">|</span>M<span style="color:#ff79c6">|</span> Payload len <span style="color:#ff79c6">|</span>    Extended payload length    <span style="color:#ff79c6">|</span>
-</span></span><span style="display:flex;"><span> <span style="color:#ff79c6">|</span>I<span style="color:#ff79c6">|</span>S<span style="color:#ff79c6">|</span>S<span style="color:#ff79c6">|</span>S<span style="color:#ff79c6">|</span>  (<span style="color:#bd93f9">4</span>)  <span style="color:#ff79c6">|</span>A<span style="color:#ff79c6">|</span>     (<span style="color:#bd93f9">7</span>)     <span style="color:#ff79c6">|</span>             (<span style="color:#bd93f9">16</span><span style="color:#ff79c6">/</span><span style="color:#bd93f9">64</span>)           <span style="color:#ff79c6">|</span>
-</span></span><span style="display:flex;"><span> <span style="color:#ff79c6">|</span>N<span style="color:#ff79c6">|</span>V<span style="color:#ff79c6">|</span>V<span style="color:#ff79c6">|</span>V<span style="color:#ff79c6">|</span>       <span style="color:#ff79c6">|</span>S<span style="color:#ff79c6">|</span>             <span style="color:#ff79c6">|</span>   (<span style="color:#ff79c6">if</span> payload len<span style="color:#ff79c6">==</span><span style="color:#bd93f9">126</span><span style="color:#ff79c6">/</span><span style="color:#bd93f9">127</span>)   <span style="color:#ff79c6">|</span>
-</span></span><span style="display:flex;"><span> <span style="color:#ff79c6">|</span> <span style="color:#ff79c6">|</span><span style="color:#bd93f9">1</span><span style="color:#ff79c6">|</span><span style="color:#bd93f9">2</span><span style="color:#ff79c6">|</span><span style="color:#bd93f9">3</span><span style="color:#ff79c6">|</span>       <span style="color:#ff79c6">|</span>K<span style="color:#ff79c6">|</span>             <span style="color:#ff79c6">|</span>                               <span style="color:#ff79c6">|</span>
-</span></span><span style="display:flex;"><span> <span style="color:#ff79c6">+-+-+-+-+-------+-+-------------+</span> <span style="color:#ff79c6">-</span> <span style="color:#ff79c6">-</span> <span style="color:#ff79c6">-</span> <span style="color:#ff79c6">-</span> <span style="color:#ff79c6">-</span> <span style="color:#ff79c6">-</span> <span style="color:#ff79c6">-</span> <span style="color:#ff79c6">-</span> <span style="color:#ff79c6">-</span> <span style="color:#ff79c6">-</span> <span style="color:#ff79c6">-</span> <span style="color:#ff79c6">-</span> <span style="color:#ff79c6">-</span> <span style="color:#ff79c6">-</span> <span style="color:#ff79c6">-</span> <span style="color:#ff79c6">+</span>
-</span></span><span style="display:flex;"><span> <span style="color:#ff79c6">|</span>     Extended payload length continued, <span style="color:#ff79c6">if</span> payload len <span style="color:#ff79c6">==</span> <span style="color:#bd93f9">127</span>  <span style="color:#ff79c6">|</span>
-</span></span><span style="display:flex;"><span> <span style="color:#ff79c6">+</span> <span style="color:#ff79c6">-</span> <span style="color:#ff79c6">-</span> <span style="color:#ff79c6">-</span> <span style="color:#ff79c6">-</span> <span style="color:#ff79c6">-</span> <span style="color:#ff79c6">-</span> <span style="color:#ff79c6">-</span> <span style="color:#ff79c6">-</span> <span style="color:#ff79c6">-</span> <span style="color:#ff79c6">-</span> <span style="color:#ff79c6">-</span> <span style="color:#ff79c6">-</span> <span style="color:#ff79c6">-</span> <span style="color:#ff79c6">-</span> <span style="color:#ff79c6">-</span> <span style="color:#ff79c6">+-------------------------------+</span>
-</span></span><span style="display:flex;"><span> <span style="color:#ff79c6">|</span>                               <span style="color:#ff79c6">|</span>Masking<span style="color:#ff79c6">-</span>key, <span style="color:#ff79c6">if</span> MASK set to <span style="color:#bd93f9">1</span>  <span style="color:#ff79c6">|</span>
-</span></span><span style="display:flex;"><span> <span style="color:#ff79c6">+-------------------------------+-------------------------------+</span>
-</span></span><span style="display:flex;"><span> <span style="color:#ff79c6">|</span> Masking<span style="color:#ff79c6">-</span>key (continued)       <span style="color:#ff79c6">|</span>          Payload Data         <span style="color:#ff79c6">|</span>
-</span></span><span style="display:flex;"><span> <span style="color:#ff79c6">+--------------------------------</span> <span style="color:#ff79c6">-</span> <span style="color:#ff79c6">-</span> <span style="color:#ff79c6">-</span> <span style="color:#ff79c6">-</span> <span style="color:#ff79c6">-</span> <span style="color:#ff79c6">-</span> <span style="color:#ff79c6">-</span> <span style="color:#ff79c6">-</span> <span style="color:#ff79c6">-</span> <span style="color:#ff79c6">-</span> <span style="color:#ff79c6">-</span> <span style="color:#ff79c6">-</span> <span style="color:#ff79c6">-</span> <span style="color:#ff79c6">-</span> <span style="color:#ff79c6">-</span> <span style="color:#ff79c6">+</span>
-</span></span><span style="display:flex;"><span> :                     Payload Data continued <span style="color:#ff79c6">...</span>                :
-</span></span><span style="display:flex;"><span> <span style="color:#ff79c6">+</span> <span style="color:#ff79c6">-</span> <span style="color:#ff79c6">-</span> <span style="color:#ff79c6">-</span> <span style="color:#ff79c6">-</span> <span style="color:#ff79c6">-</span> <span style="color:#ff79c6">-</span> <span style="color:#ff79c6">-</span> <span style="color:#ff79c6">-</span> <span style="color:#ff79c6">-</span> <span style="color:#ff79c6">-</span> <span style="color:#ff79c6">-</span> <span style="color:#ff79c6">-</span> <span style="color:#ff79c6">-</span> <span style="color:#ff79c6">-</span> <span style="color:#ff79c6">-</span> <span style="color:#ff79c6">-</span> <span style="color:#ff79c6">-</span> <span style="color:#ff79c6">-</span> <span style="color:#ff79c6">-</span> <span style="color:#ff79c6">-</span> <span style="color:#ff79c6">-</span> <span style="color:#ff79c6">-</span> <span style="color:#ff79c6">-</span> <span style="color:#ff79c6">-</span> <span style="color:#ff79c6">-</span> <span style="color:#ff79c6">-</span> <span style="color:#ff79c6">-</span> <span style="color:#ff79c6">-</span> <span style="color:#ff79c6">-</span> <span style="color:#ff79c6">-</span> <span style="color:#ff79c6">-</span> <span style="color:#ff79c6">+</span>
-</span></span><span style="display:flex;"><span> <span style="color:#ff79c6">|</span>                     Payload Data continued <span style="color:#ff79c6">...</span>                <span style="color:#ff79c6">|</span>
-</span></span><span style="display:flex;"><span> <span style="color:#ff79c6">+---------------------------------------------------------------+</span>
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>#include &lt;iostream&gt;
+</span></span><span style="display:flex;"><span>#include &lt;cstring&gt;
+</span></span><span style="display:flex;"><span>using namespace std;
 </span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>const int N = 510, INF = 0x3f3f3f3f;
+</span></span><span style="display:flex;"><span>int g[N][N], dist[N];
+</span></span><span style="display:flex;"><span>bool st[N];
+</span></span><span style="display:flex;"><span>int n, m;
 </span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>int prim() { 
+</span></span><span style="display:flex;"><span>    memset(dist, 0x3f, sizeof dist);
+</span></span><span style="display:flex;"><span>    int res = 0;
+</span></span><span style="display:flex;"><span>    for (int i = 0; i &lt; n; i ++) {  // n个点，n次循环
+</span></span><span style="display:flex;"><span>        int t = -1;
+</span></span><span style="display:flex;"><span>        for (int j = 1; j &lt;= n; j ++) // 找到距离集合最近的点
+</span></span><span style="display:flex;"><span>            if (!st[j] &amp;&amp; (t == -1 || dist[j] &lt; dist[t]))
+</span></span><span style="display:flex;"><span>                t = j;
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        if (i &amp;&amp; dist[t] == INF) return INF;  // 不连通，直接返回即可
+</span></span><span style="display:flex;"><span>        if (i) res += dist[t]; // 第一次的为INF无需加入
+</span></span><span style="display:flex;"><span>        st[t] = true;  // 该点加入集合中
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        for (int j = 1; j &lt;= n; j ++)   // 用t更新不在集合中点的距离
+</span></span><span style="display:flex;"><span>            if (!st[j]) 
+</span></span><span style="display:flex;"><span>                dist[j] = min(dist[j], g[t][j]);
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    return res;
+</span></span><span style="display:flex;"><span>}
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>    FIN      <span style="color:#bd93f9">1</span>bit 表示信息的最后一帧，flag，也就是标记符
-</span></span><span style="display:flex;"><span>    RSV <span style="color:#bd93f9">1</span><span style="color:#ff79c6">-</span><span style="color:#bd93f9">3</span>  <span style="color:#bd93f9">1</span>bit each 以后备用的 默认都为 <span style="color:#bd93f9">0</span>
-</span></span><span style="display:flex;"><span>    Opcode   <span style="color:#bd93f9">4</span>bit 帧类型，稍后细说
-</span></span><span style="display:flex;"><span>    Mask     <span style="color:#bd93f9">1</span>bit 掩码，是否加密数据，默认必须置为<span style="color:#bd93f9">1</span> 
-</span></span><span style="display:flex;"><span>    Payload  <span style="color:#bd93f9">7</span>bit 数据的长度
-</span></span><span style="display:flex;"><span>    Masking<span style="color:#ff79c6">-</span>key      <span style="color:#bd93f9">1</span> <span style="color:#ff79c6">or</span> <span style="color:#bd93f9">4</span> bit 掩码
-</span></span><span style="display:flex;"><span>    Payload data     (x <span style="color:#ff79c6">+</span> y) bytes 数据
-</span></span><span style="display:flex;"><span>    Extension data   x bytes  扩展数据
-</span></span><span style="display:flex;"><span>    Application data y bytes  程序数据
+</span></span><span style="display:flex;"><span>int main() {
+</span></span><span style="display:flex;"><span>    scanf(&#34;%d%d&#34;, &amp;n, &amp;m);
+</span></span><span style="display:flex;"><span>    memset(g, 0x3f, sizeof g);
+</span></span><span style="display:flex;"><span>    while (m --) {
+</span></span><span style="display:flex;"><span>        int a, b, c;
+</span></span><span style="display:flex;"><span>        scanf(&#34;%d%d%d&#34;, &amp;a, &amp;b, &amp;c);
+</span></span><span style="display:flex;"><span>        g[a][b] = g[b][a] = min(g[a][b], c);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    int t = prim();
+</span></span><span style="display:flex;"><span>    if (t == INF) puts(&#34;impossible&#34;);
+</span></span><span style="display:flex;"><span>    else printf(&#34;%d\n&#34;, t);
+</span></span><span style="display:flex;"><span>    return 0;
+</span></span><span style="display:flex;"><span>}
 </span></span></code></pre></td></tr></table>
 </div>
-</div><h2 id="4ws和socket的区别与联系">4、WS和Socket的区别与联系</h2>
-<p>Socket 其实并不是一个协议。它工作在 OSI 模型会话层（第5层），是为了方便大家直接使用更底层协议（一般是 TCP 或 UDP ）而存在的一个抽象层。Socket是对TCP/IP协议的封装，Socket本身并不是协议，而是一个调用接口(API)。</p>
-<p><img src="....%5Cstatic%5Cpics%5Csocket.jpg" alt=""></p>
-<p>Socket通常也称作”套接字”，用于描述IP地址和端口，是一个通信链的句柄。网络上的两个程序通过一个双向的通讯连接实现数据的交换，这个双向链路的一端称为一个Socket，一个Socket由一个IP地址和一个端口号唯一确定。应用程序通常通过”套接字”向网络发出请求或者应答网络请求。</p>
-<p>Socket在通讯过程中，服务端监听某个端口是否有连接请求，客户端向服务端发送连接请求，服务端收到连接请求向客户端发出接收消息，这样一个连接就建立起来了。客户端和服务端也都可以相互发送消息与对方进行通讯，直到双方连接断开。</p>
-<p>所以基于WebSocket和基于Socket都可以开发出IM社交聊天类的app。</p>
-<h2 id="5ws在js中的方法">5、WS在JS中的方法</h2>
-<p>客户端支持WebSocket的浏览器中，在创建socket后，可以通过onopen、onmessage、onclose和onerror四个事件对socket进行响应。WebSocket的所有操作都是采用<strong>事件</strong>的方式触发的，这样不会阻塞UI，是的UI有更快的响应时间，有更好的用户体验。</p>
-<p>　　浏览器通过Javascript向服务器发出建立WebSocket连接的请求，连接建立后，客户端和服务器就可以通过TCP连接直接交换数据。当你获取WebSocket连接后，可以通多send()方法向服务器发送数据，可以通过onmessage事件接收服务器返回的数据。</p>
-<pre><code>    //申请一个WebSocket对象，参数是服务端地址，同http协议使用http://开头一样，WebSocket协议的url使用ws://开头，另外安全的WebSocket协议使用wss://开头
-    var ws = new WebSocket(&quot;ws://localhost:8080&quot;);
-    
-    //当WebSocket创建成功时，触发onopen事件
-    ws.onopen = function () {
-        console.log(&quot;open&quot;);
-        ws.send(&quot;hello&quot;); //将消息发送到服务端
-    }
-    //当客户端收到服务端发来的消息时，触发onmessage事件，参数e.data包含server传递过来的数据
-    ws.onmessage = function (e) {
-        console.log(e.data);
-    }
-    //当客户端收到服务端发送的关闭连接请求时，触发onclose事件
-    ws.onclose = function(e){
-        console.log(&quot;close&quot;);
-    }
-    //如果出现连接、处理、接收、发送数据失败的时候触发onerror事件
-    ws.onerror = function(e){
-        console.log(error);
-    }</code></pre>
+</div><p>#Kruskal算法</p>
+<p>适用于稀疏图，时间复杂度 $O(mlogm)$，主要是排序所用的时间。</p>
+<p>核心思想：从小到大挑不多余的边。</p>
+<p>实现上，直接用结构体即可。</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">23
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">24
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">25
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">26
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">27
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">28
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">29
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">30
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">31
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">32
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">33
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">34
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">35
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">36
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">37
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">38
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">39
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">40
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">41
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">42
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">43
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">44
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">45
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">46
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">47
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">48
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">49
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>#include &lt;iostream&gt;
+</span></span><span style="display:flex;"><span>#include &lt;algorithm&gt;
+</span></span><span style="display:flex;"><span>using namespace std;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>const int N = 1e5 + 10, M = 2e5 + 10, INF = 0x3f3f3f3f;
+</span></span><span style="display:flex;"><span>int n, m;
+</span></span><span style="display:flex;"><span>int p[N];
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>struct Edge {
+</span></span><span style="display:flex;"><span>    int a, b, w;
+</span></span><span style="display:flex;"><span>    bool operator &lt; (const Edge&amp; W) const {
+</span></span><span style="display:flex;"><span>        return w &lt; W.w;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}edge[M];
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>int find(int x) { // 并查集
+</span></span><span style="display:flex;"><span>    if (x != p[x]) p[x] = find(p[x]);
+</span></span><span style="display:flex;"><span>    return p[x];
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>int kruskal() {
+</span></span><span style="display:flex;"><span>    for (int i = 0; i &lt; n; i ++) p[i] = i; // 初始化并查集
+</span></span><span style="display:flex;"><span>    sort(edge, edge + m);  // 按边权排序
+</span></span><span style="display:flex;"><span>    int res = 0, cnt = 0;
+</span></span><span style="display:flex;"><span>    for (int i = 0; i &lt; m; i ++) {
+</span></span><span style="display:flex;"><span>        int a = edge[i].a, b = edge[i].b, w = edge[i].w;
+</span></span><span style="display:flex;"><span>        a = find(a), b = find(b);
+</span></span><span style="display:flex;"><span>        if (a != b) {  // 边两端的点不连通则加入该边，连通两点
+</span></span><span style="display:flex;"><span>            p[a] = b;
+</span></span><span style="display:flex;"><span>            res += w;
+</span></span><span style="display:flex;"><span>            cnt ++;
+</span></span><span style="display:flex;"><span>            if (cnt == n - 1) return res;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    return INF;
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>int main() {
+</span></span><span style="display:flex;"><span>    scanf(&#34;%d%d&#34;, &amp;n, &amp;m);
+</span></span><span style="display:flex;"><span>    for (int i = 0; i &lt; m; i ++) {
+</span></span><span style="display:flex;"><span>        int a, b, c;
+</span></span><span style="display:flex;"><span>        scanf(&#34;%d%d%d&#34;, &amp;a, &amp;b, &amp;c);
+</span></span><span style="display:flex;"><span>        edge[i] = {a, b, c};
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    int t = kruskal();
+</span></span><span style="display:flex;"><span>    if (t == INF) puts(&#34;impossible&#34;);
+</span></span><span style="display:flex;"><span>    else printf(&#34;%d\n&#34;, t);
+</span></span><span style="display:flex;"><span>    return 0;
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></td></tr></table>
+</div>
+</div>
       </article>
     </section>
 
