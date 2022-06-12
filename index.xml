@@ -7,7 +7,115 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-Hans</language>
     <copyright>&lt;a rel=&#34;license&#34; href=&#34;http://creativecommons.org/licenses/by-nc-sa/4.0/&#34;&gt;&lt;img alt=&#34;知识共享许可协议&#34; style=&#34;border-width:0&#34; src=&#34;https://i.creativecommons.org/l/by-nc-sa/4.0/88x31.png&#34; /&gt;&lt;/a&gt;&lt;br /&gt;本作品采用&lt;a rel=&#34;license&#34; href=&#34;http://creativecommons.org/licenses/by-nc-sa/4.0/&#34;&gt;知识共享署名-非商业性使用-相同方式共享 4.0 国际许可协议&lt;/a&gt;进行许可。&lt;br /&gt;&lt;br /&gt;背景使用了 &lt;a href=&#34;https://www.pexels.com/zh-cn/&#34; target=&#34;_blank&#34;&gt;Pexels&lt;/a&gt; 上 &lt;a href=&#34;https://www.pexels.com/zh-cn/@minan1398&#34; target=&#34;_blank&#34;&gt;Min An&lt;/a&gt; 拍摄的&lt;a href=&#34;https://www.pexels.com/zh-cn/photo/1454794/&#34; target=&#34;_blank&#34;&gt;图片&lt;/a&gt;。</copyright>
-    <lastBuildDate>Thu, 26 May 2022 00:41:33 +0800</lastBuildDate><atom:link href="https://blog.surfaroundtheworld.top/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sun, 12 Jun 2022 14:55:05 +0800</lastBuildDate><atom:link href="https://blog.surfaroundtheworld.top/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>leetcode的算法周赛题整理</title>
+      <link>https://blog.surfaroundtheworld.top/posts/lc-comptition/</link>
+      <pubDate>Sun, 12 Jun 2022 14:55:05 +0800</pubDate>
+      
+      <guid>https://blog.surfaroundtheworld.top/posts/lc-comptition/</guid>
+      <description>&lt;p&gt;记录每周周赛题，滴水穿石&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>DFS &#43; 回溯</title>
+      <link>https://blog.surfaroundtheworld.top/posts/dfs/</link>
+      <pubDate>Sat, 11 Jun 2022 20:58:39 +0800</pubDate>
+      
+      <guid>https://blog.surfaroundtheworld.top/posts/dfs/</guid>
+      <description>&lt;p&gt;DFS + 回溯的题型总结&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>Vue3</title>
+      <link>https://blog.surfaroundtheworld.top/posts/vue3/</link>
+      <pubDate>Fri, 10 Jun 2022 15:44:37 +0800</pubDate>
+      
+      <guid>https://blog.surfaroundtheworld.top/posts/vue3/</guid>
+      <description>&lt;p&gt;Vue3的使用心得&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>动态规划</title>
+      <link>https://blog.surfaroundtheworld.top/posts/dp-1/</link>
+      <pubDate>Wed, 08 Jun 2022 22:55:24 +0800</pubDate>
+      
+      <guid>https://blog.surfaroundtheworld.top/posts/dp-1/</guid>
+      <description>&lt;p&gt;总结一下遇到的动态规划题型，都是做过几遍的问题，再重新整理一遍。&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>动态规划</title>
+      <link>https://blog.surfaroundtheworld.top/posts/dp/</link>
+      <pubDate>Wed, 08 Jun 2022 22:55:24 +0800</pubDate>
+      
+      <guid>https://blog.surfaroundtheworld.top/posts/dp/</guid>
+      <description>&lt;p&gt;总结一下遇到的动态规划题型，都是做过几遍的问题，再重新整理一遍。&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>React</title>
+      <link>https://blog.surfaroundtheworld.top/posts/react/</link>
+      <pubDate>Fri, 03 Jun 2022 22:23:09 +0800</pubDate>
+      
+      <guid>https://blog.surfaroundtheworld.top/posts/react/</guid>
+      <description>&lt;p&gt;React框架&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>Javascript 常用库</title>
+      <link>https://blog.surfaroundtheworld.top/posts/javascript-%E5%B8%B8%E7%94%A8%E5%BA%93/</link>
+      <pubDate>Thu, 02 Jun 2022 00:42:12 +0800</pubDate>
+      
+      <guid>https://blog.surfaroundtheworld.top/posts/javascript-%E5%B8%B8%E7%94%A8%E5%BA%93/</guid>
+      <description>&lt;p&gt;常用的Js库&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>JavaScript</title>
+      <link>https://blog.surfaroundtheworld.top/posts/javascripts/</link>
+      <pubDate>Wed, 01 Jun 2022 21:36:21 +0800</pubDate>
+      
+      <guid>https://blog.surfaroundtheworld.top/posts/javascripts/</guid>
+      <description>&lt;p&gt;整理Js语法&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>css</title>
+      <link>https://blog.surfaroundtheworld.top/posts/css/</link>
+      <pubDate>Tue, 31 May 2022 01:18:43 +0800</pubDate>
+      
+      <guid>https://blog.surfaroundtheworld.top/posts/css/</guid>
+      <description>&lt;p&gt;整理css的基本用法，只是为了建立起基本框架，花样太多，根本记不住，边用边查才是王道。当然，很多都会用bootstrap直接生成页面，基本的css语法还是要了解，便于自己去理解原理并修改。&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>Html</title>
+      <link>https://blog.surfaroundtheworld.top/posts/html/</link>
+      <pubDate>Mon, 30 May 2022 21:13:43 +0800</pubDate>
+      
+      <guid>https://blog.surfaroundtheworld.top/posts/html/</guid>
+      <description>&lt;p&gt;系统总结一下常用的html语法，用来建立初步地体系。在写项目时候，缺乏基本的概念还是容易走一些弯路。&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>周赛题整理</title>
+      <link>https://blog.surfaroundtheworld.top/posts/%E5%91%A8%E8%B5%9B%E9%A2%98%E6%95%B4%E7%90%86/</link>
+      <pubDate>Sun, 29 May 2022 15:35:29 +0800</pubDate>
+      
+      <guid>https://blog.surfaroundtheworld.top/posts/%E5%91%A8%E8%B5%9B%E9%A2%98%E6%95%B4%E7%90%86/</guid>
+      <description>&lt;p&gt;总结整理遇到的有趣的题目。&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>Thrift</title>
+      <link>https://blog.surfaroundtheworld.top/posts/thrift/</link>
+      <pubDate>Thu, 26 May 2022 21:48:34 +0800</pubDate>
+      
+      <guid>https://blog.surfaroundtheworld.top/posts/thrift/</guid>
+      <description>&lt;p&gt;实现一个多线程的匹配系统&lt;/p&gt;</description>
+    </item>
+    
     <item>
       <title>最小生成树</title>
       <link>https://blog.surfaroundtheworld.top/posts/%E5%9F%BA%E7%A1%80%E7%AE%97%E6%B3%95-%E6%9C%80%E5%B0%8F%E7%94%9F%E6%88%90%E6%A0%91/</link>
@@ -69,8 +177,7 @@
       <pubDate>Fri, 20 May 2022 16:53:05 +0800</pubDate>
       
       <guid>https://blog.surfaroundtheworld.top/posts/web%E6%B8%B8%E6%88%8F%E5%BC%80%E5%8F%91-%E5%9F%BA%E4%BA%8Ethrift%E7%9A%84%E6%B8%B8%E6%88%8F%E5%8C%B9%E9%85%8D%E7%B3%BB%E7%BB%9F/</guid>
-      <description>&lt;p&gt;Cut out summary from your post content here.&lt;/p&gt;
-&lt;p&gt;总结整理一下用到的RPC框架——Thrift&lt;/p&gt;</description>
+      <description>&lt;p&gt;总结整理一下用到的RPC框架——Thrift&lt;/p&gt;</description>
     </item>
     
     <item>
@@ -88,7 +195,7 @@
       <pubDate>Mon, 16 May 2022 22:01:27 +0800</pubDate>
       
       <guid>https://blog.surfaroundtheworld.top/posts/web%E6%B8%B8%E6%88%8F%E5%BC%80%E5%8F%91-%E8%81%94%E6%9C%BA%E5%AF%B9%E6%88%98/</guid>
-      <description>&lt;p&gt;关于异步编程和django_channel的总结整理&lt;/p&gt;</description>
+      <description>&lt;p&gt;关于异步编程和websocket在django中的实现方式django_channels的总结整理&lt;/p&gt;</description>
     </item>
     
     <item>
@@ -191,12 +298,12 @@
     </item>
     
     <item>
-      <title>Vscode连接服务器</title>
+      <title>Vscode使用日志</title>
       <link>https://blog.surfaroundtheworld.top/posts/vscode/</link>
       <pubDate>Wed, 04 May 2022 15:34:40 +0800</pubDate>
       
       <guid>https://blog.surfaroundtheworld.top/posts/vscode/</guid>
-      <description>&lt;p&gt;关于如何使用vscode连接服务器并配置免密登录以及遇到的问题记录。&lt;/p&gt;</description>
+      <description>&lt;p&gt;记录如何使用vscode连接服务器并配置免密登录以及遇到的问题，顺便总结记录一些好用的插件。&lt;/p&gt;</description>
     </item>
     
     <item>

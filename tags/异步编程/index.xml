@@ -14,7 +14,7 @@
       <pubDate>Mon, 16 May 2022 22:01:27 +0800</pubDate>
       
       <guid>https://blog.surfaroundtheworld.top/posts/web%E6%B8%B8%E6%88%8F%E5%BC%80%E5%8F%91-%E8%81%94%E6%9C%BA%E5%AF%B9%E6%88%98/</guid>
-      <description>&lt;p&gt;关于异步编程和django_channel的总结整理&lt;/p&gt;</description>
+      <description>&lt;p&gt;关于异步编程和websocket在django中的实现方式django_channels的总结整理&lt;/p&gt;</description>
     </item>
     
   </channel>

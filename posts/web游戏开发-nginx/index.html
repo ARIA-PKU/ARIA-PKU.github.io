@@ -381,6 +381,19 @@
 </span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">138
 </span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">139
 </span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">140
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">141
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">142
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">143
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">144
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">145
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">146
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">147
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">148
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">149
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">150
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">151
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">152
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">153
 </span></code></pre></td>
 <td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
 <pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>user root;   # 服务启动的用户名
@@ -454,12 +467,25 @@
 </span></span><span style="display:flex;"><span>                return 204;
 </span></span><span style="display:flex;"><span>            }
 </span></span><span style="display:flex;"><span>            if ($request_method = &#39;PUT&#39;) {
+</span></span><span style="display:flex;"><span>            	add_header &#39;Access-Control-Allow-Origin&#39; &#39;https://www.bloodborne.shop&#39;;
 </span></span><span style="display:flex;"><span>                add_header &#39;Access-Control-Allow-Methods&#39; &#39;GET, PUT, OPTIONS, POST, DELETE&#39;;
 </span></span><span style="display:flex;"><span>                add_header &#39;Access-Control-Allow-Headers&#39; &#39;DNT,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range,Authorization,X-Amz-Date&#39;;
 </span></span><span style="display:flex;"><span>                add_header &#39;Access-Control-Expose-Headers&#39; &#39;Content-Length,Content-Range&#39;;
 </span></span><span style="display:flex;"><span>            }
 </span></span><span style="display:flex;"><span>            if ($request_method = &#39;GET&#39;) {
 </span></span><span style="display:flex;"><span>                add_header &#39;Access-Control-Allow-Origin&#39; &#39;https://www.bloodborne.shop&#39;;
+</span></span><span style="display:flex;"><span>                add_header &#39;Access-Control-Allow-Methods&#39; &#39;GET, PUT, OPTIONS, POST, DELETE&#39;;
+</span></span><span style="display:flex;"><span>                add_header &#39;Access-Control-Allow-Headers&#39; &#39;DNT,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range,Authorization,X-Amz-Date&#39;;
+</span></span><span style="display:flex;"><span>                add_header &#39;Access-Control-Expose-Headers&#39; &#39;Content-Length,Content-Range&#39;;
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>             if ($request_method = &#39;POST&#39;) {
+</span></span><span style="display:flex;"><span>                add_header &#39;Access-Control-Allow-Origin&#39; &#39;https://www.acwing.com&#39;;
+</span></span><span style="display:flex;"><span>                add_header &#39;Access-Control-Allow-Methods&#39; &#39;GET, PUT, OPTIONS, POST, DELETE&#39;;
+</span></span><span style="display:flex;"><span>                add_header &#39;Access-Control-Allow-Headers&#39; &#39;DNT,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range,Authorization,X-Amz-Date&#39;;
+</span></span><span style="display:flex;"><span>                add_header &#39;Access-Control-Expose-Headers&#39; &#39;Content-Length,Content-Range&#39;;
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>            if ($request_method = &#39;DELETE&#39;) {
+</span></span><span style="display:flex;"><span>                add_header &#39;Access-Control-Allow-Origin&#39; &#39;https://www.acwing.com&#39;;
 </span></span><span style="display:flex;"><span>                add_header &#39;Access-Control-Allow-Methods&#39; &#39;GET, PUT, OPTIONS, POST, DELETE&#39;;
 </span></span><span style="display:flex;"><span>                add_header &#39;Access-Control-Allow-Headers&#39; &#39;DNT,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range,Authorization,X-Amz-Date&#39;;
 </span></span><span style="display:flex;"><span>                add_header &#39;Access-Control-Expose-Headers&#39; &#39;Content-Length,Content-Range&#39;;
@@ -732,6 +758,26 @@ python3 manage.py collectstatic</p>
     
       
     
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
     
 
     
@@ -759,9 +805,33 @@ python3 manage.py collectstatic</p>
           
           
           
+            <a class="ui label" href="/tags/c&#43;&#43;%E5%A4%9A%E7%BA%BF%E7%A8%8B%E7%BC%96%E7%A8%8B/" title="c&#43;&#43;多线程编程">
+              c&#43;&#43;多线程编程
+            </a>
+          
+          
+          
             <a class="ui label" href="/tags/canvas/" title="Canvas">
               Canvas
             </a>
+          
+          
+          
+            <a class="ui label" href="/tags/css/" title="css">
+              css
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/dfs/" title="DFS">
+              DFS
+            </a>
+          
+          </div>
+        </div>
+        <div class="content">
+    
+          <div class="dream-tags" style="margin-left: 1.5rem;">
           
           
           
@@ -780,12 +850,6 @@ python3 manage.py collectstatic</p>
             <a class="ui label" href="/tags/django_channel/" title="django_channel">
               django_channel
             </a>
-          
-          </div>
-        </div>
-        <div class="content">
-    
-          <div class="dream-tags" style="margin-left: 1.5rem;">
           
           
           
@@ -807,6 +871,12 @@ python3 manage.py collectstatic</p>
           
           
           
+            <a class="ui label" href="/tags/html/" title="html">
+              html
+            </a>
+          
+          
+          
             <a class="ui label" href="/tags/http/" title="http">
               http
             </a>
@@ -815,6 +885,24 @@ python3 manage.py collectstatic</p>
           
             <a class="ui label" href="/tags/jquery/" title="jquery">
               jquery
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/js%E5%B8%B8%E7%94%A8%E5%BA%93/" title="Js常用库">
+              Js常用库
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/js%E8%AF%AD%E6%B3%95/" title="Js语法">
+              Js语法
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/leetcode/" title="leetcode">
+              leetcode
             </a>
           
           
@@ -837,6 +925,12 @@ python3 manage.py collectstatic</p>
           
           
           
+            <a class="ui label" href="/tags/react/" title="React">
+              React
+            </a>
+          
+          
+          
             <a class="ui label" href="/tags/rpc/" title="RPC">
               RPC
             </a>
@@ -849,8 +943,8 @@ python3 manage.py collectstatic</p>
           
           
           
-            <a class="ui label" href="/tags/thrift/" title="Thrift">
-              Thrift
+            <a class="ui label" href="/tags/thrift/" title="thrift">
+              thrift
             </a>
           
           
@@ -875,6 +969,12 @@ python3 manage.py collectstatic</p>
           
             <a class="ui label" href="/tags/vscode/" title="vscode">
               vscode
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/vue3/" title="vue3">
+              vue3
             </a>
           
           
@@ -911,6 +1011,12 @@ python3 manage.py collectstatic</p>
           
             <a class="ui label" href="/tags/%E5%89%8D%E7%BC%80%E5%92%8C/" title="前缀和">
               前缀和
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92/" title="动态规划">
+              动态规划
             </a>
           
           

@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-    <title>Vscode连接服务器 | Aria&#39;s Blog</title>
+    <title>Vscode使用日志 | Aria&#39;s Blog</title>
 
     
 <link href="/header/a.jpg" rel="shortcut icon" type="image/x-icon" />
@@ -13,7 +13,7 @@
 
 
 <meta name="author" content="Aria" />
-<meta name="description" content="关于如何使用vscode连接服务器并配置免密登录以及遇到的问题记录。
+<meta name="description" content="记录如何使用vscode连接服务器并配置免密登录以及遇到的问题，顺便总结记录一些好用的插件。
 " />
 
 
@@ -23,8 +23,8 @@
 <link rel="canonical" href="https://blog.surfaroundtheworld.top/posts/vscode/" />
 
 
-<meta property="og:title" content="Vscode连接服务器" />
-<meta property="og:description" content="关于如何使用vscode连接服务器并配置免密登录以及遇到的问题记录。" />
+<meta property="og:title" content="Vscode使用日志" />
+<meta property="og:description" content="记录如何使用vscode连接服务器并配置免密登录以及遇到的问题，顺便总结记录一些好用的插件。" />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://blog.surfaroundtheworld.top/posts/vscode/" /><meta property="og:image" content="https://blog.surfaroundtheworld.top/me/background.jpg"/><meta property="article:section" content="posts" />
 <meta property="article:published_time" content="2022-05-04T15:34:40+08:00" />
@@ -36,8 +36,8 @@
 <meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:image" content="https://blog.surfaroundtheworld.top/me/background.jpg"/>
 
-<meta name="twitter:title" content="Vscode连接服务器"/>
-<meta name="twitter:description" content="关于如何使用vscode连接服务器并配置免密登录以及遇到的问题记录。"/>
+<meta name="twitter:title" content="Vscode使用日志"/>
+<meta name="twitter:description" content="记录如何使用vscode连接服务器并配置免密登录以及遇到的问题，顺便总结记录一些好用的插件。"/>
 
 
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.css" integrity="sha256-UXesixbeLkB/UYxVTzuj/gg3+LMzgwAmg3zD+C4ZASQ=" crossorigin="anonymous">
@@ -144,6 +144,12 @@
     <li><a href="#密钥登录">密钥登录</a></li>
     <li><a href="#docker下配置ssh的问题记录">docker下配置ssh的问题记录</a></li>
   </ul>
+
+  <ul>
+    <li><a href="#插件">插件</a></li>
+    <li><a href="#设置">设置</a></li>
+    <li><a href="#小技巧">小技巧</a></li>
+  </ul>
 </nav>
     </div>
     
@@ -154,7 +160,7 @@
   <div class="sixteen wide mobile sixteen wide tablet ten wide computer column markdown-body dream-single" id="dream-save-post-as-img">
     <section class="ui segment">
       <header>
-        <h1 class="ui large header">Vscode连接服务器<span class="sub header">
+        <h1 class="ui large header">Vscode使用日志<span class="sub header">
             <span class="left">
               @
               
@@ -180,7 +186,7 @@
   <a href="#" class="save-as-image" title="保存为图片" onclick="savePostAsImg()">
     <i class="save icon"></i>
   </a>
-  <a href="https://twitter.com/intent/tweet?text=Vscode%e8%bf%9e%e6%8e%a5%e6%9c%8d%e5%8a%a1%e5%99%a8&url=https%3a%2f%2fblog.surfaroundtheworld.top%2fposts%2fvscode%2f" title="Twitter">
+  <a href="https://twitter.com/intent/tweet?text=Vscode%e4%bd%bf%e7%94%a8%e6%97%a5%e5%bf%97&url=https%3a%2f%2fblog.surfaroundtheworld.top%2fposts%2fvscode%2f" title="Twitter">
     <i class="twitter icon"></i>
   </a>
   <a href="https://facebook.com/sharer/sharer.php?u=https%3a%2f%2fblog.surfaroundtheworld.top%2fposts%2fvscode%2f" title="Facebook">
@@ -198,7 +204,8 @@
         <img class="cover" src="/img/cover.jpg" />
         
 
-        <p>关于如何使用vscode连接服务器并配置免密登录以及遇到的问题记录。</p>
+        <p>记录如何使用vscode连接服务器并配置免密登录以及遇到的问题，顺便总结记录一些好用的插件。</p>
+<h1 id="vscode连接远程服务器">vscode连接远程服务器</h1>
 <h2 id="vscode中安装remote-ssh">vscode中安装remote-ssh</h2>
 <p>因为vscode的本质就是利用的ssh来建立连接的；</p>
 <h2 id="配置文件">配置文件</h2>
@@ -268,6 +275,17 @@
 </span></span></code></pre></td></tr></table>
 </div>
 </div><p>折腾了一晚上，终于又能正常连接vscode了，以后还是不要随便给文件开权限了&hellip;..</p>
+<h1 id="vscode的前端使用心得">vscode的前端使用心得</h1>
+<h2 id="插件">插件</h2>
+<p><strong>Live Server</strong>：本地调试可视化，方便好用</p>
+<p><strong>Auto Rename Tag</strong>：自动修改后面的标签</p>
+<p><strong>Simple React Snippets</strong>：React的自动补全</p>
+<p><strong>Prettier - Code formatter</strong>： 美化工具</p>
+<h2 id="设置">设置</h2>
+<p>点击settings，然后输入format，然后勾选上Format On Save。这就能在save的时候自动格式化了</p>
+<h2 id="小技巧">小技巧</h2>
+<p>1、对于html文件，输入<code>i</code>之间<code>tab</code>就能生成初始html模板，类似的有很多，比如<code>imrc</code> + <code>tab</code> 的自动补全，<code>cc</code> + <code>tab</code> 类组件等。</p>
+<p>2、table.table&gt;thead&gt;th&gt;tr*4 回车</p>
       </article>
     </section>
 
@@ -422,6 +440,26 @@
     
       
     
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
     
 
     
@@ -449,9 +487,33 @@
           
           
           
+            <a class="ui label" href="/tags/c&#43;&#43;%E5%A4%9A%E7%BA%BF%E7%A8%8B%E7%BC%96%E7%A8%8B/" title="c&#43;&#43;多线程编程">
+              c&#43;&#43;多线程编程
+            </a>
+          
+          
+          
             <a class="ui label" href="/tags/canvas/" title="Canvas">
               Canvas
             </a>
+          
+          
+          
+            <a class="ui label" href="/tags/css/" title="css">
+              css
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/dfs/" title="DFS">
+              DFS
+            </a>
+          
+          </div>
+        </div>
+        <div class="content">
+    
+          <div class="dream-tags" style="margin-left: 1.5rem;">
           
           
           
@@ -470,12 +532,6 @@
             <a class="ui label" href="/tags/django_channel/" title="django_channel">
               django_channel
             </a>
-          
-          </div>
-        </div>
-        <div class="content">
-    
-          <div class="dream-tags" style="margin-left: 1.5rem;">
           
           
           
@@ -497,6 +553,12 @@
           
           
           
+            <a class="ui label" href="/tags/html/" title="html">
+              html
+            </a>
+          
+          
+          
             <a class="ui label" href="/tags/http/" title="http">
               http
             </a>
@@ -505,6 +567,24 @@
           
             <a class="ui label" href="/tags/jquery/" title="jquery">
               jquery
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/js%E5%B8%B8%E7%94%A8%E5%BA%93/" title="Js常用库">
+              Js常用库
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/js%E8%AF%AD%E6%B3%95/" title="Js语法">
+              Js语法
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/leetcode/" title="leetcode">
+              leetcode
             </a>
           
           
@@ -527,6 +607,12 @@
           
           
           
+            <a class="ui label" href="/tags/react/" title="React">
+              React
+            </a>
+          
+          
+          
             <a class="ui label" href="/tags/rpc/" title="RPC">
               RPC
             </a>
@@ -539,8 +625,8 @@
           
           
           
-            <a class="ui label" href="/tags/thrift/" title="Thrift">
-              Thrift
+            <a class="ui label" href="/tags/thrift/" title="thrift">
+              thrift
             </a>
           
           
@@ -565,6 +651,12 @@
           
             <a class="ui label" href="/tags/vscode/" title="vscode">
               vscode
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/vue3/" title="vue3">
+              vue3
             </a>
           
           
@@ -601,6 +693,12 @@
           
             <a class="ui label" href="/tags/%E5%89%8D%E7%BC%80%E5%92%8C/" title="前缀和">
               前缀和
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92/" title="动态规划">
+              动态规划
             </a>
           
           
