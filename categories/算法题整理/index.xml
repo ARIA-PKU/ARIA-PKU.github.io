@@ -10,19 +10,19 @@
     <lastBuildDate>Wed, 08 Jun 2022 22:55:24 +0800</lastBuildDate><atom:link href="https://blog.surfaroundtheworld.top/categories/%E7%AE%97%E6%B3%95%E9%A2%98%E6%95%B4%E7%90%86/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>动态规划</title>
-      <link>https://blog.surfaroundtheworld.top/posts/dp-1/</link>
-      <pubDate>Wed, 08 Jun 2022 22:55:24 +0800</pubDate>
-      
-      <guid>https://blog.surfaroundtheworld.top/posts/dp-1/</guid>
-      <description>&lt;p&gt;总结一下遇到的动态规划题型，都是做过几遍的问题，再重新整理一遍。&lt;/p&gt;</description>
-    </item>
-    
-    <item>
-      <title>动态规划</title>
       <link>https://blog.surfaroundtheworld.top/posts/dp/</link>
       <pubDate>Wed, 08 Jun 2022 22:55:24 +0800</pubDate>
       
       <guid>https://blog.surfaroundtheworld.top/posts/dp/</guid>
+      <description>&lt;p&gt;总结一下遇到的动态规划题型，都是做过几遍的问题，再重新整理一遍。&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>动态规划-1</title>
+      <link>https://blog.surfaroundtheworld.top/posts/dp-1/</link>
+      <pubDate>Wed, 08 Jun 2022 22:55:24 +0800</pubDate>
+      
+      <guid>https://blog.surfaroundtheworld.top/posts/dp-1/</guid>
       <description>&lt;p&gt;总结一下遇到的动态规划题型，都是做过几遍的问题，再重新整理一遍。&lt;/p&gt;</description>
     </item>
     

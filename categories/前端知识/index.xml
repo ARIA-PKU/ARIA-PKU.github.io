@@ -53,5 +53,14 @@
       <description>&lt;p&gt;整理css的基本用法，只是为了建立起基本框架，花样太多，根本记不住，边用边查才是王道。当然，很多都会用bootstrap直接生成页面，基本的css语法还是要了解，便于自己去理解原理并修改。&lt;/p&gt;</description>
     </item>
     
+    <item>
+      <title>Html</title>
+      <link>https://blog.surfaroundtheworld.top/posts/html/</link>
+      <pubDate>Mon, 30 May 2022 21:13:43 +0800</pubDate>
+      
+      <guid>https://blog.surfaroundtheworld.top/posts/html/</guid>
+      <description>&lt;p&gt;系统总结一下常用的html语法，用来建立初步地体系。在写项目时候，缺乏基本的概念还是容易走一些弯路。&lt;/p&gt;</description>
+    </item>
+    
   </channel>
 </rss>
