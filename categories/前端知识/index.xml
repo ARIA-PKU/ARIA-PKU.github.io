@@ -10,55 +10,55 @@
     <lastBuildDate>Fri, 10 Jun 2022 15:44:37 +0800</lastBuildDate><atom:link href="https://blog.surfaroundtheworld.top/categories/%E5%89%8D%E7%AB%AF%E7%9F%A5%E8%AF%86/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Vue3</title>
-      <link>https://blog.surfaroundtheworld.top/posts/vue3/</link>
+      <link>https://blog.surfaroundtheworld.top/posts/%E5%89%8D%E7%AB%AF%E7%9F%A5%E8%AF%86/vue3/</link>
       <pubDate>Fri, 10 Jun 2022 15:44:37 +0800</pubDate>
       
-      <guid>https://blog.surfaroundtheworld.top/posts/vue3/</guid>
+      <guid>https://blog.surfaroundtheworld.top/posts/%E5%89%8D%E7%AB%AF%E7%9F%A5%E8%AF%86/vue3/</guid>
       <description>&lt;p&gt;Vue3的使用心得&lt;/p&gt;</description>
     </item>
     
     <item>
       <title>React</title>
-      <link>https://blog.surfaroundtheworld.top/posts/react/</link>
+      <link>https://blog.surfaroundtheworld.top/posts/%E5%89%8D%E7%AB%AF%E7%9F%A5%E8%AF%86/react/</link>
       <pubDate>Fri, 03 Jun 2022 22:23:09 +0800</pubDate>
       
-      <guid>https://blog.surfaroundtheworld.top/posts/react/</guid>
+      <guid>https://blog.surfaroundtheworld.top/posts/%E5%89%8D%E7%AB%AF%E7%9F%A5%E8%AF%86/react/</guid>
       <description>&lt;p&gt;React框架&lt;/p&gt;</description>
     </item>
     
     <item>
       <title>Javascript 常用库</title>
-      <link>https://blog.surfaroundtheworld.top/posts/javascript-%E5%B8%B8%E7%94%A8%E5%BA%93/</link>
+      <link>https://blog.surfaroundtheworld.top/posts/%E5%89%8D%E7%AB%AF%E7%9F%A5%E8%AF%86/javascript-%E5%B8%B8%E7%94%A8%E5%BA%93/</link>
       <pubDate>Thu, 02 Jun 2022 00:42:12 +0800</pubDate>
       
-      <guid>https://blog.surfaroundtheworld.top/posts/javascript-%E5%B8%B8%E7%94%A8%E5%BA%93/</guid>
+      <guid>https://blog.surfaroundtheworld.top/posts/%E5%89%8D%E7%AB%AF%E7%9F%A5%E8%AF%86/javascript-%E5%B8%B8%E7%94%A8%E5%BA%93/</guid>
       <description>&lt;p&gt;常用的Js库&lt;/p&gt;</description>
     </item>
     
     <item>
       <title>JavaScript</title>
-      <link>https://blog.surfaroundtheworld.top/posts/javascripts/</link>
+      <link>https://blog.surfaroundtheworld.top/posts/%E5%89%8D%E7%AB%AF%E7%9F%A5%E8%AF%86/javascripts/</link>
       <pubDate>Wed, 01 Jun 2022 21:36:21 +0800</pubDate>
       
-      <guid>https://blog.surfaroundtheworld.top/posts/javascripts/</guid>
+      <guid>https://blog.surfaroundtheworld.top/posts/%E5%89%8D%E7%AB%AF%E7%9F%A5%E8%AF%86/javascripts/</guid>
       <description>&lt;p&gt;整理Js语法&lt;/p&gt;</description>
     </item>
     
     <item>
       <title>css</title>
-      <link>https://blog.surfaroundtheworld.top/posts/css/</link>
+      <link>https://blog.surfaroundtheworld.top/posts/%E5%89%8D%E7%AB%AF%E7%9F%A5%E8%AF%86/css/</link>
       <pubDate>Tue, 31 May 2022 01:18:43 +0800</pubDate>
       
-      <guid>https://blog.surfaroundtheworld.top/posts/css/</guid>
+      <guid>https://blog.surfaroundtheworld.top/posts/%E5%89%8D%E7%AB%AF%E7%9F%A5%E8%AF%86/css/</guid>
       <description>&lt;p&gt;整理css的基本用法，只是为了建立起基本框架，花样太多，根本记不住，边用边查才是王道。当然，很多都会用bootstrap直接生成页面，基本的css语法还是要了解，便于自己去理解原理并修改。&lt;/p&gt;</description>
     </item>
     
     <item>
       <title>Html</title>
-      <link>https://blog.surfaroundtheworld.top/posts/html/</link>
+      <link>https://blog.surfaroundtheworld.top/posts/%E5%89%8D%E7%AB%AF%E7%9F%A5%E8%AF%86/html/</link>
       <pubDate>Mon, 30 May 2022 21:13:43 +0800</pubDate>
       
-      <guid>https://blog.surfaroundtheworld.top/posts/html/</guid>
+      <guid>https://blog.surfaroundtheworld.top/posts/%E5%89%8D%E7%AB%AF%E7%9F%A5%E8%AF%86/html/</guid>
       <description>&lt;p&gt;系统总结一下常用的html语法，用来建立初步地体系。在写项目时候，缺乏基本的概念还是容易走一些弯路。&lt;/p&gt;</description>
     </item>
     

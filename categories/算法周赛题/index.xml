@@ -10,20 +10,11 @@
     <lastBuildDate>Sun, 12 Jun 2022 14:55:05 +0800</lastBuildDate><atom:link href="https://blog.surfaroundtheworld.top/categories/%E7%AE%97%E6%B3%95%E5%91%A8%E8%B5%9B%E9%A2%98/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>leetcode的算法周赛题整理</title>
-      <link>https://blog.surfaroundtheworld.top/posts/lc-comptition/</link>
+      <link>https://blog.surfaroundtheworld.top/posts/%E7%AE%97%E6%B3%95%E9%A2%98/%E5%91%A8%E8%B5%9B%E6%9D%82%E9%A2%98/lc-comptition/</link>
       <pubDate>Sun, 12 Jun 2022 14:55:05 +0800</pubDate>
       
-      <guid>https://blog.surfaroundtheworld.top/posts/lc-comptition/</guid>
+      <guid>https://blog.surfaroundtheworld.top/posts/%E7%AE%97%E6%B3%95%E9%A2%98/%E5%91%A8%E8%B5%9B%E6%9D%82%E9%A2%98/lc-comptition/</guid>
       <description>&lt;p&gt;记录每周周赛题，滴水穿石&lt;/p&gt;</description>
-    </item>
-    
-    <item>
-      <title>算法题——点的赋值</title>
-      <link>https://blog.surfaroundtheworld.top/posts/acwing_4415%E7%82%B9%E7%9A%84%E8%B5%8B%E5%80%BC/</link>
-      <pubDate>Sat, 30 Apr 2022 22:16:19 +0800</pubDate>
-      
-      <guid>https://blog.surfaroundtheworld.top/posts/acwing_4415%E7%82%B9%E7%9A%84%E8%B5%8B%E5%80%BC/</guid>
-      <description>&lt;p&gt;周赛算法题总结，封面来自pivix的防人画师。&lt;/p&gt;</description>
     </item>
     
   </channel>

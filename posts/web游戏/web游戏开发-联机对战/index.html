@@ -1,0 +1,1321 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Web游戏开发 Python的异步编程 | Aria&#39;s Blog</title>
+
+    
+<link href="https://oss.surfaroundtheworld.top/blog-pictures/icon.png" rel="shortcut icon" type="image/x-icon" />
+
+
+
+
+<meta name="author" content="Aria" />
+<meta name="description" content="关于异步编程和websocket在django中的实现方式django_channels的总结整理
+" />
+
+
+
+<meta name="generator" content="Hugo 0.98.0" />
+
+<link rel="canonical" href="https://blog.surfaroundtheworld.top/posts/web%E6%B8%B8%E6%88%8F/web%E6%B8%B8%E6%88%8F%E5%BC%80%E5%8F%91-%E8%81%94%E6%9C%BA%E5%AF%B9%E6%88%98/" />
+
+
+<meta property="og:title" content="Web游戏开发 Python的异步编程" />
+<meta property="og:description" content="关于异步编程和websocket在django中的实现方式django_channels的总结整理" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://blog.surfaroundtheworld.top/posts/web%E6%B8%B8%E6%88%8F/web%E6%B8%B8%E6%88%8F%E5%BC%80%E5%8F%91-%E8%81%94%E6%9C%BA%E5%AF%B9%E6%88%98/" /><meta property="og:image" content="https://oss.surfaroundtheworld.top/blog-pictures/bear_flower.jpg"/><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2022-05-16T22:01:27+08:00" />
+<meta property="article:modified_time" content="2022-05-16T22:01:27+08:00" />
+
+
+
+
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="https://oss.surfaroundtheworld.top/blog-pictures/bear_flower.jpg"/>
+
+<meta name="twitter:title" content="Web游戏开发 Python的异步编程"/>
+<meta name="twitter:description" content="关于异步编程和websocket在django中的实现方式django_channels的总结整理"/>
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.css" integrity="sha256-UXesixbeLkB/UYxVTzuj/gg3+LMzgwAmg3zD+C4ZASQ=" crossorigin="anonymous">
+<link rel="stylesheet" href="/css/icomoon.css" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/overlayscrollbars@1.13.1/css/OverlayScrollbars.min.css" integrity="sha256-WKijf8KI68sbq8Znd6yMepIuFF0wdWfIt6gk3JWcQfk=" crossorigin="anonymous">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4.0.0/github-markdown.min.css">
+<link rel="stylesheet" href="/css/site.css" />
+
+<style>
+  .ui.header a:not(.item, .ui.button):hover {
+    text-decoration: underline;
+  }
+
+  
+  a:not(.item, .ui.button) {
+    color: seagreen !important;
+  }
+  
+
+  
+  .inverted a:not(.item, .ui.button) {
+     color: darkseagreen !important;
+  }
+  
+
+  
+  body.default {
+    
+    background-color: #fff;
+    
+
+    
+    background-image: url(https://oss.surfaroundtheworld.top/blog-pictures/bear_flower.jpg);
+    
+  }
+  
+
+  
+  body.dark {
+    
+
+    
+    background-image: url(https://oss.surfaroundtheworld.top/blog-pictures/bear_flower.jpg);
+    
+  }
+  
+</style>
+
+
+    
+
+
+
+
+
+
+
+    
+    <link rel="stylesheet" href="/css/custom.css" />
+    
+  </head>
+
+  <body class="default">
+    
+<nav class="ui secondary menu dream-menu dream-nav">
+
+  <a class="item dream-flip-toggle" title="翻转！">
+    <i class="large link bullseye icon"></i>
+  </a>
+  <a class="item" href="https://blog.surfaroundtheworld.top/" title="首页">
+    <i class="large link home icon"></i>
+  </a>
+  
+  <a class="item" onclick="themeSwitch(event)">
+    <i class="large link icon theme-switch"></i>
+  </a>
+  
+  
+  <a class="item" title="搜索" onclick="toggleSearch(event)">
+    <i class="large link search icon"></i>
+  </a>
+  
+</nav>
+
+    <div class="flip-container">
+      <div class="flipper">
+        <section class="front">
+          <div class="dream-max-width">
+            
+<div class="ui relaxed centered grid dream-grid dream-grid-single">
+  
+  
+  
+  
+
+  
+  <aside class="sixteen wide mobile sixteen wide tablet three wide computer column dream-single-aside">
+    
+    <div class="ui segment toc">
+      <nav id="TableOfContents">
+  <ul>
+    <li><a href="#1产生背景">1、产生背景</a></li>
+    <li><a href="#2进程线程与协程">2、进程、线程与协程</a></li>
+    <li><a href="#3async和await的使用">3、async和await的使用</a></li>
+  </ul>
+
+  <ul>
+    <li><a href="#1概念">1、概念</a></li>
+    <li><a href="#2channels中的消费者">2、channels中的消费者</a></li>
+    <li><a href="#3路由">3、路由</a></li>
+    <li><a href="#4进程间通信">4、进程间通信</a>
+      <ul>
+        <li></li>
+      </ul>
+    </li>
+    <li><a href="#6部署配置">6、部署配置</a></li>
+  </ul>
+</nav>
+    </div>
+    
+
+    
+  </aside>
+  
+  <div class="sixteen wide mobile sixteen wide tablet ten wide computer column markdown-body dream-single" id="dream-save-post-as-img">
+    <section class="ui segment">
+      <header>
+        <h1 class="ui large header">Web游戏开发 Python的异步编程<span class="sub header">
+            <span class="left">
+              @
+              
+                Aria
+              
+
+              | 
+                  <span data-format="luxon">2022-05-16T22:01:27&#43;08:00</span>
+                
+
+              | 9 分钟阅读
+
+              
+              | 更新于
+                
+                  <span data-format="luxon">2022-05-16T22:01:27&#43;08:00</span>
+                
+              
+            </span>
+
+            
+            <span class="dream-share">
+  <a href="#" class="save-as-image" title="保存为图片" onclick="savePostAsImg()">
+    <i class="save icon"></i>
+  </a>
+  <a href="https://twitter.com/intent/tweet?text=Web%e6%b8%b8%e6%88%8f%e5%bc%80%e5%8f%91%20Python%e7%9a%84%e5%bc%82%e6%ad%a5%e7%bc%96%e7%a8%8b&url=https%3a%2f%2fblog.surfaroundtheworld.top%2fposts%2fweb%25E6%25B8%25B8%25E6%2588%258F%2fweb%25E6%25B8%25B8%25E6%2588%258F%25E5%25BC%2580%25E5%258F%2591-%25E8%2581%2594%25E6%259C%25BA%25E5%25AF%25B9%25E6%2588%2598%2f" title="Twitter">
+    <i class="twitter icon"></i>
+  </a>
+  <a href="https://facebook.com/sharer/sharer.php?u=https%3a%2f%2fblog.surfaroundtheworld.top%2fposts%2fweb%25E6%25B8%25B8%25E6%2588%258F%2fweb%25E6%25B8%25B8%25E6%2588%258F%25E5%25BC%2580%25E5%258F%2591-%25E8%2581%2594%25E6%259C%25BA%25E5%25AF%25B9%25E6%2588%2598%2f" title="Facebook">
+    <i class="facebook icon"></i>
+  </a>
+</span>
+
+            
+          </span>
+        </h1>
+      </header>
+
+      <article class="main">
+        
+        <img class="cover" src="/cover/lonely%20plannet.jpg" />
+        
+
+        <p>关于异步编程和websocket在django中的实现方式django_channels的总结整理</p>
+<h1 id="一python的异步编程">一、Python的异步编程</h1>
+<h2 id="1产生背景">1、产生背景</h2>
+<p>历史上，Python 并不支持专门的异步编程语法，因为不需要。</p>
+<p>有了多线程（threading）和多进程（multiprocessing），就没必要一定支持异步了。如果一个线程（或进程）阻塞，新建其他线程（或进程）就可以了，程序不会卡死。</p>
+<p>但是，多线程有&quot;线程竞争&quot;的问题，处理起来很复杂，还涉及加锁。对于简单的异步任务来说（比如与网页互动），写起来很麻烦。</p>
+<p>Python 3.4 引入了 <code>asyncio</code> 模块，增加了异步编程，跟 JavaScript 的<code>async/await</code> 极为类似，大大方便了异步任务的处理。它受到了开发者的欢迎，成为从 Python 2 升级到 Python 3 的主要理由之一。</p>
+<h2 id="2进程线程与协程">2、进程、线程与协程</h2>
+<p>举个例子：假设有1个洗衣房，里面有10台洗衣机，有一个洗衣工在负责这10台洗衣机。那么洗衣房就相当于1个进程，洗衣工就相当1个线程。如果有10个洗衣工，就相当于10个线程，1个进程是可以开多线程的。这就是多线程！</p>
+<p>那么协程呢？先不急。大家都知道，洗衣机洗衣服是需要等待时间的，如果10个洗衣工，1人负责1台洗衣机，这样效率肯定会提高，但是不觉得浪费资源吗？明明1 个人能做的事，却要10个人来做。只是把衣服放进去，打开开关，就没事做了，等衣服洗好再拿出来就可以了。就算很多人来洗衣服，1个人也足以应付了，开好第一台洗衣机，在等待的时候去开第二台洗衣机，再开第三台，……直到有衣服洗好了，就回来把衣服取出来，接着再取另一台的（哪台洗好先就取哪台，所以协程是无序的）。这就是计算机的协程！洗衣机就是执行的方法。</p>
+<p>在python中，async与await就是协程的一种实现方式。</p>
+<h2 id="3async和await的使用">3、async和await的使用</h2>
+<p>正常的函数在执行时是不会中断的，所以你要写一个能够中断的函数，就需要添加async关键字。</p>
+<p>async 用来声明一个函数为异步函数，异步函数的特点是能在函数执行过程中挂起，去执行其他异步函数，等到挂起条件（假设挂起条件是sleep(5)）消失后，也就是5秒到了再回来执行。</p>
+<p>await 用来用来声明程序挂起，比如异步程序执行到某一步时需要等待的时间很长，就将此挂起，去执行其他的异步程序。await 后面只能跟异步程序或有__await__属性的对象，因为异步程序与一般程序不同。假设有两个异步函数async a，async b，a中的某一步有await，当程序碰到关键字await b()后，异步程序挂起后去执行另一个异步b程序，就是从函数内部跳出去执行其他函数，<strong>当挂起条件消失后，不管b是否执行完，要马上从b程序中跳出来</strong>，回到原程序执行原来的操作。如果await后面跟的b函数不是异步函数，那么操作就只能等b执行完再返回，无法在b执行的过程中返回。如果要在b执行完才返回，也就不需要用await关键字了，直接调用b函数就行。所以这就需要await后面跟的是异步函数了。在一个异步函数中，可以不止一次挂起，也就是可以用多个await。</p>
+<h1 id="二django-channels">二、Django Channels</h1>
+<h2 id="1概念">1、概念</h2>
+<p>django的channels在官方文档里有着很详细的介绍，这里只总结一下项目用到的部分。</p>
+<p>首先，官方表面整个channels遵循“turtles all the way down” 的原则，搜了一下，发现这背后还有一个典故，大概就是我们的世界是在一个乌龟的背上，而乌龟的下面是一个又一个乌龟驮着的乌龟群。作者这里在后面解释了一下，所有的channels的应用都是一整个有效的，可以自己运行的ASGI（ASGI is the name for the asynchronous server specification that Channels is built on.）应用。</p>
+<h2 id="2channels中的消费者">2、channels中的消费者</h2>
+<p>消费者是 Channels 代码的基本单位。我们称它为<em>消费者</em>，因为它 <em>消费事件</em>，但您可以将其视为它自己的小应用程序。当一个请求或新套接字进来时，Channels 将遵循它的路由表——我们稍后会看一下——为那个传入连接找到正确的消费者，并启动它的副本。</p>
+<p>这意味着，与 Django 视图不同，消费者是长期运行的。它们也可以是短期运行的——毕竟，HTTP 请求也可以由消费者提供服务——但它们是围绕生存一段时间的想法构建的（正如我们上面所描述的，它们在一个<em>范围内生存）。</em></p>
+<p>官网中提供了消费者的基本代码：</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>class ChatConsumer(WebsocketConsumer):
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    def connect(self):
+</span></span><span style="display:flex;"><span>        self.username = &#34;Anonymous&#34;
+</span></span><span style="display:flex;"><span>        self.accept()
+</span></span><span style="display:flex;"><span>        self.send(text_data=&#34;[Welcome %s!]&#34; % self.username)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    def receive(self, *, text_data):
+</span></span><span style="display:flex;"><span>        if text_data.startswith(&#34;/name&#34;):
+</span></span><span style="display:flex;"><span>            self.username = text_data[5:].strip()
+</span></span><span style="display:flex;"><span>            self.send(text_data=&#34;[set your username to %s]&#34; % self.username)
+</span></span><span style="display:flex;"><span>        else:
+</span></span><span style="display:flex;"><span>            self.send(text_data=self.username + &#34;: &#34; + text_data)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    def disconnect(self, message):
+</span></span><span style="display:flex;"><span>        pass
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>也可以用它来编写完全异步的函数：</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>class PingConsumer(AsyncConsumer):
+</span></span><span style="display:flex;"><span>    async def websocket_connect(self, message):
+</span></span><span style="display:flex;"><span>        await self.send({
+</span></span><span style="display:flex;"><span>            &#34;type&#34;: &#34;websocket.accept&#34;,
+</span></span><span style="display:flex;"><span>        })
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    async def websocket_receive(self, message):
+</span></span><span style="display:flex;"><span>        await asyncio.sleep(1)
+</span></span><span style="display:flex;"><span>        await self.send({
+</span></span><span style="display:flex;"><span>            &#34;type&#34;: &#34;websocket.send&#34;,
+</span></span><span style="display:flex;"><span>            &#34;text&#34;: &#34;pong&#34;,
+</span></span><span style="display:flex;"><span>        })
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="3路由">3、路由</h2>
+<p>您可以将多个使用者（记住，他们自己的 ASGI 应用程序）组合成一个更大的应用程序，使用路由来代表您的项目：</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>application = URLRouter([
+</span></span><span style="display:flex;"><span>    path(&#34;chat/admin/&#34;, AdminChatConsumer.as_asgi()),
+</span></span><span style="display:flex;"><span>    path(&#34;chat/&#34;, PublicChatConsumer.as_asgi(),
+</span></span><span style="display:flex;"><span>])
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Channels 不仅仅是围绕 HTTP 和 WebSockets 构建的——它还允许您将任何协议构建到 Django 环境中，方法是构建一个将这些协议映射到一组类似事件的服务器。例如，您可以构建一个类似风格的聊天机器人：</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>class ChattyBotConsumer(SyncConsumer):
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    def telegram_message(self, message):
+</span></span><span style="display:flex;"><span>        &#34;&#34;&#34;
+</span></span><span style="display:flex;"><span>        Simple echo handler for telegram messages in any chat.
+</span></span><span style="display:flex;"><span>        &#34;&#34;&#34;
+</span></span><span style="display:flex;"><span>        self.send({
+</span></span><span style="display:flex;"><span>            &#34;type&#34;: &#34;telegram.message&#34;,
+</span></span><span style="display:flex;"><span>            &#34;text&#34;: &#34;You said: %s&#34; % message[&#34;text&#34;],
+</span></span><span style="display:flex;"><span>        })
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>然后使用另一个路由器让一个项目能够同时服务 WebSocket 和聊天请求：</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">6
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">7
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">8
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">9
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>application = ProtocolTypeRouter({
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    &#34;websocket&#34;: URLRouter([
+</span></span><span style="display:flex;"><span>        path(&#34;chat/admin/&#34;, AdminChatConsumer.as_asgi()),
+</span></span><span style="display:flex;"><span>        path(&#34;chat/&#34;, PublicChatConsumer.as_asgi()),
+</span></span><span style="display:flex;"><span>    ]),
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    &#34;telegram&#34;: ChattyBotConsumer.as_asgi(),
+</span></span><span style="display:flex;"><span>})
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Channels 的目标是让您构建您的 Django 项目以跨现代网络中可能遇到的任何协议或传输方式工作，同时让您使用熟悉的组件和编码风格。</p>
+<h2 id="4进程间通信">4、进程间通信</h2>
+<p>通道层允许您在应用程序的不同实例之间进行对话。如果您不想让所有消息或事件通过数据库传送，它们是制作分布式实时应用程序的有用部分。</p>
+<h4 id="1redis-通道层">1）Redis 通道层</h4>
+<p><a href="https://pypi.org/project/channels-redis/">channels_redis</a>是唯一支持生产使用的官方 Django 维护的通道层。该层使用 Redis 作为其后备存储，它支持单服务器和分片配置以及组支持。要使用这一层，您需要安装<a href="https://pypi.org/project/channels-redis/">channels_redis</a> 包。</p>
+<p>在此示例中，Redis 在 localhost (127.0.0.1) 端口 6379 上运行：</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">6
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">7
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">8
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>CHANNEL_LAYERS = {
+</span></span><span style="display:flex;"><span>    &#34;default&#34;: {
+</span></span><span style="display:flex;"><span>        &#34;BACKEND&#34;: &#34;channels_redis.core.RedisChannelLayer&#34;,
+</span></span><span style="display:flex;"><span>        &#34;CONFIG&#34;: {
+</span></span><span style="display:flex;"><span>            &#34;hosts&#34;: [(&#34;127.0.0.1&#34;, 6379)],
+</span></span><span style="display:flex;"><span>        },
+</span></span><span style="display:flex;"><span>    },
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>同时还支持内存通道层，但是官方建议不要在生产中使用内存通道层的配置，因此一般只会使用Redis通道层。</p>
+<h4 id="2同步函数">2）同步函数</h4>
+<p>默认情况下<code>send()</code>，<code>group_send()</code>、<code>group_add()</code>和其他函数是异步函数，这意味着您必须使用<code>await</code>它们。如果您需要从同步代码中调用它们，则需要使用方便的 <code>asgiref.sync.async_to_sync</code>包装器：</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>from asgiref.sync import async_to_sync
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>async_to_sync(channel_layer.send)(&#34;channel_name&#34;, {...})
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h4 id="3发送消息">3）发送消息</h4>
+<p>通道层用于高级应用程序到应用程序的通信。当您发送消息时，它会被另一端收听组或频道的消费者接收。这意味着您应该通过通道层发送高级事件，然后让消费者处理这些事件，并对其连接的客户端进行适当的低级联网。</p>
+<p>例如，聊天应用程序可以通过通道层发送如下事件：</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">6
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">7
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">8
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">9
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>await self.channel_layer.group_send(
+</span></span><span style="display:flex;"><span>    room.group_name,
+</span></span><span style="display:flex;"><span>    {
+</span></span><span style="display:flex;"><span>        &#34;type&#34;: &#34;chat.message&#34;,
+</span></span><span style="display:flex;"><span>        &#34;room_id&#34;: room_id,
+</span></span><span style="display:flex;"><span>        &#34;username&#34;: self.scope[&#34;user&#34;].username,
+</span></span><span style="display:flex;"><span>        &#34;message&#34;: message,
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>)
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>然后消费者定义一个处理函数来接收这些事件并将它们转换为 WebSocket 帧：</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>async def chat_message(self, event):
+</span></span><span style="display:flex;"><span>    &#34;&#34;&#34;
+</span></span><span style="display:flex;"><span>    Called when someone has messaged our chat.
+</span></span><span style="display:flex;"><span>    &#34;&#34;&#34;
+</span></span><span style="display:flex;"><span>    # Send a message down to the client
+</span></span><span style="display:flex;"><span>    await self.send_json(
+</span></span><span style="display:flex;"><span>        {
+</span></span><span style="display:flex;"><span>            &#34;msg_type&#34;: settings.MSG_TYPE_MESSAGE,
+</span></span><span style="display:flex;"><span>            &#34;room&#34;: event[&#34;room_id&#34;],
+</span></span><span style="display:flex;"><span>            &#34;username&#34;: event[&#34;username&#34;],
+</span></span><span style="display:flex;"><span>            &#34;message&#34;: event[&#34;message&#34;],
+</span></span><span style="display:flex;"><span>        },
+</span></span><span style="display:flex;"><span>    )
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>任何基于 Channels 的消费者<code>SyncConsumer</code>或<code>AsyncConsumer</code>将自动为您提供一个<code>self.channel_layer</code>and<code>self.channel_name</code> 属性，其中包含指向通道层实例的指针和将分别到达消费者的通道名称。</p>
+<p>发送到该通道名称（或通道名称添加到的组）的任何消息都将被消费者接收，就像来自其连接客户端的事件一样，并分派到消费者上的命名方法。该方法的名称将是<code>type</code>事件的名称，其中句点替换为下划线 - 因此，例如，通过通道层传入的事件<code>type</code>将由<code>chat.join</code>该方法处理<code>chat_join</code>。</p>
+<p>笔记</p>
+<p>如果您从<code>AsyncConsumer</code>类树继承，您的所有事件处理程序，包括通道层上的事件处理程序，都必须是异步的 ( )。如果您在类树中，则它们都必须是同步的 ( )。<code>async def``SyncConsumer``def</code></p>
+<h4 id="4单通道">4）单通道</h4>
+<p>每个应用程序实例 - 例如，每个长时间运行的 HTTP 请求或打开的 WebSocket - 都会产生一个消费者实例，如果您启用了通道层，消费者将为自己生成一个唯一的<em>通道名称</em>，并开始监听它事件。</p>
+<p>这意味着您可以从流程外部（可能来自其他消费者，或来自管理命令）发送这些消费者事件，他们将对它们做出反应并运行代码，就像他们从客户端连接中发送事件一样。</p>
+<p>频道名称在消费者上可用<code>self.channel_name</code>. 这是一个在连接时将通道名称写入数据库的示例，然后为其上的事件指定处理方法：</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>class ChatConsumer(WebsocketConsumer):
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    def connect(self):
+</span></span><span style="display:flex;"><span>        # Make a database row with our channel name
+</span></span><span style="display:flex;"><span>        Clients.objects.create(channel_name=self.channel_name)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    def disconnect(self, close_code):
+</span></span><span style="display:flex;"><span>        # Note that in some rare cases (power loss, etc) disconnect may fail
+</span></span><span style="display:flex;"><span>        # to run; this naive example would leave zombie channel names around.
+</span></span><span style="display:flex;"><span>        Clients.objects.filter(channel_name=self.channel_name).delete()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    def chat_message(self, event):
+</span></span><span style="display:flex;"><span>        # Handles the &#34;chat.message&#34; event when it&#39;s sent to us.
+</span></span><span style="display:flex;"><span>        self.send(text_data=event[&#34;text&#34;])
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>请注意，因为您正在混合来自通道层和协议连接的事件处理，所以您需要确保您的类型名称不会发生冲突。建议您为类型名称添加前缀（就像我们在此处使用 所做的那样<code>chat.</code>）以避免冲突。</p>
+<p>要发送到单个频道，只需找到其频道名称（对于上面的示例，我们可以爬取数据库），然后使用<code>channel_layer.send</code>：</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">6
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">7
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>from channels.layers import get_channel_layer
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>channel_layer = get_channel_layer()
+</span></span><span style="display:flex;"><span>await channel_layer.send(&#34;channel_name&#34;, {
+</span></span><span style="display:flex;"><span>    &#34;type&#34;: &#34;chat.message&#34;,
+</span></span><span style="display:flex;"><span>    &#34;text&#34;: &#34;Hello there!&#34;,
+</span></span><span style="display:flex;"><span>})
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h4 id="5groups通道中的广播机制">5）Groups，通道中的广播机制</h4>
+<p>显然，发送到单个channels并不是特别有用 - 在大多数情况下，您希望一次发送到多个channels/消费者作为广播。不仅适用于聊天等情况，您希望将传入消息发送给房间中的每个人，甚至可以发送给可能连接了多个浏览器选项卡或设备的个人用户。</p>
+<p>如果您喜欢使用现有数据存储，您可以为此构建自己的解决方案，或者您可以使用某些通道层内置的组系统。Groups 是一个广播系统，它：</p>
+<ul>
+<li>允许您在命名组中添加和删除频道名称，并发送到这些命名组。</li>
+<li>提供组到期以清理其断开处理程序未运行的连接（例如电源故障）</li>
+</ul>
+<p>它们不允许您枚举或列出组中的频道；这是一个纯粹的广播系统。如果您需要更精确的控制或需要知道谁连接，您应该构建自己的系统或使用合适的第三方系统。</p>
+<p>您可以通过在连接期间向组添加通道并在断开连接期间将其删除来使用组，如 WebSocket 通用使用者上所示：</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span># This example uses WebSocket consumer, which is synchronous, and so
+</span></span><span style="display:flex;"><span># needs the async channel layer functions to be converted.
+</span></span><span style="display:flex;"><span>from asgiref.sync import async_to_sync
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>class ChatConsumer(WebsocketConsumer):
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    def connect(self):
+</span></span><span style="display:flex;"><span>        async_to_sync(self.channel_layer.group_add)(&#34;chat&#34;, self.channel_name)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    def disconnect(self, close_code):
+</span></span><span style="display:flex;"><span>        async_to_sync(self.channel_layer.group_discard)(&#34;chat&#34;, self.channel_name)
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>然后，要发送到一个组，请使用<code>group_send</code>，就像在这个小示例中一样，当与上面的代码结合使用时，它会将聊天消息广播到每个连接的套接字：</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>class ChatConsumer(WebsocketConsumer):
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    ...
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    def receive(self, text_data):
+</span></span><span style="display:flex;"><span>        async_to_sync(self.channel_layer.group_send)(
+</span></span><span style="display:flex;"><span>            &#34;chat&#34;,
+</span></span><span style="display:flex;"><span>            {
+</span></span><span style="display:flex;"><span>                &#34;type&#34;: &#34;chat.message&#34;,
+</span></span><span style="display:flex;"><span>                &#34;text&#34;: text_data,
+</span></span><span style="display:flex;"><span>            },
+</span></span><span style="display:flex;"><span>        )
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    def chat_message(self, event):
+</span></span><span style="display:flex;"><span>        self.send(text_data=event[&#34;text&#34;])
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h4 id="6-在消费者之外调用通道函数">6) 在消费者之外调用通道函数</h4>
+<p>通常希望从消费者范围之外发送到通道层，因此不会有<code>self.channel_layer</code>. 在这种情况下，应该使用该<code>get_channel_layer</code>函数来检索它：</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>from channels.layers import get_channel_layer
+</span></span><span style="display:flex;"><span>channel_layer = get_channel_layer()
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>然后，一旦你拥有它，你就可以调用它的方法。请记住， <strong>通道层仅支持异步方法</strong>，因此可以从自己的异步上下文中调用它：</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>for chat_name in chats:
+</span></span><span style="display:flex;"><span>    await channel_layer.group_send(
+</span></span><span style="display:flex;"><span>        chat_name,
+</span></span><span style="display:flex;"><span>        {&#34;type&#34;: &#34;chat.system_message&#34;, &#34;text&#34;: announcement_text},
+</span></span><span style="display:flex;"><span>    )
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>或者需要使用 async_to_sync：</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>from asgiref.sync import async_to_sync
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>async_to_sync(channel_layer.group_send)(&#34;chat&#34;, {&#34;type&#34;: &#34;chat.force_disconnect&#34;})
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="6部署配置">6、部署配置</h2>
+<p>在~/webapp目录下执行：</p>
+<p><code>daphne -b 0.0.0.0 -p 5015 acapp.asgi:application</code>，启动django_channels服务。</p>
+<h1 id="参考资料">参考资料</h1>
+<p>1、django channels官方文档： <a href="https://channels.readthedocs.io/en/latest/">https://channels.readthedocs.io/en/latest/</a></p>
+      </article>
+    </section>
+
+    
+
+    
+    <article class="ui segment utterances-comments" data-html2canvas-ignore>
+      <script
+        src="https://utteranc.es/client.js"
+        repo="ARIA-PKU/ARIA-PKU.github.io"
+        issue-term="og:title"
+        theme="github-light"
+        crossorigin="anonymous"
+        async>
+      </script>
+    </article>
+    
+
+    
+  </div>
+</div>
+
+
+            <footer class="ui basic center aligned segment" style="background-color: transparent;">
+              
+              <p>© 2022 Aria&#39;s Blog</p>
+              
+
+              <p>Powered by <a href="https://gohugo.io/" target="_blank">Hugo</a> with theme <a href="https://github.com/g1eny0ung/hugo-theme-dream" target="_blank">Dream</a>.</p>
+
+              
+            </footer>
+          </div>
+        </section>
+        <section class="back">
+          <div class="dream-max-width">
+            <header class="ui basic very padded segment dream-header">
+  
+  <div class="ui small circular image">
+    <img src="/me/cool.jpg" alt="avatar" />
+  </div>
+  
+
+  <div class="content">
+    <h1 class="ui medium header">Aria&#39;s Blog<span class="sub header">今天不做的事情，今后也不会去做。</span>
+    </h1>
+
+    <article class="ui horizontal list">
+      
+      <a class="item" href="/posts">
+        <i class="archive icon" title="归档"></i>
+      </a>
+      
+      <a class="item" href="/categories">
+        <i class="th list icon" title="所有分类"></i>
+      </a>
+      <a class="item" href="/tags">
+        <i class="tags icon" title="所有标签"></i>
+      </a>
+    </article>
+
+    
+    
+    
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+    
+
+    
+
+    
+
+    
+    
+
+    <div class="tags-with-dropdown">
+      <div class="ui accordion">
+        <div class="title">
+          <div class="ui horizontal list">
+            <a class="item dropdown" href="#">
+              <i class="chevron right icon dropdown-icon"></i>
+            </a>
+          </div>
+          <div class="dream-tags">
+          
+          
+          
+            <a class="ui label" href="/tags/bellman-ford%E7%AE%97%E6%B3%95/" title="Bellman-Ford算法">
+              Bellman-Ford算法
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/c&#43;&#43;%E5%A4%9A%E7%BA%BF%E7%A8%8B%E7%BC%96%E7%A8%8B/" title="c&#43;&#43;多线程编程">
+              c&#43;&#43;多线程编程
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/css/" title="css">
+              css
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/dfs/" title="DFS">
+              DFS
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/dijkstra/" title="Dijkstra">
+              Dijkstra
+            </a>
+          
+          </div>
+        </div>
+        <div class="content">
+    
+          <div class="dream-tags" style="margin-left: 1.5rem;">
+          
+          
+          
+            <a class="ui label" href="/tags/django/" title="Django">
+              Django
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/django_channel/" title="django_channel">
+              django_channel
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/docker%E5%B8%B8%E7%94%A8%E6%93%8D%E4%BD%9C/" title="Docker常用操作">
+              Docker常用操作
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/floyd%E7%AE%97%E6%B3%95/" title="Floyd算法">
+              Floyd算法
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/git/" title="git">
+              git
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/html/" title="html">
+              html
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/http/" title="http">
+              http
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/jquery/" title="jquery">
+              jquery
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/js%E5%B8%B8%E7%94%A8%E5%BA%93/" title="Js常用库">
+              Js常用库
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/js%E8%AF%AD%E6%B3%95/" title="Js语法">
+              Js语法
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/leetcode/" title="leetcode">
+              leetcode
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/linux/" title="Linux">
+              Linux
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/mysql%E6%9E%B6%E6%9E%84%E4%B8%8E%E6%97%A5%E5%BF%97/" title="mysql架构与日志">
+              mysql架构与日志
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/nginx/" title="nginx">
+              nginx
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/react/" title="React">
+              React
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/rpc/" title="RPC">
+              RPC
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/spfa%E7%AE%97%E6%B3%95/" title="spfa算法">
+              spfa算法
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/thrift/" title="thrift">
+              thrift
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/tmux/" title="tmux">
+              tmux
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/uwsgi/" title="uwsgi">
+              uwsgi
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/vim/" title="vim">
+              vim
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/vscode/" title="vscode">
+              vscode
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/vue3/" title="vue3">
+              vue3
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/websocket/" title="websocket">
+              websocket
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/%E4%BA%8C%E5%88%86%E6%B3%95/" title="二分法">
+              二分法
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/%E4%BD%8D%E8%BF%90%E7%AE%97/" title="位运算">
+              位运算
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/%E5%89%8D%E7%BC%80%E5%92%8C/" title="前缀和">
+              前缀和
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92/" title="动态规划">
+              动态规划
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/%E5%8C%BA%E9%97%B4%E5%90%88%E5%B9%B6/" title="区间合并">
+              区间合并
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/%E5%8D%95%E8%B0%83%E6%A0%88/" title="单调栈">
+              单调栈
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/%E5%8D%95%E8%B0%83%E9%98%9F%E5%88%97/" title="单调队列">
+              单调队列
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/%E5%8F%8C%E6%8C%87%E9%92%88%E7%AE%97%E6%B3%95/" title="双指针算法">
+              双指针算法
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/%E5%9B%BE%E8%AE%BA/" title="图论">
+              图论
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/%E5%B7%AE%E5%88%86/" title="差分">
+              差分
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/%E5%BC%82%E6%AD%A5%E7%BC%96%E7%A8%8B/" title="异步编程">
+              异步编程
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/%E5%BD%92%E5%B9%B6%E6%8E%92%E5%BA%8F/" title="归并排序">
+              归并排序
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/%E5%BF%AB%E9%80%9F%E6%8E%92%E5%BA%8F/" title="快速排序">
+              快速排序
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/%E6%9C%80%E5%B0%8F%E7%94%9F%E6%88%90%E6%A0%91/" title="最小生成树">
+              最小生成树
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/%E6%9C%80%E7%9F%AD%E8%B7%AF/" title="最短路">
+              最短路
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/%E6%A0%88/" title="栈">
+              栈
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/%E7%A6%BB%E6%95%A3%E5%8C%96/" title="离散化">
+              离散化
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/%E7%AE%97%E6%B3%95%E9%A2%98/" title="算法题">
+              算法题
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/%E8%B4%A6%E5%8F%B7%E7%B3%BB%E7%BB%9F/" title="账号系统">
+              账号系统
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/%E9%93%BE%E8%A1%A8/" title="链表">
+              链表
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/%E9%98%9F%E5%88%97/" title="队列">
+              队列
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/%E9%AB%98%E7%B2%BE%E5%BA%A6%E8%AE%A1%E7%AE%97/" title="高精度计算">
+              高精度计算
+            </a>
+          
+          </div>
+    
+        </div>
+      </div>
+    </div>
+    
+
+    
+  </div>
+</header>
+
+
+<div class="ui relaxed grid dream-grid dream-back">
+  
+  
+  
+
+  <div class="sixteen wide mobile eight wide tablet four wide computer column dream-column">
+    <article class="ui segment">
+      <div class="ui medium header">社交链接</div>
+      <nav class="ui secondary menu dream-menu dream-socials">
+  
+  <a class="item" href="/index.xml">
+    <i class="large rss square icon" title="RSS"></i>
+  </a>
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</nav>
+
+    </article>
+  </div>
+
+  <div class="sixteen wide mobile eight wide tablet four wide computer column dream-column">
+    
+    <article class="ui segment">
+      <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"><img alt="知识共享许可协议" style="border-width:0" src="https://i.creativecommons.org/l/by-nc-sa/4.0/88x31.png" /></a><br />本作品采用<a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/">知识共享署名-非商业性使用-相同方式共享 4.0 国际许可协议</a>进行许可。<br /><br />背景使用了 <a href="https://www.pexels.com/zh-cn/" target="_blank">Pexels</a> 上 <a href="https://www.pexels.com/zh-cn/@minan1398" target="_blank">Min An</a> 拍摄的<a href="https://www.pexels.com/zh-cn/photo/1454794/" target="_blank">图片</a>。
+    </article>
+    
+  </div>
+
+  
+</div>
+
+          </div>
+        </section>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.js" integrity="sha256-CgSoWC9w5wNmI1aN8dIMK+6DPelUEtvDr+Bc2m/0Nx8=" crossorigin="anonymous"></script>
+
+    
+    <div class="ui segment" id="dream-search">
+  <div class="ui search">
+    <div class="ui transparent input">
+      <input class="prompt" type="text" placeholder="搜索" />
+    </div>
+    <div class="results"></div>
+  </div>
+</div>
+<script>
+  $(document).ready(function () {
+    $.getJSON('https:\/\/blog.surfaroundtheworld.top\//index.json', function (data) {
+      $('.ui.search').search({
+        source: data,
+        searchFields: ['title'],
+        showNoResults: false,
+      })
+    })
+  })
+</script>
+<script src="/js/search.js"></script>
+
+    
+
+    
+
+    <script>
+  window.background = "#fff"
+  window.defaultDark =  null 
+  window.backgroundDark =  null 
+  window.backgroundImageDark = "https://oss.surfaroundtheworld.top/blog-pictures/bear_flower.jpg"
+  window.darkNav =  true 
+  window.maxTags =  5 
+  window.hasTwitterEmbed =  null 
+  window.fixedNav =  null 
+
+  if (window.hasTwitterEmbed) {
+    
+    window.twttr = (function (d, s, id) {
+      var js,
+        fjs = d.getElementsByTagName(s)[0],
+        t = window.twttr || {}
+      if (d.getElementById(id)) return t
+      js = d.createElement(s)
+      js.id = id
+      js.src = 'https://platform.twitter.com/widgets.js'
+      fjs.parentNode.insertBefore(js, fjs)
+
+      t._e = []
+      t.ready = function (f) {
+        t._e.push(f)
+      }
+
+      return t
+    })(document, 'script', 'twitter-wjs')
+  }
+</script>
+<script src="https://cdn.jsdelivr.net/npm/overlayscrollbars@1.13.1/js/jquery.overlayScrollbars.min.js" integrity="sha256-tBd38uWlvgfps3zHPrUb2ePBg+Z8EjMf0QloFONzpvU=" crossorigin="anonymous"></script>
+<script src="/js/header.js"></script>
+<script src="/js/main.js"></script>
+<script src="/js/theme.js"></script>
+
+    
+
+
+<script src="https://cdn.jsdelivr.net/npm/luxon@1.26.0" integrity="sha256-4sbTzmCCW9LGrIh5OsN8V5Pfdad1F1MwhLAOyXKnsE0=" crossorigin="anonymous"></script>
+<script>
+  format()
+
+  function format() {
+    $('span[data-format="luxon"]').each(function () {
+      var date = $(this).text()
+
+      $(this).text(luxon.DateTime.fromISO(date, { locale: "zh" }).toFormat("yyyy年MM月dd日"))
+    })
+  }
+</script>
+
+
+
+<script src="/js/scrollToTop.js"></script>
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.0.0-rc.1/dist/html2canvas.min.js" integrity="sha256-uacRffSSMP9qpvNWhVmYLykBv9YKMA1d/VSIN1AmfyQ=" crossorigin="anonymous"></script>
+<script src="/js/post.js" defer></script>
+
+
+    
+
+    
+  </body>
+</html>

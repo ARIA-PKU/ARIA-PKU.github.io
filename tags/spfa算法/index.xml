@@ -10,10 +10,10 @@
     <lastBuildDate>Tue, 24 May 2022 17:23:58 +0800</lastBuildDate><atom:link href="https://blog.surfaroundtheworld.top/tags/spfa%E7%AE%97%E6%B3%95/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>基础算法 最短路二</title>
-      <link>https://blog.surfaroundtheworld.top/posts/%E5%9F%BA%E7%A1%80%E7%AE%97%E6%B3%95-%E6%9C%80%E7%9F%AD%E8%B7%AF%E4%BA%8C/</link>
+      <link>https://blog.surfaroundtheworld.top/posts/%E7%AE%97%E6%B3%95%E9%A2%98/%E7%AE%97%E6%B3%95%E5%9F%BA%E7%A1%80%E8%AF%BE/%E5%9F%BA%E7%A1%80%E7%AE%97%E6%B3%95-%E6%9C%80%E7%9F%AD%E8%B7%AF%E4%BA%8C/</link>
       <pubDate>Tue, 24 May 2022 17:23:58 +0800</pubDate>
       
-      <guid>https://blog.surfaroundtheworld.top/posts/%E5%9F%BA%E7%A1%80%E7%AE%97%E6%B3%95-%E6%9C%80%E7%9F%AD%E8%B7%AF%E4%BA%8C/</guid>
+      <guid>https://blog.surfaroundtheworld.top/posts/%E7%AE%97%E6%B3%95%E9%A2%98/%E7%AE%97%E6%B3%95%E5%9F%BA%E7%A1%80%E8%AF%BE/%E5%9F%BA%E7%A1%80%E7%AE%97%E6%B3%95-%E6%9C%80%E7%9F%AD%E8%B7%AF%E4%BA%8C/</guid>
       <description>&lt;p&gt;继续总结BF算法、spfa算法以及Floyd算法&lt;/p&gt;</description>
     </item>
     

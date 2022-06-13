@@ -10,11 +10,11 @@
     <lastBuildDate>Mon, 02 May 2022 16:55:41 +0800</lastBuildDate><atom:link href="https://blog.surfaroundtheworld.top/tags/linux/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Linux常用命令</title>
-      <link>https://blog.surfaroundtheworld.top/posts/linux/</link>
+      <link>https://blog.surfaroundtheworld.top/posts/linux%E7%9B%B8%E5%85%B3/linux/</link>
       <pubDate>Mon, 02 May 2022 16:55:41 +0800</pubDate>
       
-      <guid>https://blog.surfaroundtheworld.top/posts/linux/</guid>
-      <description>&lt;p&gt;整理了Linux的命令常用的操作。封面来自pivix的&lt;a href=&#34;https://www.pixiv.net/users/1096811&#34;&gt;チャイ&lt;/a&gt;画师，内容整理自y总课程。&lt;/p&gt;</description>
+      <guid>https://blog.surfaroundtheworld.top/posts/linux%E7%9B%B8%E5%85%B3/linux/</guid>
+      <description>&lt;p&gt;整理了Linux的命令常用的操作。内容整理自y总课程。&lt;/p&gt;</description>
     </item>
     
     <item>
@@ -28,19 +28,19 @@
     
     <item>
       <title>tmux常用操作</title>
-      <link>https://blog.surfaroundtheworld.top/posts/tmux/</link>
+      <link>https://blog.surfaroundtheworld.top/posts/linux%E7%9B%B8%E5%85%B3/tmux/</link>
       <pubDate>Sun, 01 May 2022 19:04:23 +0800</pubDate>
       
-      <guid>https://blog.surfaroundtheworld.top/posts/tmux/</guid>
+      <guid>https://blog.surfaroundtheworld.top/posts/linux%E7%9B%B8%E5%85%B3/tmux/</guid>
       <description>&lt;p&gt;整理了tmux命令常用的操作。封面来自pivix的&lt;a href=&#34;https://www.pixiv.net/users/1096811&#34;&gt;チャイ&lt;/a&gt;画师，内容整理自y总课程。&lt;/p&gt;</description>
     </item>
     
     <item>
       <title>vim常用操作</title>
-      <link>https://blog.surfaroundtheworld.top/posts/vim/</link>
+      <link>https://blog.surfaroundtheworld.top/posts/linux%E7%9B%B8%E5%85%B3/vim/</link>
       <pubDate>Sun, 01 May 2022 19:04:18 +0800</pubDate>
       
-      <guid>https://blog.surfaroundtheworld.top/posts/vim/</guid>
+      <guid>https://blog.surfaroundtheworld.top/posts/linux%E7%9B%B8%E5%85%B3/vim/</guid>
       <description>&lt;p&gt;整理了vim的命令常用的操作。封面来自pivix的&lt;a href=&#34;https://www.pixiv.net/users/1096811&#34;&gt;チャイ&lt;/a&gt;画师，内容整理自y总课程。&lt;/p&gt;</description>
     </item>
     

@@ -10,10 +10,10 @@
     <lastBuildDate>Fri, 20 May 2022 16:53:05 +0800</lastBuildDate><atom:link href="https://blog.surfaroundtheworld.top/tags/rpc/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Web游戏开发 基于Thrift的游戏匹配系统</title>
-      <link>https://blog.surfaroundtheworld.top/posts/web%E6%B8%B8%E6%88%8F%E5%BC%80%E5%8F%91-%E5%9F%BA%E4%BA%8Ethrift%E7%9A%84%E6%B8%B8%E6%88%8F%E5%8C%B9%E9%85%8D%E7%B3%BB%E7%BB%9F/</link>
+      <link>https://blog.surfaroundtheworld.top/posts/web%E6%B8%B8%E6%88%8F/web%E6%B8%B8%E6%88%8F%E5%BC%80%E5%8F%91-%E5%9F%BA%E4%BA%8Ethrift%E7%9A%84%E6%B8%B8%E6%88%8F%E5%8C%B9%E9%85%8D%E7%B3%BB%E7%BB%9F/</link>
       <pubDate>Fri, 20 May 2022 16:53:05 +0800</pubDate>
       
-      <guid>https://blog.surfaroundtheworld.top/posts/web%E6%B8%B8%E6%88%8F%E5%BC%80%E5%8F%91-%E5%9F%BA%E4%BA%8Ethrift%E7%9A%84%E6%B8%B8%E6%88%8F%E5%8C%B9%E9%85%8D%E7%B3%BB%E7%BB%9F/</guid>
+      <guid>https://blog.surfaroundtheworld.top/posts/web%E6%B8%B8%E6%88%8F/web%E6%B8%B8%E6%88%8F%E5%BC%80%E5%8F%91-%E5%9F%BA%E4%BA%8Ethrift%E7%9A%84%E6%B8%B8%E6%88%8F%E5%8C%B9%E9%85%8D%E7%B3%BB%E7%BB%9F/</guid>
       <description>&lt;p&gt;总结整理一下用到的RPC框架——Thrift&lt;/p&gt;</description>
     </item>
     

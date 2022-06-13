@@ -10,10 +10,10 @@
     <lastBuildDate>Wed, 04 May 2022 15:34:40 +0800</lastBuildDate><atom:link href="https://blog.surfaroundtheworld.top/tags/vscode/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Vscode使用日志</title>
-      <link>https://blog.surfaroundtheworld.top/posts/vscode/</link>
+      <link>https://blog.surfaroundtheworld.top/posts/ide%E4%BD%BF%E7%94%A8/vscode/</link>
       <pubDate>Wed, 04 May 2022 15:34:40 +0800</pubDate>
       
-      <guid>https://blog.surfaroundtheworld.top/posts/vscode/</guid>
+      <guid>https://blog.surfaroundtheworld.top/posts/ide%E4%BD%BF%E7%94%A8/vscode/</guid>
       <description>&lt;p&gt;记录如何使用vscode连接服务器并配置免密登录以及遇到的问题，顺便总结记录一些好用的插件。&lt;/p&gt;</description>
     </item>
     

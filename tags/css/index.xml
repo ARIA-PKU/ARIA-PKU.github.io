@@ -10,10 +10,10 @@
     <lastBuildDate>Tue, 31 May 2022 01:18:43 +0800</lastBuildDate><atom:link href="https://blog.surfaroundtheworld.top/tags/css/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>css</title>
-      <link>https://blog.surfaroundtheworld.top/posts/css/</link>
+      <link>https://blog.surfaroundtheworld.top/posts/%E5%89%8D%E7%AB%AF%E7%9F%A5%E8%AF%86/css/</link>
       <pubDate>Tue, 31 May 2022 01:18:43 +0800</pubDate>
       
-      <guid>https://blog.surfaroundtheworld.top/posts/css/</guid>
+      <guid>https://blog.surfaroundtheworld.top/posts/%E5%89%8D%E7%AB%AF%E7%9F%A5%E8%AF%86/css/</guid>
       <description>&lt;p&gt;整理css的基本用法，只是为了建立起基本框架，花样太多，根本记不住，边用边查才是王道。当然，很多都会用bootstrap直接生成页面，基本的css语法还是要了解，便于自己去理解原理并修改。&lt;/p&gt;</description>
     </item>
     
