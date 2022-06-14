@@ -148,7 +148,7 @@
                   <span data-format="luxon">2022-06-11T20:58:39&#43;08:00</span>
                 
 
-              | 1 分钟阅读
+              | 4 分钟阅读
 
               
               | 更新于
@@ -300,6 +300,424 @@
 </span></span><span style="display:flex;"><span>        sort(nums.begin(), nums.end());
 </span></span><span style="display:flex;"><span>        dfs(nums, 0, 0, 0);
 </span></span><span style="display:flex;"><span>        return ans;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>};
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h1 id="78-子集httpsleetcodecnproblemssubsets"><a href="https://leetcode.cn/problems/subsets/">78. 子集</a></h1>
+<p>所有元素互不相同，求所有子集。</p>
+<p>思路：</p>
+<p>直接暴力枚举所有状态，时间复杂度的为$O(2^n)$。</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>class Solution {
+</span></span><span style="display:flex;"><span>public:
+</span></span><span style="display:flex;"><span>    vector&lt;vector&lt;int&gt;&gt; subsets(vector&lt;int&gt;&amp; nums) {
+</span></span><span style="display:flex;"><span>        vector&lt;vector&lt;int&gt;&gt; ans;
+</span></span><span style="display:flex;"><span>        int n = nums.size();
+</span></span><span style="display:flex;"><span>        for (int i = 0; i &lt; 1 &lt;&lt; n; i ++) {
+</span></span><span style="display:flex;"><span>            vector&lt;int&gt; path;
+</span></span><span style="display:flex;"><span>            for (int j = 0; j &lt; n; j ++) {
+</span></span><span style="display:flex;"><span>                if (i &gt;&gt; j &amp; 1) path.push_back(nums[j]);
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>            ans.push_back(path);
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        return ans;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>};
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h1 id="90-子集-iihttpsleetcodecnproblemssubsets-ii"><a href="https://leetcode.cn/problems/subsets-ii/">90. 子集 II</a></h1>
+<p>包含重复元素，枚举所有不同的子集</p>
+<p>思路：</p>
+<p>对原数组进行排序，然后dfs+回溯，每次枚举出下个不同元素的位置作为下次dfs起始位置，将当前元素个数从0枚举到原数组中个数，最后对其回溯。</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">23
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">24
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">25
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">26
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">27
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>class Solution {
+</span></span><span style="display:flex;"><span>public:
+</span></span><span style="display:flex;"><span>    vector&lt;vector&lt;int&gt;&gt; ans;
+</span></span><span style="display:flex;"><span>    vector&lt;int&gt; path;
+</span></span><span style="display:flex;"><span>    void dfs(vector&lt;int&gt;&amp; nums, int u) {
+</span></span><span style="display:flex;"><span>        int n = nums.size();
+</span></span><span style="display:flex;"><span>        if (u == n) {
+</span></span><span style="display:flex;"><span>            ans.push_back(path);
+</span></span><span style="display:flex;"><span>            return;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        // j统计当前元素个数，下一次dfs起始位置
+</span></span><span style="display:flex;"><span>        int j = u + 1;
+</span></span><span style="display:flex;"><span>        while (j &lt; n &amp;&amp; nums[j] == nums[u]) j ++;
+</span></span><span style="display:flex;"><span>        // 情况是从0个到j-u个
+</span></span><span style="display:flex;"><span>        for (int i = u; i &lt;= j; i ++) {
+</span></span><span style="display:flex;"><span>            dfs(nums, j);
+</span></span><span style="display:flex;"><span>            path.push_back(nums[u]);
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        for (int i = u; i &lt;= j; i ++)
+</span></span><span style="display:flex;"><span>            path.pop_back();
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    vector&lt;vector&lt;int&gt;&gt; subsetsWithDup(vector&lt;int&gt;&amp; nums) {
+</span></span><span style="display:flex;"><span>        sort(nums.begin(), nums.end());
+</span></span><span style="display:flex;"><span>        dfs(nums, 0);
+</span></span><span style="display:flex;"><span>        return ans;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>};
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h1 id="39-组合总和httpsleetcodecnproblemscombination-sum"><a href="https://leetcode.cn/problems/combination-sum/">39. 组合总和</a></h1>
+<p>题意：</p>
+<p>元素无重复，并且元素都是<strong>正数</strong>，不限制使用次数，求满足组合总数的所有集合。</p>
+<p>思路：</p>
+<p>和上一题子集Ⅱ基本一致，不过也有其他思路。</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">23
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">24
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">25
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>class Solution {
+</span></span><span style="display:flex;"><span>public:
+</span></span><span style="display:flex;"><span>    vector&lt;vector&lt;int&gt;&gt; ans;
+</span></span><span style="display:flex;"><span>    vector&lt;int&gt; path;
+</span></span><span style="display:flex;"><span>    void dfs(vector&lt;int&gt;&amp; candidates, int st, int u) {
+</span></span><span style="display:flex;"><span>        if(u == 0) {
+</span></span><span style="display:flex;"><span>            ans.push_back(path);
+</span></span><span style="display:flex;"><span>            return;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        // 越界则跳出
+</span></span><span style="display:flex;"><span>        if (st &gt;= candidates.size()) return;
+</span></span><span style="display:flex;"><span>        // 找到最多次数j
+</span></span><span style="display:flex;"><span>        int j = u / candidates[st];
+</span></span><span style="display:flex;"><span>        for (int i = 0; i &lt;= j; i ++) {
+</span></span><span style="display:flex;"><span>            dfs(candidates, st + 1, u - i * candidates[st]);
+</span></span><span style="display:flex;"><span>            path.push_back(candidates[st]);
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        for (int i = 0; i &lt;= j; i ++) 
+</span></span><span style="display:flex;"><span>            path.pop_back();
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    vector&lt;vector&lt;int&gt;&gt; combinationSum(vector&lt;int&gt;&amp; candidates, int target) {
+</span></span><span style="display:flex;"><span>        dfs(candidates, 0, target);
+</span></span><span style="display:flex;"><span>        return ans;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>};
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h1 id="40-组合总和-iihttpsleetcodecnproblemscombination-sum-ii"><a href="https://leetcode.cn/problems/combination-sum-ii/">40. 组合总和 II</a></h1>
+<p>题意：</p>
+<p>包含重复元素，每个元素最多使用一次，元素全为正数，要求解集不重复。</p>
+<p>思路：</p>
+<p>思路也与上面的基本一致，具体细节的地方稍作修改。</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">23
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">24
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>class Solution {
+</span></span><span style="display:flex;"><span>public:
+</span></span><span style="display:flex;"><span>    vector&lt;vector&lt;int&gt;&gt; ans;
+</span></span><span style="display:flex;"><span>    vector&lt;int&gt; path;
+</span></span><span style="display:flex;"><span>    void dfs(vector&lt;int&gt;&amp; candidates, int u, int target) {
+</span></span><span style="display:flex;"><span>        if (target == 0) {
+</span></span><span style="display:flex;"><span>            ans.push_back(path);
+</span></span><span style="display:flex;"><span>            return;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        if (target &lt; 0 || u &gt;= candidates.size()) return;
+</span></span><span style="display:flex;"><span>        int j = u + 1;
+</span></span><span style="display:flex;"><span>        while (j &lt; candidates.size() &amp;&amp; candidates[j] == candidates[u]) j ++;
+</span></span><span style="display:flex;"><span>        for (int i = u; i &lt;= j; i ++) {
+</span></span><span style="display:flex;"><span>            dfs(candidates, j, target - (i - u) * candidates[u]);
+</span></span><span style="display:flex;"><span>            path.push_back(candidates[u]);
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        for (int i = u; i &lt;= j; i ++) path.pop_back();
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    vector&lt;vector&lt;int&gt;&gt; combinationSum2(vector&lt;int&gt;&amp; candidates, int target) {
+</span></span><span style="display:flex;"><span>        sort(candidates.begin(), candidates.end());
+</span></span><span style="display:flex;"><span>        dfs(candidates, 0, target);
+</span></span><span style="display:flex;"><span>        return ans;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>};
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h1 id="216-组合总和-iiihttpsleetcodecnproblemscombination-sum-iii"><a href="https://leetcode.cn/problems/combination-sum-iii/">216. 组合总和 III</a></h1>
+<p>题意：</p>
+<p>和为n的k个数，只能从1到9中选数，最多选一个。</p>
+<p>思路：</p>
+<p>回溯+剪枝</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">23
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>class Solution {
+</span></span><span style="display:flex;"><span>public:
+</span></span><span style="display:flex;"><span>    vector&lt;vector&lt;int&gt;&gt; ans;
+</span></span><span style="display:flex;"><span>    vector&lt;int&gt; path;
+</span></span><span style="display:flex;"><span>    int k;
+</span></span><span style="display:flex;"><span>    void dfs(int cnt, int n, int st) {
+</span></span><span style="display:flex;"><span>        if (cnt &gt; k || n &lt; 0) return;
+</span></span><span style="display:flex;"><span>        if (n == 0 &amp;&amp; cnt == k) {
+</span></span><span style="display:flex;"><span>            ans.push_back(path);
+</span></span><span style="display:flex;"><span>            return;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        if (st &gt;= 9) return;
+</span></span><span style="display:flex;"><span>        dfs(cnt, n, st + 1);
+</span></span><span style="display:flex;"><span>        path.push_back(st + 1);
+</span></span><span style="display:flex;"><span>        dfs(cnt + 1, n - st - 1, st + 1);
+</span></span><span style="display:flex;"><span>        path.pop_back();
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    vector&lt;vector&lt;int&gt;&gt; combinationSum3(int k, int n) {
+</span></span><span style="display:flex;"><span>        this-&gt;k = k;
+</span></span><span style="display:flex;"><span>        dfs(0, n, 0);
+</span></span><span style="display:flex;"><span>        return ans;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>};
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h1 id="22-括号生成httpsleetcodecnproblemsgenerate-parentheses"><a href="https://leetcode.cn/problems/generate-parentheses/">22. 括号生成</a></h1>
+<p>题意：</p>
+<p>给定小于等于8的正整数n，求能生成的括号集合。</p>
+<p>思路：</p>
+<p>dfs，注意右括号个数不能多于左括号即可。</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>class Solution {
+</span></span><span style="display:flex;"><span>public:
+</span></span><span style="display:flex;"><span>    vector&lt;string&gt; ans;
+</span></span><span style="display:flex;"><span>    int n;
+</span></span><span style="display:flex;"><span>    void dfs(string u, int l, int r) {
+</span></span><span style="display:flex;"><span>        if (l == n &amp;&amp; r == n) {
+</span></span><span style="display:flex;"><span>            ans.push_back(u);
+</span></span><span style="display:flex;"><span>            return;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        if (l &lt; n) dfs(u + &#39;(&#39;, l + 1, r);
+</span></span><span style="display:flex;"><span>        if (r &lt; n &amp;&amp; r &lt; l) dfs(u + &#39;)&#39;, l, r + 1);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    vector&lt;string&gt; generateParenthesis(int n) {
+</span></span><span style="display:flex;"><span>        this-&gt;n = n;
+</span></span><span style="display:flex;"><span>        string u = &#34;&#34;;
+</span></span><span style="display:flex;"><span>        dfs(u, 0, 0);
+</span></span><span style="display:flex;"><span>        return ans;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>};
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h1 id="473-火柴拼正方形httpsleetcodecnproblemsmatchsticks-to-square"><a href="https://leetcode.cn/problems/matchsticks-to-square/">473. 火柴拼正方形</a></h1>
+<p>题意：</p>
+<p>给定若干火柴棒，不能折断，所有都要使用，判断能否拼成正方形。数组元素个数小于等于15。</p>
+<p>思路：</p>
+<p>经典问题的DFS剪枝问题，总结一下基本的剪枝策略。</p>
+<p>枚举的时候，<strong>按照每条边枚举</strong>，枚举完每条边记录当前使用过的火柴。</p>
+<p>1、枚举火柴的时候，从<strong>大到小开始枚举</strong>，因为开始枚举的越大，后面的选择越少，分支越少，越容易提前发现错误剪枝。</p>
+<p>2、每条边内部，要求火柴<strong>编号递增</strong></p>
+<p>3、如果当前放某根火柴<strong>失败</strong>，</p>
+<p>​	3.1、跳过长度相同的火柴</p>
+<p>​	3.2 、如果是第一根火柴，则剪掉当前分支</p>
+<p>​	3.3、如果是最后一根，也剪掉当前分支</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">23
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">24
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">25
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">26
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">27
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">28
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">29
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">30
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">31
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">32
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">33
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">34
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">35
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>class Solution {
+</span></span><span style="display:flex;"><span>public:
+</span></span><span style="display:flex;"><span>    int n, avg;
+</span></span><span style="display:flex;"><span>    vector&lt;int&gt; nums;
+</span></span><span style="display:flex;"><span>    vector&lt;bool&gt; used;
+</span></span><span style="display:flex;"><span>    // u记录当前长度，st记录使用到数组第几根火柴，cnt记录拼好的边数
+</span></span><span style="display:flex;"><span>    bool dfs(int u, int st, int cnt) {
+</span></span><span style="display:flex;"><span>        if (cnt == 3) return true;
+</span></span><span style="display:flex;"><span>        if (u == avg) return dfs(0, 0, cnt + 1);
+</span></span><span style="display:flex;"><span>        for (int i = st; i &lt; n; i ++) {
+</span></span><span style="display:flex;"><span>            if (used[i]) continue;
+</span></span><span style="display:flex;"><span>            if (u + nums[i] &lt;= avg) {
+</span></span><span style="display:flex;"><span>                used[i] = true;
+</span></span><span style="display:flex;"><span>                if (dfs(u + nums[i], i + 1, cnt)) return true;
+</span></span><span style="display:flex;"><span>                used[i] = false;
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>            // 第一个个最后一个直接剪枝
+</span></span><span style="display:flex;"><span>            if (!u || u + nums[i] == avg) return false;
+</span></span><span style="display:flex;"><span>            // 相同长度火柴直接跳过
+</span></span><span style="display:flex;"><span>            while (i + 1 &lt; nums.size() &amp;&amp; nums[i + 1] == nums[i]) i ++;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        return false;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    bool makesquare(vector&lt;int&gt;&amp; matchsticks) {
+</span></span><span style="display:flex;"><span>        n = matchsticks.size();
+</span></span><span style="display:flex;"><span>        used.resize(n);
+</span></span><span style="display:flex;"><span>        nums = matchsticks;
+</span></span><span style="display:flex;"><span>        avg = 0;
+</span></span><span style="display:flex;"><span>        for(auto&amp; x: nums) avg += x;
+</span></span><span style="display:flex;"><span>        if (avg % 4) return false;
+</span></span><span style="display:flex;"><span>        avg /= 4;
+</span></span><span style="display:flex;"><span>        sort(nums.begin(), nums.end(), greater&lt;int&gt;());
+</span></span><span style="display:flex;"><span>        return dfs(0, 0, 0);
 </span></span><span style="display:flex;"><span>    }
 </span></span><span style="display:flex;"><span>};
 </span></span></code></pre></td></tr></table>
@@ -850,7 +1268,7 @@
   <div class="sixteen wide mobile eight wide tablet four wide computer column dream-column">
     
     <article class="ui segment">
-      <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"><img alt="知识共享许可协议" style="border-width:0" src="https://i.creativecommons.org/l/by-nc-sa/4.0/88x31.png" /></a><br />本作品采用<a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/">知识共享署名-非商业性使用-相同方式共享 4.0 国际许可协议</a>进行许可。<br /><br />背景使用了 <a href="https://www.pexels.com/zh-cn/" target="_blank">Pexels</a> 上 <a href="https://www.pexels.com/zh-cn/@minan1398" target="_blank">Min An</a> 拍摄的<a href="https://www.pexels.com/zh-cn/photo/1454794/" target="_blank">图片</a>。
+      <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"><img alt="知识共享许可协议" style="border-width:0" src="https://i.creativecommons.org/l/by-nc-sa/4.0/88x31.png" /></a><br />本作品采用<a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/">知识共享署名-非商业性使用-相同方式共享 4.0 国际许可协议</a>进行许可。<br />
     </article>
     
   </div>
