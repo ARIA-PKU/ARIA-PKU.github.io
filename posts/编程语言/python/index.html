@@ -1,0 +1,1423 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Python | Aria&#39;s Blog</title>
+
+    
+<link href="/header/icon.jpg" rel="shortcut icon" type="image/x-icon" />
+
+
+
+
+<meta name="author" content="Aria" />
+<meta name="description" content="Python语言的总结归纳
+" />
+
+
+
+<meta name="generator" content="Hugo 0.98.0" />
+
+<link rel="canonical" href="https://blog.surfaroundtheworld.top/posts/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/python/" />
+
+
+<meta property="og:title" content="Python" />
+<meta property="og:description" content="Python语言的总结归纳" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://blog.surfaroundtheworld.top/posts/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/python/" /><meta property="og:image" content="https://blog.surfaroundtheworld.top/me/edge_of_planet.jpg"/><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2022-06-15T23:21:39+08:00" />
+<meta property="article:modified_time" content="2022-06-15T23:21:39+08:00" />
+
+
+
+
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="https://blog.surfaroundtheworld.top/me/edge_of_planet.jpg"/>
+
+<meta name="twitter:title" content="Python"/>
+<meta name="twitter:description" content="Python语言的总结归纳"/>
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.css" integrity="sha256-UXesixbeLkB/UYxVTzuj/gg3+LMzgwAmg3zD+C4ZASQ=" crossorigin="anonymous">
+<link rel="stylesheet" href="/css/icomoon.css" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/overlayscrollbars@1.13.1/css/OverlayScrollbars.min.css" integrity="sha256-WKijf8KI68sbq8Znd6yMepIuFF0wdWfIt6gk3JWcQfk=" crossorigin="anonymous">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4.0.0/github-markdown.min.css">
+<link rel="stylesheet" href="/css/site.css" />
+
+<style>
+  .ui.header a:not(.item, .ui.button):hover {
+    text-decoration: underline;
+  }
+
+  
+  a:not(.item, .ui.button) {
+    color: seagreen !important;
+  }
+  
+
+  
+  .inverted a:not(.item, .ui.button) {
+     color: darkseagreen !important;
+  }
+  
+
+  
+  body.default {
+    
+    background-color: #fff;
+    
+
+    
+    background-image: url(/cover/edge_of_planet.jpg);
+    
+  }
+  
+
+  
+  body.dark {
+    
+
+    
+    background-image: url(/cover/edge_of_planet.jpg);
+    
+  }
+  
+</style>
+
+
+    
+
+
+
+
+
+
+
+    
+    <link rel="stylesheet" href="/css/custom.css" />
+    
+  </head>
+
+  <body class="default">
+    
+<nav class="ui secondary menu dream-menu dream-nav">
+
+  <a class="item dream-flip-toggle" title="翻转！">
+    <i class="large link bullseye icon"></i>
+  </a>
+  <a class="item" href="https://blog.surfaroundtheworld.top/" title="首页">
+    <i class="large link home icon"></i>
+  </a>
+  
+  <a class="item" onclick="themeSwitch(event)">
+    <i class="large link icon theme-switch"></i>
+  </a>
+  
+  
+  <a class="item" title="搜索" onclick="toggleSearch(event)">
+    <i class="large link search icon"></i>
+  </a>
+  
+</nav>
+
+    <div class="flip-container">
+      <div class="flipper">
+        <section class="front">
+          <div class="dream-max-width">
+            
+<div class="ui relaxed centered grid dream-grid dream-grid-single">
+  
+  
+  
+  
+
+  
+  <aside class="sixteen wide mobile sixteen wide tablet three wide computer column dream-single-aside">
+    
+    <div class="ui segment toc">
+      <nav id="TableOfContents">
+  <ul>
+    <li><a href="#1垃圾回收机制">1、垃圾回收机制</a></li>
+    <li><a href="#2gil锁global-interpreter-lock">2、GIL锁(Global Interpreter Lock)</a>
+      <ul>
+        <li><a href="#21-gil是什么">2.1 GIL是什么</a></li>
+        <li><a href="#22-gil是否保证了线程安全">2.2 GIL是否保证了线程安全</a></li>
+        <li><a href="#23-如何避免gil锁影响">2.3 如何避免GIL锁影响</a></li>
+      </ul>
+    </li>
+  </ul>
+
+  <ul>
+    <li><a href="#1列表推导式">1、列表推导式</a></li>
+    <li><a href="#2生成器">2、生成器</a>
+      <ul>
+        <li><a href="#21-使用方法一">2.1 使用方法一</a></li>
+        <li><a href="#22-使用方法二">2.2 使用方法二</a></li>
+      </ul>
+    </li>
+    <li><a href="#3迭代器">3、迭代器</a></li>
+    <li><a href="#4装饰器">4、装饰器</a></li>
+    <li><a href="#5异步编程">5、异步编程</a>
+      <ul>
+        <li><a href="#51-python的协程">5.1 python的协程</a></li>
+        <li><a href="#52-asyncawait">5.2 async/await</a></li>
+      </ul>
+    </li>
+  </ul>
+
+  <ul>
+    <li><a href="#1-和-is-有什么区别">1、== 和 is 有什么区别？</a></li>
+  </ul>
+</nav>
+    </div>
+    
+
+    
+  </aside>
+  
+  <div class="sixteen wide mobile sixteen wide tablet ten wide computer column markdown-body dream-single" id="dream-save-post-as-img">
+    <section class="ui segment">
+      <header>
+        <h1 class="ui large header">Python<span class="sub header">
+            <span class="left">
+              @
+              
+                Aria
+              
+
+              | 
+                  <span data-format="luxon">2022-06-15T23:21:39&#43;08:00</span>
+                
+
+              | 14 分钟阅读
+
+              
+              | 更新于
+                
+                  <span data-format="luxon">2022-06-15T23:21:39&#43;08:00</span>
+                
+              
+            </span>
+
+            
+            <span class="dream-share">
+  <a href="#" class="save-as-image" title="保存为图片" onclick="savePostAsImg()">
+    <i class="save icon"></i>
+  </a>
+  <a href="https://twitter.com/intent/tweet?text=Python&url=https%3a%2f%2fblog.surfaroundtheworld.top%2fposts%2f%25E7%25BC%2596%25E7%25A8%258B%25E8%25AF%25AD%25E8%25A8%2580%2fpython%2f" title="Twitter">
+    <i class="twitter icon"></i>
+  </a>
+  <a href="https://facebook.com/sharer/sharer.php?u=https%3a%2f%2fblog.surfaroundtheworld.top%2fposts%2f%25E7%25BC%2596%25E7%25A8%258B%25E8%25AF%25AD%25E8%25A8%2580%2fpython%2f" title="Facebook">
+    <i class="facebook icon"></i>
+  </a>
+</span>
+
+            
+          </span>
+        </h1>
+      </header>
+
+      <article class="main">
+        
+        <img class="cover" src="http://oss.surfaroundtheworld.top/blog-pictures/6_15/python.jpg" />
+        
+
+        <p>Python语言的总结归纳</p>
+<p>实习、写项目一直都在用python，发现和其他编程语言相比还是有很多特性平时没有注意到，这里总结整理一下，记录遇到的一些问题。</p>
+<p>python作为一门解释型语言，以代码简洁易懂著称。我们可以直接对名称赋值，而不必声明类型。名称类型的确定、内存空间的分配与释放都是由python解释器在运行时进行的。当然，简洁的代价带来的就是执行效率的降低，但是其实Python的很多库函数都是利用C++实现的，在真正使用的时候，可以链接库函数，解决性能的问题。</p>
+<h1 id="一python的底层原理">一、Python的底层原理</h1>
+<h2 id="1垃圾回收机制">1、垃圾回收机制</h2>
+<p>**结论：**在Python中，<strong>主要通过引用计数进行垃圾回收</strong>；<strong>通过 “标记-清除” 解决容器对象可能产生的循环引用问题</strong>；<strong>通过 “分代回收” 以空间换时间的方法提高垃圾回收效率。</strong></p>
+<p><strong>引用计数</strong></p>
+<p>Python中，主要通过**引用计数（Reference Counting）**进行垃圾回收。</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-text" data-lang="text"><span style="display:flex;"><span>typedef struct_object {
+</span></span><span style="display:flex;"><span> int ob_refcnt;
+</span></span><span style="display:flex;"><span> struct_typeobject *ob_type;
+</span></span><span style="display:flex;"><span>} PyObject;
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>在Python中每一个对象的核心就是一个结构体PyObject，它的内部有一个引用计数器（ob_refcnt）。程序在运行的过程中会实时的更新ob_refcnt的值，来反映引用当前对象的名称数量。当某对象的引用计数值为0,那么它的内存就会被立即释放掉。</p>
+<p>引用计数法有其明显的优点，如高效、实现逻辑简单、具备实时性，一旦一个对象的引用计数归零，内存就直接释放了。不用像其他机制等到特定时机。将垃圾回收随机分配到运行的阶段，处理回收内存的时间分摊到了平时，正常程序的运行比较平稳。但是，引用计数也存在着一些缺点，通常的缺点有：</p>
+<ul>
+<li>逻辑简单，但<strong>实现有些麻烦</strong>。每个对象需要分配单独的空间来统计引用计数，这无形中加大的空间的负担，并且需要对引用计数进行维护，在维护的时候很容易会出错。</li>
+<li>在一些场景下，可能会比较慢。正常来说垃圾回收会比较平稳运行，<strong>但是当需要释放一个大的对象时，比如字典，需要对引用的所有对象循环嵌套调用，从而可能会花费比较长的时间</strong>。</li>
+<li><strong>循环引用</strong>。这将是引用计数的致命伤，引用计数对此是无解的，因此必须要使用其它的垃圾回收算法对其进行补充。</li>
+</ul>
+<p>也就是说，Python 的垃圾回收机制，很大一部分是<strong>为了处理可能产生的循环引用</strong>，是对引用计数的补充。</p>
+<p><strong>标记清除解决循环引用</strong></p>
+<p>Python采用了**“标记-清除”(Mark and Sweep)**算法，解决容器对象可能产生的循环引用问题。(注意，只有容器对象才会产生循环引用的情况，比如列表、字典、用户自定义类的对象、元组等。而像数字，字符串这类简单类型不会出现循环引用。作为一种优化策略，对于只包含简单类型的元组也不在标记清除算法的考虑之列)</p>
+<p>但是，<strong>标记清除算法会暂停整个应用程序，等待标记清除结束后才会恢复应用程序的运行。</strong></p>
+<p><strong>分代回收算法</strong></p>
+<p>在循环引用对象的回收中，整个应用程序会被暂停，为了减少应用程序暂停的时间，Python 通过**“分代回收”(Generational Collection)**以空间换时间的方法提高垃圾回收效率。</p>
+<p>分代回收是基于这样的一个统计事实，<strong>对于程序，存在一定比例的内存块的生存周期比较短；而剩下的内存块，生存周期会比较长，甚至会从程序开始一直持续到程序结束。生存期较短对象的比例通常在 80%～90% 之间，这种思想简单点说就是：对象存在时间越长，越可能不是垃圾，应该越少去收集。这样在执行标记-清除算法时可以有效减小遍历的对象数，从而提高垃圾回收的速度。</strong></p>
+<h2 id="2gil锁global-interpreter-lock">2、GIL锁(Global Interpreter Lock)</h2>
+<h3 id="21-gil是什么">2.1 GIL是什么</h3>
+<p><strong>GIL并不是Python的特性</strong>，它是在实现Python解析器(CPython)时所引入的一个概念。就好比C++是一套语言（语法）标准，但是可以用不同的编译器来编译成可执行代码。有名的编译器例如GCC，INTEL C++，Visual C++等。Python也一样，同样一段代码可以通过CPython，PyPy，Psyco等不同的Python执行环境来执行。像其中的JPython就没有GIL。然而因为CPython是大部分环境下默认的Python执行环境。所以在很多人的概念里CPython就是Python，也就想当然的把GIL归结为Python语言的缺陷。所以这里要先明确一点：GIL并不是Python的特性，Python完全可以不依赖于GIL。</p>
+<p>而且，GIL锁锁的其实是进程。</p>
+<h3 id="22-gil是否保证了线程安全">2.2 GIL是否保证了线程安全</h3>
+<p>结论是<strong>有GIL并不意味着python一定是线程安全的</strong>。</p>
+<p>一个线程有两种情况下会释放全局解释器锁，一种情况是在该线程<strong>进入IO操作</strong>之前，会主动释放GIL，另一种情况是解释器<strong>不间断运行了1000字节码（Py2）或运行15毫秒（Py3）后</strong>，该线程也会放弃GIL。既然一个线程可能随时会失去GIL，那么这就一定会涉及到线程安全的问题。GIL虽然从设计的出发点就是考虑到线程安全，但这种线程安全是粗粒度的线程安全，即不需要程序员自己对线程进行加锁处理（同理，所谓细粒度就是指程序员需要自行加、解锁来保证线程安全，典型代表是 Java , 而 CPython 中是粗粒度的锁，即语言层面本身维护着一个全局的锁机制,用来保证线程安全）。</p>
+<p>首先，线程因为进入IO操作而主动释放了GIL，容易理解这样是安全的。</p>
+<p>其次，另一种方式放弃则不一定安全，即线程A是因为解释器不间断执行了1000字节码的指令或不间断运行了15毫秒而放弃了GIL，那么此时实际上线程A和线程B将同时竞争GIL锁。在同时竞争的情况下，实际上谁会竞争成功是不确定的一个结果，所以一般被称为“抢占式多任务处理”，这种情况下当然就看谁抢得厉害了。当然，在python3上由于对GIL做了优化，并且会动态调整线程的优先级，所以线程B的优先级会比较高，但<strong>仍然无法肯定线程B就一定会拿到GIL</strong>。那么在这种情况下，线程可能就会出现不安全的状态。这种情况，只要在代码上加锁即可，在 Python 中获取一个 <strong>threading.Lock</strong> 也就是一行代码的事**。**</p>
+<p>还有一种特殊情况是<strong>原子操作</strong>，原子操作对应的一定是线程安全的，典型的例子比如sort方法。</p>
+<h3 id="23-如何避免gil锁影响">2.3 如何避免GIL锁影响</h3>
+<p>1）在以IO操作为主的IO密集型应用中，多线程和多进程的性能区别并不大，原因在于即使在Python中有GIL锁的存在，由于线程中的IO操作会使得线程立即释放GIL，切换到其他非IO线程继续操作，提高程序执行效率。相比进程操作，线程操作更加轻量级，线程之间的通讯复杂度更低，建议使用多线程。</p>
+<p>2）如果是计算密集型的应用，尽量使用多进程或者协程来代替多线程。</p>
+<h1 id="二python的高级特性">二、Python的高级特性</h1>
+<h2 id="1列表推导式">1、列表推导式</h2>
+<p>列表推导式不只是看起来更简洁，其效率也比一般的for循环要更高，具体原因是for循环需要每次载入append属性再CALL_FUNCTION’，因此还是要多用列表推导式的。</p>
+<p>写列表生成式时，把要生成的元素<code>x * x</code>放到前面，后面跟<code>for</code>循环，就可以把list创建出来，十分有用，多写几次，很快就可以熟悉这种语法。</p>
+<p>for循环后面还可以加上if判断，这样我们就可以筛选出仅偶数的平方：</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>&gt;&gt;&gt; [x * x for x in range(1, 11) if x % 2 == 0]
+</span></span><span style="display:flex;"><span>[4, 16, 36, 64, 100]
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="2生成器">2、生成器</h2>
+<p>生成器在机器学习中也经常使用，确实是一个很方便实用的方法。</p>
+<p>通过列表生成式，我们可以直接创建一个列表。但是，受到内存限制，列表容量肯定是有限的。而且，创建一个包含100万个元素的列表，不仅占用很大的存储空间，如果我们仅仅需要访问前面几个元素，那后面绝大多数元素占用的空间都白白浪费了。</p>
+<p>所以，如果列表元素可以按照某种算法推算出来，那我们是否可以在循环的过程中不断推算出后续的元素呢？这样就不必创建完整的list，从而节省大量的空间。在Python中，这种一边循环一边计算的机制，称为生成器：generator。</p>
+<h3 id="21-使用方法一">2.1 使用方法一</h3>
+<p>第一种方法很简单，<strong>只要把一个列表生成式的<code>[]</code>改成<code>()</code>，就创建了一个generator</strong>：</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">6
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>&gt;&gt;&gt; L = [x * x for x in range(10)]
+</span></span><span style="display:flex;"><span>&gt;&gt;&gt; L
+</span></span><span style="display:flex;"><span>[0, 1, 4, 9, 16, 25, 36, 49, 64, 81]
+</span></span><span style="display:flex;"><span>&gt;&gt;&gt; g = (x * x for x in range(10))
+</span></span><span style="display:flex;"><span>&gt;&gt;&gt; g
+</span></span><span style="display:flex;"><span>&lt;generator object &lt;genexpr&gt; at 0x1022ef630&gt;
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>可以通过<code>next()</code>函数获得generator的下一个返回值</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">6
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>&gt;&gt;&gt; next(g)
+</span></span><span style="display:flex;"><span>0
+</span></span><span style="display:flex;"><span>&gt;&gt;&gt; next(g)
+</span></span><span style="display:flex;"><span>1
+</span></span><span style="display:flex;"><span>&gt;&gt;&gt; next(g)
+</span></span><span style="display:flex;"><span>4
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="22-使用方法二">2.2 使用方法二</h3>
+<p>第二种方法，<strong>通过yield返回结果。</strong></p>
+<p>generator函数和普通函数的执行流程不一样。普通函数是顺序执行，遇到<code>return</code>语句或者最后一行函数语句就返回。而变成generator的函数，在每次调用<code>next()</code>的时候执行，遇到<code>yield</code>语句返回，再次执行时从上次返回的<code>yield</code>语句处继续执行。</p>
+<p>举个简单的例子，定义一个generator函数，依次返回数字1，3，5：</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">6
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">7
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>def odd():
+</span></span><span style="display:flex;"><span>    print(&#39;step 1&#39;)
+</span></span><span style="display:flex;"><span>    yield 1
+</span></span><span style="display:flex;"><span>    print(&#39;step 2&#39;)
+</span></span><span style="display:flex;"><span>    yield(3)
+</span></span><span style="display:flex;"><span>    print(&#39;step 3&#39;)
+</span></span><span style="display:flex;"><span>    yield(5)
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>调用该generator函数时，首先要生成一个generator对象，然后用<code>next()</code>函数不断获得下一个返回值：</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>&gt;&gt;&gt; o = odd()
+</span></span><span style="display:flex;"><span>&gt;&gt;&gt; next(o)
+</span></span><span style="display:flex;"><span>step 1
+</span></span><span style="display:flex;"><span>1
+</span></span><span style="display:flex;"><span>&gt;&gt;&gt; next(o)
+</span></span><span style="display:flex;"><span>step 2
+</span></span><span style="display:flex;"><span>3
+</span></span><span style="display:flex;"><span>&gt;&gt;&gt; next(o)
+</span></span><span style="display:flex;"><span>step 3
+</span></span><span style="display:flex;"><span>5
+</span></span><span style="display:flex;"><span>&gt;&gt;&gt; next(o)
+</span></span><span style="display:flex;"><span>Traceback (most recent call last):
+</span></span><span style="display:flex;"><span>  File &#34;&lt;stdin&gt;&#34;, line 1, in &lt;module&gt;
+</span></span><span style="display:flex;"><span>StopIteration
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="3迭代器">3、迭代器</h2>
+<p>可以被<code>next()</code>函数调用并不断返回下一个值的对象称为迭代器：<code>Iterator</code>。</p>
+<p>我们已经知道，可以直接作用于<code>for</code>循环的数据类型有以下几种：</p>
+<p>一类是集合数据类型，如<code>list</code>、<code>tuple</code>、<code>dict</code>、<code>set</code>、<code>str</code>等；</p>
+<p>一类是<code>generator</code>，包括生成器和带<code>yield</code>的generator function。</p>
+<p>这些可以直接作用于<code>for</code>循环的对象统称为可迭代对象：<code>Iterable</code>。</p>
+<p>可以使用<code>isinstance()</code>判断一个对象是否是<code>Iterable</code>对象：</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>&gt;&gt;&gt; from collections.abc import Iterable
+</span></span><span style="display:flex;"><span>&gt;&gt;&gt; isinstance([], Iterable)
+</span></span><span style="display:flex;"><span>True
+</span></span><span style="display:flex;"><span>&gt;&gt;&gt; isinstance({}, Iterable)
+</span></span><span style="display:flex;"><span>True
+</span></span><span style="display:flex;"><span>&gt;&gt;&gt; isinstance(&#39;abc&#39;, Iterable)
+</span></span><span style="display:flex;"><span>True
+</span></span><span style="display:flex;"><span>&gt;&gt;&gt; isinstance((x for x in range(10)), Iterable)
+</span></span><span style="display:flex;"><span>True
+</span></span><span style="display:flex;"><span>&gt;&gt;&gt; isinstance(100, Iterable)
+</span></span><span style="display:flex;"><span>False
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>生成器都是<code>Iterator</code>对象，但<code>list</code>、<code>dict</code>、<code>str</code>虽然是<code>Iterable</code>，却不是<code>Iterator</code>。</p>
+<p>把<code>list</code>、<code>dict</code>、<code>str</code>等<code>Iterable</code>变成<code>Iterator</code>可以使用<code>iter()</code>函数：</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>&gt;&gt;&gt; isinstance(iter([]), Iterator)
+</span></span><span style="display:flex;"><span>True
+</span></span><span style="display:flex;"><span>&gt;&gt;&gt; isinstance(iter(&#39;abc&#39;), Iterator)
+</span></span><span style="display:flex;"><span>True
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p><strong>小结：</strong></p>
+<p>凡是可作用于<code>for</code>循环的对象都是<code>Iterable</code>类型；</p>
+<p>凡是可作用于<code>next()</code>函数的对象都是<code>Iterator</code>类型，它们表示一个惰性计算的序列；</p>
+<p>集合数据类型如<code>list</code>、<code>dict</code>、<code>str</code>等是<code>Iterable</code>但不是<code>Iterator</code>，不过可以通过<code>iter()</code>函数获得一个<code>Iterator</code>对象；</p>
+<p>Python的<code>for</code>循环本质上就是通过不断调用<code>next()</code>函数实现的。</p>
+<h2 id="4装饰器">4、装饰器</h2>
+<p><strong>在代码运行期间动态增加功能的方式，称之为“装饰器”（Decorator）。</strong></p>
+<p>这是一个非常实用的功能，结合在廖雪峰官网上的例子总结一下使用方法。</p>
+<p>由于函数也是一个对象，而且函数对象可以被赋值给变量，所以，通过变量也能调用该函数。</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">6
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>&gt;&gt;&gt; def now():
+</span></span><span style="display:flex;"><span>...     print(&#39;2015-3-25&#39;)
+</span></span><span style="display:flex;"><span>...
+</span></span><span style="display:flex;"><span>&gt;&gt;&gt; f = now
+</span></span><span style="display:flex;"><span>&gt;&gt;&gt; f()
+</span></span><span style="display:flex;"><span>2015-3-25
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>现在，假设我们要增强<code>now()</code>函数的功能，比如，在函数调用前后自动打印日志。</p>
+<p>本质上，decorator就是一个返回函数的高阶函数。所以，我们要定义一个能打印日志的decorator，可以定义如下：</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>def log(func):
+</span></span><span style="display:flex;"><span>    def wrapper(*args, **kw):
+</span></span><span style="display:flex;"><span>        print(&#39;call %s():&#39; % func.__name__)
+</span></span><span style="display:flex;"><span>        return func(*args, **kw)
+</span></span><span style="display:flex;"><span>    return wrapper
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>观察上面的<code>log</code>，因为它是一个decorator，所以接受一个函数作为参数，并返回一个函数。我们要借助Python的@语法，把decorator置于函数的定义处：</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>@log
+</span></span><span style="display:flex;"><span>def now():
+</span></span><span style="display:flex;"><span>    print(&#39;2015-3-25&#39;)
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>调用<code>now()</code>函数，不仅会运行<code>now()</code>函数本身，还会在运行<code>now()</code>函数前打印一行日志：</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>&gt;&gt;&gt; now()
+</span></span><span style="display:flex;"><span>call now():
+</span></span><span style="display:flex;"><span>2015-3-25
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>把<code>@log</code>放到<code>now()</code>函数的定义处，相当于执行了语句：</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>now = log(now)
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>由于<code>log()</code>是一个decorator，返回一个函数，所以，原来的<code>now()</code>函数仍然存在，只是现在同名的<code>now</code>变量指向了新的函数，于是调用<code>now()</code>将执行新函数，即在<code>log()</code>函数中返回的<code>wrapper()</code>函数。</p>
+<p><code>wrapper()</code>函数的参数定义是<code>(*args, **kw)</code>，因此，<code>wrapper()</code>函数可以接受任意参数的调用。在<code>wrapper()</code>函数内，首先打印日志，再紧接着调用原始函数。</p>
+<p>如果decorator本身需要传入参数，那就需要编写一个返回decorator的高阶函数，写出来会更复杂。比如，要自定义log的文本：</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">6
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">7
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>def log(text):
+</span></span><span style="display:flex;"><span>    def decorator(func):
+</span></span><span style="display:flex;"><span>        def wrapper(*args, **kw):
+</span></span><span style="display:flex;"><span>            print(&#39;%s %s():&#39; % (text, func.__name__))
+</span></span><span style="display:flex;"><span>            return func(*args, **kw)
+</span></span><span style="display:flex;"><span>        return wrapper
+</span></span><span style="display:flex;"><span>    return decorator
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>这个3层嵌套的decorator用法如下：</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>@log(&#39;execute&#39;)
+</span></span><span style="display:flex;"><span>def now():
+</span></span><span style="display:flex;"><span>    print(&#39;2015-3-25&#39;)
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>执行结果如下：</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>&gt;&gt;&gt; now()
+</span></span><span style="display:flex;"><span>execute now():
+</span></span><span style="display:flex;"><span>2015-3-25
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>和两层嵌套的decorator相比，3层嵌套的效果是这样的：</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>&gt;&gt;&gt; now = log(&#39;execute&#39;)(now)
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>我们来剖析上面的语句，首先执行<code>log('execute')</code>，返回的是<code>decorator</code>函数，再调用返回的函数，参数是<code>now</code>函数，返回值最终是<code>wrapper</code>函数。</p>
+<p>以上两种decorator的定义都没有问题，但还差最后一步。因为我们讲了函数也是对象，它有<code>__name__</code>等属性，但你去看经过decorator装饰之后的函数，它们的<code>__name__</code>已经从原来的<code>'now'</code>变成了<code>'wrapper'</code>：</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>&gt;&gt;&gt; now.__name__
+</span></span><span style="display:flex;"><span>&#39;wrapper&#39;
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>因为返回的那个<code>wrapper()</code>函数名字就是<code>'wrapper'</code>，所以，需要把原始函数的<code>__name__</code>等属性复制到<code>wrapper()</code>函数中，否则，有些依赖函数签名的代码执行就会出错。</p>
+<p>不需要编写<code>wrapper.__name__ = func.__name__</code>这样的代码，Python内置的<code>functools.wraps</code>就是干这个事的，所以，一个完整的decorator的写法如下：</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">6
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">7
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">8
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>import functools
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>def log(func):
+</span></span><span style="display:flex;"><span>    @functools.wraps(func)
+</span></span><span style="display:flex;"><span>    def wrapper(*args, **kw):
+</span></span><span style="display:flex;"><span>        print(&#39;call %s():&#39; % func.__name__)
+</span></span><span style="display:flex;"><span>        return func(*args, **kw)
+</span></span><span style="display:flex;"><span>    return wrapper
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>或者针对带参数的decorator：</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>import functools
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>def log(text):
+</span></span><span style="display:flex;"><span>    def decorator(func):
+</span></span><span style="display:flex;"><span>        @functools.wraps(func)
+</span></span><span style="display:flex;"><span>        def wrapper(*args, **kw):
+</span></span><span style="display:flex;"><span>            print(&#39;%s %s():&#39; % (text, func.__name__))
+</span></span><span style="display:flex;"><span>            return func(*args, **kw)
+</span></span><span style="display:flex;"><span>        return wrapper
+</span></span><span style="display:flex;"><span>    return decorator
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="5异步编程">5、异步编程</h2>
+<h3 id="51-python的协程">5.1 python的协程</h3>
+<p>协程，又称微线程，纤程。英文名Coroutine。</p>
+<p>子程序，或者称为函数，在所有语言中都是层级调用，比如A调用B，B在执行过程中又调用了C，C执行完毕返回，B执行完毕返回，最后是A执行完毕。</p>
+<p>所以子程序调用是通过栈实现的，一个线程就是执行一个子程序。</p>
+<p>子程序调用总是一个入口，一次返回，调用顺序是明确的。而协程的调用和子程序不同。</p>
+<p>协程看上去也是子程序，但执行过程中，在<strong>子程序内部可中断</strong>，然后转而执行别的子程序，在适当的时候再返回来接着执行。</p>
+<p><strong>优势：</strong></p>
+<p>最大的优势就是协程极高的执行效率。因为子程序切换不是线程切换，而是由程序自身控制，因此，没有线程切换的开销，和多线程比，线程数量越多，协程的性能优势就越明显。这里子程序的切换其实就是进程的切换。</p>
+<p>第二大优势就是不需要多线程的锁机制，因为只有一个线程，也不存在同时写变量冲突，在协程中控制共享资源不加锁，只需要判断状态就好了，所以执行效率比多线程高很多。</p>
+<p>因为协程是一个线程执行，那怎么利用多核CPU呢？最简单的方法是多进程+协程，既充分利用多核，又充分发挥协程的高效率，可获得极高的性能。</p>
+<p>Python对协程的支持是通过generator实现的。</p>
+<p>在generator中，我们不但可以通过<code>for</code>循环来迭代，还可以不断调用<code>next()</code>函数获取由<code>yield</code>语句返回的下一个值。</p>
+<p>但是Python的<code>yield</code>不但可以返回一个值，它还可以接收调用者发出的参数。</p>
+<h3 id="52-asyncawait">5.2 async/await</h3>
+<p>这个在web游戏开发的项目中使用过，也总结过。async就是声明这个函数是异步的，await则是函数的中断条件，只有await的条件满足了，函数才会继续执行下去。</p>
+<p>用<code>asyncio</code>提供的<code>@asyncio.coroutine</code>可以把一个generator标记为coroutine类型，然后在coroutine内部用<code>yield from</code>调用另一个coroutine实现异步操作。</p>
+<p>为了简化并更好地标识异步IO，从Python 3.5开始引入了新的语法<code>async</code>和<code>await</code>，可以让coroutine的代码更简洁易读。</p>
+<p>请注意，<code>async</code>和<code>await</code>是针对coroutine的新语法，要使用新的语法，只需要做两步简单的替换：</p>
+<ol>
+<li>把<code>@asyncio.coroutine</code>替换为<code>async</code>；</li>
+<li>把<code>yield from</code>替换为<code>await</code>。</li>
+</ol>
+<p>让我们对比一下使用asynio的代码：</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>@asyncio.coroutine
+</span></span><span style="display:flex;"><span>def hello():
+</span></span><span style="display:flex;"><span>    print(&#34;Hello world!&#34;)
+</span></span><span style="display:flex;"><span>    r = yield from asyncio.sleep(1)
+</span></span><span style="display:flex;"><span>    print(&#34;Hello again!&#34;)
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>用新语法重新编写如下：</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>async def hello():
+</span></span><span style="display:flex;"><span>    print(&#34;Hello world!&#34;)
+</span></span><span style="display:flex;"><span>    r = await asyncio.sleep(1)
+</span></span><span style="display:flex;"><span>    print(&#34;Hello again!&#34;)
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h1 id="三python的数据结构相关">三、Python的数据结构相关</h1>
+<h2 id="1-和-is-有什么区别">1、== 和 is 有什么区别？</h2>
+<p><code>==</code>比较的是两个变量的 value，只要值相等就会返回True</p>
+<p><code>is</code>比较的是两个变量的 id，即<code>id(a) == id(b)</code>，只有两个变量指向同一个对象的时候，才会返回True</p>
+<p>但是需要注意的是，比如以下代码：</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>a = 2
+</span></span><span style="display:flex;"><span>b = 2
+</span></span><span style="display:flex;"><span>print(a is b)
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>按照上面的解释，应该会输出False，但是事实上会输出True，这是因为Python中对小数据有缓存机制，-5~256之间的数据都会被缓存。这一点和java中的一致。</p>
+<h1 id="四参考文章">四、参考文章</h1>
+<p>1、<a href="https://zhuanlan.zhihu.com/p/83251959">Python垃圾回收机制！非常实用</a></p>
+<p>2、<a href="https://zhuanlan.zhihu.com/p/75780308">深入理解Python中的GIL（全局解释器锁）</a></p>
+<p>3、<a href="https://www.liaoxuefeng.com/">廖雪峰的官方网站</a></p>
+      </article>
+    </section>
+
+    
+
+    
+    <article class="ui segment utterances-comments" data-html2canvas-ignore>
+      <script
+        src="https://utteranc.es/client.js"
+        repo="ARIA-PKU/ARIA-PKU.github.io"
+        issue-term="og:title"
+        theme="github-light"
+        crossorigin="anonymous"
+        async>
+      </script>
+    </article>
+    
+
+    
+  </div>
+</div>
+
+
+            <footer class="ui basic center aligned segment" style="background-color: transparent;">
+              
+              <p>© 2022 Aria&#39;s Blog</p>
+              
+
+              <p>Powered by <a href="https://gohugo.io/" target="_blank">Hugo</a> with theme <a href="https://github.com/g1eny0ung/hugo-theme-dream" target="_blank">Dream</a>.</p>
+
+              
+            </footer>
+          </div>
+        </section>
+        <section class="back">
+          <div class="dream-max-width">
+            <header class="ui basic very padded segment dream-header">
+  
+  <div class="ui small circular image">
+    <img src="/me/cool.jpg" alt="avatar" />
+  </div>
+  
+
+  <div class="content">
+    <h1 class="ui medium header">Aria&#39;s Blog<span class="sub header">今天不做的事情，今后也不会去做。</span>
+    </h1>
+
+    <article class="ui horizontal list">
+      
+      <a class="item" href="/posts">
+        <i class="archive icon" title="归档"></i>
+      </a>
+      
+      <a class="item" href="/categories">
+        <i class="th list icon" title="所有分类"></i>
+      </a>
+      <a class="item" href="/tags">
+        <i class="tags icon" title="所有标签"></i>
+      </a>
+    </article>
+
+    
+    
+    
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+    
+
+    
+
+    
+
+    
+    
+
+    <div class="tags-with-dropdown">
+      <div class="ui accordion">
+        <div class="title">
+          <div class="ui horizontal list">
+            <a class="item dropdown" href="#">
+              <i class="chevron right icon dropdown-icon"></i>
+            </a>
+          </div>
+          <div class="dream-tags">
+          
+          
+          
+            <a class="ui label" href="/tags/base/" title="BASE">
+              BASE
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/bellman-ford%E7%AE%97%E6%B3%95/" title="Bellman-Ford算法">
+              Bellman-Ford算法
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/c&#43;&#43;%E5%A4%9A%E7%BA%BF%E7%A8%8B%E7%BC%96%E7%A8%8B/" title="c&#43;&#43;多线程编程">
+              c&#43;&#43;多线程编程
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/cap/" title="CAP">
+              CAP
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/css/" title="css">
+              css
+            </a>
+          
+          </div>
+        </div>
+        <div class="content">
+    
+          <div class="dream-tags" style="margin-left: 1.5rem;">
+          
+          
+          
+            <a class="ui label" href="/tags/dfs/" title="DFS">
+              DFS
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/dijkstra/" title="Dijkstra">
+              Dijkstra
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/django/" title="Django">
+              Django
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/django_channel/" title="django_channel">
+              django_channel
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/docker%E5%B8%B8%E7%94%A8%E6%93%8D%E4%BD%9C/" title="Docker常用操作">
+              Docker常用操作
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/floyd%E7%AE%97%E6%B3%95/" title="Floyd算法">
+              Floyd算法
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/git/" title="git">
+              git
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/go/" title="go">
+              go
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/html/" title="html">
+              html
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/http/" title="http">
+              http
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/jquery/" title="jquery">
+              jquery
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/js%E5%B8%B8%E7%94%A8%E5%BA%93/" title="Js常用库">
+              Js常用库
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/js%E8%AF%AD%E6%B3%95/" title="Js语法">
+              Js语法
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/leetcode/" title="leetcode">
+              leetcode
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/linux/" title="Linux">
+              Linux
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/mysql%E6%9E%B6%E6%9E%84%E4%B8%8E%E6%97%A5%E5%BF%97/" title="mysql架构与日志">
+              mysql架构与日志
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/nginx/" title="nginx">
+              nginx
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/python/" title="python">
+              python
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/raft/" title="Raft">
+              Raft
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/react/" title="React">
+              React
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/redis/" title="redis">
+              redis
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/rpc/" title="RPC">
+              RPC
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/spfa%E7%AE%97%E6%B3%95/" title="spfa算法">
+              spfa算法
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/thrift/" title="Thrift">
+              Thrift
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/tmux/" title="tmux">
+              tmux
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/uwsgi/" title="uwsgi">
+              uwsgi
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/vim/" title="vim">
+              vim
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/vscode/" title="vscode">
+              vscode
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/vue3/" title="vue3">
+              vue3
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/websocket/" title="websocket">
+              websocket
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/%E4%BA%8C%E5%88%86%E6%B3%95/" title="二分法">
+              二分法
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/%E4%BD%8D%E8%BF%90%E7%AE%97/" title="位运算">
+              位运算
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/%E5%89%8D%E7%BC%80%E5%92%8C/" title="前缀和">
+              前缀和
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92/" title="动态规划">
+              动态规划
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/%E5%8C%BA%E9%97%B4%E5%90%88%E5%B9%B6/" title="区间合并">
+              区间合并
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/%E5%8D%95%E8%B0%83%E6%A0%88/" title="单调栈">
+              单调栈
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/%E5%8D%95%E8%B0%83%E9%98%9F%E5%88%97/" title="单调队列">
+              单调队列
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/%E5%8F%8C%E6%8C%87%E9%92%88%E7%AE%97%E6%B3%95/" title="双指针算法">
+              双指针算法
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/%E5%9B%BE%E8%AE%BA/" title="图论">
+              图论
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/%E5%B7%AE%E5%88%86/" title="差分">
+              差分
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/%E5%BC%82%E6%AD%A5%E7%BC%96%E7%A8%8B/" title="异步编程">
+              异步编程
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/%E5%BD%92%E5%B9%B6%E6%8E%92%E5%BA%8F/" title="归并排序">
+              归并排序
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/%E5%BF%AB%E9%80%9F%E6%8E%92%E5%BA%8F/" title="快速排序">
+              快速排序
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/%E6%9C%80%E5%B0%8F%E7%94%9F%E6%88%90%E6%A0%91/" title="最小生成树">
+              最小生成树
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/%E6%9C%80%E7%9F%AD%E8%B7%AF/" title="最短路">
+              最短路
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/%E6%A0%88/" title="栈">
+              栈
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/%E7%A6%BB%E6%95%A3%E5%8C%96/" title="离散化">
+              离散化
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/%E7%AE%97%E6%B3%95%E9%A2%98/" title="算法题">
+              算法题
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/%E9%93%BE%E8%A1%A8/" title="链表">
+              链表
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/%E9%98%9F%E5%88%97/" title="队列">
+              队列
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/%E9%AB%98%E7%B2%BE%E5%BA%A6%E8%AE%A1%E7%AE%97/" title="高精度计算">
+              高精度计算
+            </a>
+          
+          </div>
+    
+        </div>
+      </div>
+    </div>
+    
+
+    
+  </div>
+</header>
+
+
+<div class="ui relaxed grid dream-grid dream-back">
+  
+  
+  
+
+  <div class="sixteen wide mobile eight wide tablet four wide computer column dream-column">
+    <article class="ui segment">
+      <div class="ui medium header">社交链接</div>
+      <nav class="ui secondary menu dream-menu dream-socials">
+  
+  <a class="item" href="/index.xml">
+    <i class="large rss square icon" title="RSS"></i>
+  </a>
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</nav>
+
+    </article>
+  </div>
+
+  <div class="sixteen wide mobile eight wide tablet four wide computer column dream-column">
+    
+    <article class="ui segment">
+      <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"><img alt="知识共享许可协议" style="border-width:0" src="https://i.creativecommons.org/l/by-nc-sa/4.0/88x31.png" /></a><br />本作品采用<a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/">知识共享署名-非商业性使用-相同方式共享 4.0 国际许可协议</a>进行许可。<br />
+    </article>
+    
+  </div>
+
+  
+</div>
+
+          </div>
+        </section>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.js" integrity="sha256-CgSoWC9w5wNmI1aN8dIMK+6DPelUEtvDr+Bc2m/0Nx8=" crossorigin="anonymous"></script>
+
+    
+    <div class="ui segment" id="dream-search">
+  <div class="ui search">
+    <div class="ui transparent input">
+      <input class="prompt" type="text" placeholder="搜索" />
+    </div>
+    <div class="results"></div>
+  </div>
+</div>
+<script>
+  $(document).ready(function () {
+    $.getJSON('https:\/\/blog.surfaroundtheworld.top\//index.json', function (data) {
+      $('.ui.search').search({
+        source: data,
+        searchFields: ['title'],
+        showNoResults: false,
+      })
+    })
+  })
+</script>
+<script src="/js/search.js"></script>
+
+    
+
+    
+
+    <script>
+  window.background = "#fff"
+  window.defaultDark =  null 
+  window.backgroundDark =  null 
+  window.backgroundImageDark = "/cover/edge_of_planet.jpg"
+  window.darkNav =  true 
+  window.maxTags =  5 
+  window.hasTwitterEmbed =  null 
+  window.fixedNav =  null 
+
+  if (window.hasTwitterEmbed) {
+    
+    window.twttr = (function (d, s, id) {
+      var js,
+        fjs = d.getElementsByTagName(s)[0],
+        t = window.twttr || {}
+      if (d.getElementById(id)) return t
+      js = d.createElement(s)
+      js.id = id
+      js.src = 'https://platform.twitter.com/widgets.js'
+      fjs.parentNode.insertBefore(js, fjs)
+
+      t._e = []
+      t.ready = function (f) {
+        t._e.push(f)
+      }
+
+      return t
+    })(document, 'script', 'twitter-wjs')
+  }
+</script>
+<script src="https://cdn.jsdelivr.net/npm/overlayscrollbars@1.13.1/js/jquery.overlayScrollbars.min.js" integrity="sha256-tBd38uWlvgfps3zHPrUb2ePBg+Z8EjMf0QloFONzpvU=" crossorigin="anonymous"></script>
+<script src="/js/header.js"></script>
+<script src="/js/main.js"></script>
+<script src="/js/theme.js"></script>
+
+    
+
+
+<script src="https://cdn.jsdelivr.net/npm/luxon@1.26.0" integrity="sha256-4sbTzmCCW9LGrIh5OsN8V5Pfdad1F1MwhLAOyXKnsE0=" crossorigin="anonymous"></script>
+<script>
+  format()
+
+  function format() {
+    $('span[data-format="luxon"]').each(function () {
+      var date = $(this).text()
+
+      $(this).text(luxon.DateTime.fromISO(date, { locale: "zh" }).toFormat("yyyy年MM月dd日"))
+    })
+  }
+</script>
+
+
+
+<script src="/js/scrollToTop.js"></script>
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.0.0-rc.1/dist/html2canvas.min.js" integrity="sha256-uacRffSSMP9qpvNWhVmYLykBv9YKMA1d/VSIN1AmfyQ=" crossorigin="anonymous"></script>
+<script src="/js/post.js" defer></script>
+
+
+    
+
+    
+  </body>
+</html>
