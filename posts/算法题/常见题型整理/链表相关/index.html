@@ -26,7 +26,7 @@
 <meta property="og:title" content="链表相关" />
 <meta property="og:description" content="主要是力扣中与链表相关的题目整理归纳" />
 <meta property="og:type" content="article" />
-<meta property="og:url" content="https://blog.surfaroundtheworld.top/posts/%E7%AE%97%E6%B3%95%E9%A2%98/%E5%B8%B8%E8%A7%81%E9%A2%98%E5%9E%8B%E6%95%B4%E7%90%86/%E9%93%BE%E8%A1%A8%E7%9B%B8%E5%85%B3/" /><meta property="og:image" content="https://blog.surfaroundtheworld.top/me/edge_of_planet.jpg"/><meta property="article:section" content="posts" />
+<meta property="og:url" content="https://blog.surfaroundtheworld.top/posts/%E7%AE%97%E6%B3%95%E9%A2%98/%E5%B8%B8%E8%A7%81%E9%A2%98%E5%9E%8B%E6%95%B4%E7%90%86/%E9%93%BE%E8%A1%A8%E7%9B%B8%E5%85%B3/" /><meta property="og:image" content="https://oss.surfaroundtheworld.top/blog-pictures/6-16/edge_of_planet.jpg"/><meta property="article:section" content="posts" />
 <meta property="article:published_time" content="2022-06-16T23:41:22+08:00" />
 <meta property="article:modified_time" content="2022-06-16T23:41:22+08:00" />
 
@@ -34,7 +34,7 @@
 
 
 <meta name="twitter:card" content="summary_large_image"/>
-<meta name="twitter:image" content="https://blog.surfaroundtheworld.top/me/edge_of_planet.jpg"/>
+<meta name="twitter:image" content="https://oss.surfaroundtheworld.top/blog-pictures/6-16/edge_of_planet.jpg"/>
 
 <meta name="twitter:title" content="链表相关"/>
 <meta name="twitter:description" content="主要是力扣中与链表相关的题目整理归纳"/>
@@ -70,7 +70,7 @@
     
 
     
-    background-image: url(/cover/edge_of_planet.jpg);
+    background-image: url(https://oss.surfaroundtheworld.top/blog-pictures/6-16/edge_of_planet.jpg);
     
   }
   
@@ -80,7 +80,7 @@
     
 
     
-    background-image: url(/cover/edge_of_planet.jpg);
+    background-image: url(https://oss.surfaroundtheworld.top/blog-pictures/6-16/edge_of_planet.jpg);
     
   }
   
@@ -148,7 +148,7 @@
                   <span data-format="luxon">2022-06-16T23:41:22&#43;08:00</span>
                 
 
-              | 2 分钟阅读
+              | 7 分钟阅读
 
               
               | 更新于
@@ -474,7 +474,749 @@
 </span></span><span style="display:flex;"><span>};
 </span></span></code></pre></td></tr></table>
 </div>
+</div><h1 id="61-旋转链表httpsleetcodecnproblemsrotate-list"><a href="https://leetcode.cn/problems/rotate-list/">61. 旋转链表</a></h1>
+<p>题意：</p>
+<p>将链表整体循环右移k位</p>
+<p>思路：</p>
+<p>找到前后两个部分，断开再拼接</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">23
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">24
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">25
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">26
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">27
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">28
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">29
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">30
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">31
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">32
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">33
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">34
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">35
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">36
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>/**
+</span></span><span style="display:flex;"><span> * Definition for singly-linked list.
+</span></span><span style="display:flex;"><span> * struct ListNode {
+</span></span><span style="display:flex;"><span> *     int val;
+</span></span><span style="display:flex;"><span> *     ListNode *next;
+</span></span><span style="display:flex;"><span> *     ListNode() : val(0), next(nullptr) {}
+</span></span><span style="display:flex;"><span> *     ListNode(int x) : val(x), next(nullptr) {}
+</span></span><span style="display:flex;"><span> *     ListNode(int x, ListNode *next) : val(x), next(next) {}
+</span></span><span style="display:flex;"><span> * };
+</span></span><span style="display:flex;"><span> */
+</span></span><span style="display:flex;"><span>class Solution {
+</span></span><span style="display:flex;"><span>public:
+</span></span><span style="display:flex;"><span>    ListNode* rotateRight(ListNode* head, int k) {
+</span></span><span style="display:flex;"><span>        if (!k || !head) return head;
+</span></span><span style="display:flex;"><span>        int n = 0;
+</span></span><span style="display:flex;"><span>        auto u = head;
+</span></span><span style="display:flex;"><span>        // 求链表长度n
+</span></span><span style="display:flex;"><span>        while (u) {
+</span></span><span style="display:flex;"><span>            u = u-&gt;next;
+</span></span><span style="display:flex;"><span>            n ++;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        k %= n;
+</span></span><span style="display:flex;"><span>        if (!k) return head;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        // 找到后面断开位置
+</span></span><span style="display:flex;"><span>        k = n - k - 1;
+</span></span><span style="display:flex;"><span>        u = head;
+</span></span><span style="display:flex;"><span>        while (k --) u = u-&gt;next;
+</span></span><span style="display:flex;"><span>        // t是最终头节点位置，tail要找到链表尾部，然后接到头部
+</span></span><span style="display:flex;"><span>        auto t = u-&gt;next, tail = t;
+</span></span><span style="display:flex;"><span>        u-&gt;next = nullptr;
+</span></span><span style="display:flex;"><span>        while (tail-&gt;next) tail = tail-&gt;next;
+</span></span><span style="display:flex;"><span>        tail-&gt;next = head;
+</span></span><span style="display:flex;"><span>        return t;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>};
+</span></span></code></pre></td></tr></table>
 </div>
+</div><h1 id="143-重排链表httpsleetcodecnproblemsreorder-list"><a href="https://leetcode.cn/problems/reorder-list/">143. 重排链表</a></h1>
+<p>题意：</p>
+<p>将后半部分反转，然后插入到前半部分中去</p>
+<p>思路：</p>
+<p>按照题意一步步操作即可</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">23
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">24
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">25
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">26
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">27
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">28
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">29
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">30
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">31
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">32
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">33
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">34
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">35
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">36
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">37
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">38
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">39
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">40
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">41
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">42
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>/**
+</span></span><span style="display:flex;"><span> * Definition for singly-linked list.
+</span></span><span style="display:flex;"><span> * struct ListNode {
+</span></span><span style="display:flex;"><span> *     int val;
+</span></span><span style="display:flex;"><span> *     ListNode *next;
+</span></span><span style="display:flex;"><span> *     ListNode() : val(0), next(nullptr) {}
+</span></span><span style="display:flex;"><span> *     ListNode(int x) : val(x), next(nullptr) {}
+</span></span><span style="display:flex;"><span> *     ListNode(int x, ListNode *next) : val(x), next(next) {}
+</span></span><span style="display:flex;"><span> * };
+</span></span><span style="display:flex;"><span> */
+</span></span><span style="display:flex;"><span>class Solution {
+</span></span><span style="display:flex;"><span>public:
+</span></span><span style="display:flex;"><span>    void reorderList(ListNode* head) {
+</span></span><span style="display:flex;"><span>        if (!head || !head-&gt;next) return;
+</span></span><span style="display:flex;"><span>        auto fast = head, slow = head;
+</span></span><span style="display:flex;"><span>        // 快慢指针确定分界位置
+</span></span><span style="display:flex;"><span>        while (fast-&gt;next &amp;&amp; fast-&gt;next-&gt;next) {
+</span></span><span style="display:flex;"><span>            slow = slow-&gt;next;
+</span></span><span style="display:flex;"><span>            fast = fast-&gt;next-&gt;next;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        auto t = slow-&gt;next;
+</span></span><span style="display:flex;"><span>        slow-&gt;next = nullptr;
+</span></span><span style="display:flex;"><span>        auto a = t, b = t-&gt;next;
+</span></span><span style="display:flex;"><span>        // 将后半部分反转
+</span></span><span style="display:flex;"><span>        while (b) {
+</span></span><span style="display:flex;"><span>            auto c = b-&gt;next;
+</span></span><span style="display:flex;"><span>            b-&gt;next = a;
+</span></span><span style="display:flex;"><span>            a = b, b = c;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        t-&gt;next = nullptr;
+</span></span><span style="display:flex;"><span>        auto u = head;
+</span></span><span style="display:flex;"><span>        // 将后半部分反转的链表依次插入到前半部分去
+</span></span><span style="display:flex;"><span>        while (u &amp;&amp; a) {
+</span></span><span style="display:flex;"><span>            auto p = a-&gt;next;
+</span></span><span style="display:flex;"><span>            a-&gt;next = u-&gt;next;
+</span></span><span style="display:flex;"><span>            u-&gt;next = a;
+</span></span><span style="display:flex;"><span>            u = a-&gt;next;
+</span></span><span style="display:flex;"><span>            a = p;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        return;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>};
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h1 id="160-相交链表httpsleetcodecnproblemsintersection-of-two-linked-lists"><a href="https://leetcode.cn/problems/intersection-of-two-linked-lists/">160. 相交链表</a></h1>
+<p>题意：</p>
+<p>给你两个单链表的头节点 <code>headA</code> 和 <code>headB</code> ，请你找出并返回两个单链表相交的起始节点。如果两个链表不存在相交节点，返回 <code>null</code> 。</p>
+<p>思路：</p>
+<p>本题有一个简便而又有趣的思路，用两个指针h1和h2分别从两个单链表头节点开始走，走到空结点的时候，切换到另一个链表的头节点。当存在交点的时候，两个指针正好走了相同的路程，必定会相遇；如果不存在交点，则会在最后的空结点处相遇，也会相同跳出循环。</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>/**
+</span></span><span style="display:flex;"><span> * Definition for singly-linked list.
+</span></span><span style="display:flex;"><span> * struct ListNode {
+</span></span><span style="display:flex;"><span> *     int val;
+</span></span><span style="display:flex;"><span> *     ListNode *next;
+</span></span><span style="display:flex;"><span> *     ListNode(int x) : val(x), next(NULL) {}
+</span></span><span style="display:flex;"><span> * };
+</span></span><span style="display:flex;"><span> */
+</span></span><span style="display:flex;"><span>class Solution {
+</span></span><span style="display:flex;"><span>public:
+</span></span><span style="display:flex;"><span>    ListNode *getIntersectionNode(ListNode *headA, ListNode *headB) {
+</span></span><span style="display:flex;"><span>        auto h1 = headA, h2 = headB;
+</span></span><span style="display:flex;"><span>        while (h1 != h2) {
+</span></span><span style="display:flex;"><span>            if (h1) h1 = h1-&gt;next;
+</span></span><span style="display:flex;"><span>            else h1 = headB;
+</span></span><span style="display:flex;"><span>            if (h2) h2 = h2-&gt;next;
+</span></span><span style="display:flex;"><span>            else h2 = headA;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        return h1;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>};
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h1 id="剑指-offer-ii-029-排序的循环链表httpsleetcodecnproblems4ueaj6"><a href="https://leetcode.cn/problems/4ueAj6/">剑指 Offer II 029. 排序的循环链表</a></h1>
+<p>题意：</p>
+<p>给定<strong>循环单调非递减列表</strong>中的一个点，写一个函数向这个列表中插入一个新元素 <code>insertVal</code> ，使这个列表仍然是循环升序的。</p>
+<p>思路：</p>
+<p>分析三种情况。</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">23
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">24
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">25
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">26
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">27
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">28
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">29
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">30
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">31
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">32
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">33
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">34
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">35
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">36
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">37
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">38
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">39
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">40
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">41
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">42
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">43
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">44
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">45
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">46
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">47
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">48
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">49
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">50
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">51
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">52
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>/*
+</span></span><span style="display:flex;"><span>// Definition for a Node.
+</span></span><span style="display:flex;"><span>class Node {
+</span></span><span style="display:flex;"><span>public:
+</span></span><span style="display:flex;"><span>    int val;
+</span></span><span style="display:flex;"><span>    Node* next;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    Node() {}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    Node(int _val) {
+</span></span><span style="display:flex;"><span>        val = _val;
+</span></span><span style="display:flex;"><span>        next = NULL;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    Node(int _val, Node* _next) {
+</span></span><span style="display:flex;"><span>        val = _val;
+</span></span><span style="display:flex;"><span>        next = _next;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>};
+</span></span><span style="display:flex;"><span>*/
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>class Solution {
+</span></span><span style="display:flex;"><span>public:
+</span></span><span style="display:flex;"><span>        // 总共分三种情况
+</span></span><span style="display:flex;"><span>        // 1、head为空，直接新建节点
+</span></span><span style="display:flex;"><span>        // 2、找得到中间位置插入元素
+</span></span><span style="display:flex;"><span>        // 3、找不到中间位置，这种对应的是元素大于等于最大值或者小于等于最小值
+</span></span><span style="display:flex;"><span>        //    则直接记录最后的最大元素所在位置，然后插入到其后面即可
+</span></span><span style="display:flex;"><span>    Node* insert(Node* head, int insertVal) {
+</span></span><span style="display:flex;"><span>        if (!head) {
+</span></span><span style="display:flex;"><span>            auto node = new Node(insertVal);
+</span></span><span style="display:flex;"><span>            node-&gt;next = node;
+</span></span><span style="display:flex;"><span>            return node;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        auto u = head, maxNode = head;
+</span></span><span style="display:flex;"><span>        while (1) {
+</span></span><span style="display:flex;"><span>            // 这里要大于等于，不取等号就到不了最后一个位置
+</span></span><span style="display:flex;"><span>            if (u-&gt;val &gt;= maxNode-&gt;val) maxNode = u;
+</span></span><span style="display:flex;"><span>            // 这个要在最后的判断之前
+</span></span><span style="display:flex;"><span>            if (u-&gt;val &lt;= insertVal &amp;&amp; u-&gt;next-&gt;val &gt;= insertVal) break;
+</span></span><span style="display:flex;"><span>            if (u-&gt;next == head) {
+</span></span><span style="display:flex;"><span>                u = maxNode;
+</span></span><span style="display:flex;"><span>                break;
+</span></span><span style="display:flex;"><span>            } 
+</span></span><span style="display:flex;"><span>            u = u-&gt;next;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        auto cur = new Node(insertVal);
+</span></span><span style="display:flex;"><span>        cur-&gt;next = u-&gt;next;
+</span></span><span style="display:flex;"><span>        u-&gt;next = cur;
+</span></span><span style="display:flex;"><span>        return head;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>};
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h1 id="147-对链表进行插入排序httpsleetcodecnproblemsinsertion-sort-list"><a href="https://leetcode.cn/problems/insertion-sort-list/">147. 对链表进行插入排序</a></h1>
+<p>题意：</p>
+<p>插入排序</p>
+<p>思路：</p>
+<p>两种思路，一种是每次从后面未排序的找到最小的节点，插入到前面的有序链表中；</p>
+<p>第二种是每次从未排序的链表中取第一个元素，然后再前面有序的链表中找到该元素的位置，插入到对应位置中，使得前面的链表相对有序。</p>
+<p>在lc上，第二种的时间要短很多，虽然时间复杂度最坏都是$O(N^2)$的</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">23
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">24
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">25
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">26
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">27
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">28
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">29
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">30
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">31
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">32
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">33
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">34
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>//第一种思路
+</span></span><span style="display:flex;"><span>/**
+</span></span><span style="display:flex;"><span> * Definition for singly-linked list.
+</span></span><span style="display:flex;"><span> * struct ListNode {
+</span></span><span style="display:flex;"><span> *     int val;
+</span></span><span style="display:flex;"><span> *     ListNode *next;
+</span></span><span style="display:flex;"><span> *     ListNode() : val(0), next(nullptr) {}
+</span></span><span style="display:flex;"><span> *     ListNode(int x) : val(x), next(nullptr) {}
+</span></span><span style="display:flex;"><span> *     ListNode(int x, ListNode *next) : val(x), next(next) {}
+</span></span><span style="display:flex;"><span> * };
+</span></span><span style="display:flex;"><span> */
+</span></span><span style="display:flex;"><span>class Solution {
+</span></span><span style="display:flex;"><span>public:
+</span></span><span style="display:flex;"><span>    ListNode* insertionSortList(ListNode* head) {
+</span></span><span style="display:flex;"><span>        if (!head) return head;
+</span></span><span style="display:flex;"><span>        ListNode* dummy = new ListNode(0);
+</span></span><span style="display:flex;"><span>        dummy-&gt;next = head;
+</span></span><span style="display:flex;"><span>        auto p = dummy;
+</span></span><span style="display:flex;"><span>        while (p-&gt;next) {
+</span></span><span style="display:flex;"><span>            auto u = p, cur = p;
+</span></span><span style="display:flex;"><span>            while (u-&gt;next) {
+</span></span><span style="display:flex;"><span>                if (u-&gt;next-&gt;val &lt; cur-&gt;next-&gt;val) cur = u;
+</span></span><span style="display:flex;"><span>                u = u-&gt;next;
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>          
+</span></span><span style="display:flex;"><span>            auto t = cur-&gt;next;
+</span></span><span style="display:flex;"><span>            cur-&gt;next = cur-&gt;next-&gt;next;
+</span></span><span style="display:flex;"><span>            t-&gt;next = p-&gt;next;
+</span></span><span style="display:flex;"><span>            p-&gt;next = t;
+</span></span><span style="display:flex;"><span>            p =  p-&gt;next;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        return dummy-&gt;next;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>};
+</span></span></code></pre></td></tr></table>
+</div>
+</div><div class="highlight"><div style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">23
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">24
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">25
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">26
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">27
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">28
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>//第二种思路
+</span></span><span style="display:flex;"><span>/**
+</span></span><span style="display:flex;"><span> * Definition for singly-linked list.
+</span></span><span style="display:flex;"><span> * struct ListNode {
+</span></span><span style="display:flex;"><span> *     int val;
+</span></span><span style="display:flex;"><span> *     ListNode *next;
+</span></span><span style="display:flex;"><span> *     ListNode() : val(0), next(nullptr) {}
+</span></span><span style="display:flex;"><span> *     ListNode(int x) : val(x), next(nullptr) {}
+</span></span><span style="display:flex;"><span> *     ListNode(int x, ListNode *next) : val(x), next(next) {}
+</span></span><span style="display:flex;"><span> * };
+</span></span><span style="display:flex;"><span> */
+</span></span><span style="display:flex;"><span>class Solution {
+</span></span><span style="display:flex;"><span>public:
+</span></span><span style="display:flex;"><span>    ListNode* insertionSortList(ListNode* head) {
+</span></span><span style="display:flex;"><span>        if(!head) return nullptr;
+</span></span><span style="display:flex;"><span>        ListNode* dummy = new ListNode(-1);
+</span></span><span style="display:flex;"><span>        ListNode* cur = head;
+</span></span><span style="display:flex;"><span>        while(cur){
+</span></span><span style="display:flex;"><span>            ListNode* p = dummy;
+</span></span><span style="display:flex;"><span>            while(p-&gt;next != nullptr &amp;&amp; cur-&gt;val &gt; p-&gt;next-&gt;val) p = p-&gt;next;
+</span></span><span style="display:flex;"><span>            auto q = cur-&gt;next;
+</span></span><span style="display:flex;"><span>            cur-&gt;next = p-&gt;next;
+</span></span><span style="display:flex;"><span>            p-&gt;next = cur;
+</span></span><span style="display:flex;"><span>            cur = q;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        return dummy-&gt;next;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>};
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h1 id="138-复制带随机指针的链表httpsleetcodecnproblemscopy-list-with-random-pointer"><a href="https://leetcode.cn/problems/copy-list-with-random-pointer/">138. 复制带随机指针的链表</a></h1>
+<p>题意：</p>
+<p>深拷贝一个带随机指针的链表</p>
+<p>思路：</p>
+<p>第一种思路简单一些，需要用一个unordered_map来存储对应节点的深拷贝节点，然后依次构建链表，最后返回。</p>
+<p>第二种是在每个节点的后面复制节点，然后依次链接，再抽取结果，恢复链表。</p>
+<p>第二种的空间复杂度为O(1)，是原地修改，但是在lc上评判没有太大差别。</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">23
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">24
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">25
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">26
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">27
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">28
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">29
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">30
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">31
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">32
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">33
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">34
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">35
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>//unordered_map的方法
+</span></span><span style="display:flex;"><span>/*
+</span></span><span style="display:flex;"><span>// Definition for a Node.
+</span></span><span style="display:flex;"><span>class Node {
+</span></span><span style="display:flex;"><span>public:
+</span></span><span style="display:flex;"><span>    int val;
+</span></span><span style="display:flex;"><span>    Node* next;
+</span></span><span style="display:flex;"><span>    Node* random;
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    Node(int _val) {
+</span></span><span style="display:flex;"><span>        val = _val;
+</span></span><span style="display:flex;"><span>        next = NULL;
+</span></span><span style="display:flex;"><span>        random = NULL;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>};
+</span></span><span style="display:flex;"><span>*/
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>class Solution {
+</span></span><span style="display:flex;"><span>public:
+</span></span><span style="display:flex;"><span>    unordered_map&lt;Node*, Node*&gt; hash;
+</span></span><span style="display:flex;"><span>    Node* copyRandomList(Node* head) {
+</span></span><span style="display:flex;"><span>        auto u = head;
+</span></span><span style="display:flex;"><span>        while (u) {
+</span></span><span style="display:flex;"><span>            hash[u] = new Node(u-&gt;val);
+</span></span><span style="display:flex;"><span>            u = u-&gt;next;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        u = head;
+</span></span><span style="display:flex;"><span>        while (u) {
+</span></span><span style="display:flex;"><span>            hash[u]-&gt;next = hash[u-&gt;next];
+</span></span><span style="display:flex;"><span>            hash[u]-&gt;random = hash[u-&gt;random];
+</span></span><span style="display:flex;"><span>            u = u-&gt;next;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        return hash[head];
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>};
+</span></span></code></pre></td></tr></table>
+</div>
+</div><div class="highlight"><div style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">23
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">24
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">25
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">26
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">27
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">28
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">29
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">30
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">31
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">32
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">33
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">34
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">35
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">36
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">37
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">38
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">39
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">40
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">41
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">42
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">43
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>// 第二种思路，原地修改
+</span></span><span style="display:flex;"><span>/*
+</span></span><span style="display:flex;"><span>// Definition for a Node.
+</span></span><span style="display:flex;"><span>class Node {
+</span></span><span style="display:flex;"><span>public:
+</span></span><span style="display:flex;"><span>    int val;
+</span></span><span style="display:flex;"><span>    Node* next;
+</span></span><span style="display:flex;"><span>    Node* random;
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    Node(int _val) {
+</span></span><span style="display:flex;"><span>        val = _val;
+</span></span><span style="display:flex;"><span>        next = NULL;
+</span></span><span style="display:flex;"><span>        random = NULL;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>};
+</span></span><span style="display:flex;"><span>*/
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>class Solution {
+</span></span><span style="display:flex;"><span>public:
+</span></span><span style="display:flex;"><span>    Node* copyRandomList(Node* head) {
+</span></span><span style="display:flex;"><span>        auto u = head;
+</span></span><span style="display:flex;"><span>        // 在每个节点的后面增加一个其复制节点
+</span></span><span style="display:flex;"><span>        while (u) {
+</span></span><span style="display:flex;"><span>            auto t = new Node(u-&gt;val);
+</span></span><span style="display:flex;"><span>            t-&gt;next = u-&gt;next;
+</span></span><span style="display:flex;"><span>            u-&gt;next = t;
+</span></span><span style="display:flex;"><span>            u = t-&gt;next;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        u = head;
+</span></span><span style="display:flex;"><span>        // 给复制节点增加random指针
+</span></span><span style="display:flex;"><span>        while (u) {
+</span></span><span style="display:flex;"><span>            if (u-&gt;random) u-&gt;next-&gt;random = u-&gt;random-&gt;next;
+</span></span><span style="display:flex;"><span>            u = u-&gt;next-&gt;next;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        auto dummy = new Node(0), p = head, q = dummy;
+</span></span><span style="display:flex;"><span>        // 抽取出来复制的链表，还要恢复原先的链表
+</span></span><span style="display:flex;"><span>        while (p) {
+</span></span><span style="display:flex;"><span>            q = q-&gt;next = p-&gt;next;
+</span></span><span style="display:flex;"><span>            p = p-&gt;next = p-&gt;next-&gt;next;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        return dummy-&gt;next;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>};
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h1 id="142-环形链表-iihttpsleetcodecnproblemslinked-list-cycle-ii"><a href="https://leetcode.cn/problems/linked-list-cycle-ii/">142. 环形链表 II</a></h1>
+<p>题意：</p>
+<p>无环返回null，有环返回入口节点。</p>
+<p>思路：</p>
+<p>首先，快慢指针判断是否有环；然后，在有环的条件下，将fast指针移到链表头部，然后和slow逐个向后遍历，直到到达同一个节点，这个节点就是入口节点。</p>
+<p>证明起来也比较简单，画个图更好理解，假设入口前的距离为l，第一次快慢指针相遇的位置距离入口的距离为x，环的一圈的距离为r，可以知道，在第一次快慢指针的位移中：</p>
+<p>slow的移动距离：$s1 = l + x + k_1r$</p>
+<p>fast的移动距离：$s2 = l + x + k_2r$</p>
+<p>而且s2 = 2 * s1（快慢指针移动跳的步数不同），可以得到：</p>
+<p>$l + x = (k_2 - 2 * k_1) * r$</p>
+<p>带入s1可以得到，s1位移的距离是圆的周长的整数倍，则只需要再走l的距离就可以到达入口位置。</p>
+<p>这里也可以将x移到右边， r - x得到的是slow要走多远能够到达入口节点。</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">23
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">24
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">25
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">26
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">27
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>/**
+</span></span><span style="display:flex;"><span> * Definition for singly-linked list.
+</span></span><span style="display:flex;"><span> * struct ListNode {
+</span></span><span style="display:flex;"><span> *     int val;
+</span></span><span style="display:flex;"><span> *     ListNode *next;
+</span></span><span style="display:flex;"><span> *     ListNode(int x) : val(x), next(NULL) {}
+</span></span><span style="display:flex;"><span> * };
+</span></span><span style="display:flex;"><span> */
+</span></span><span style="display:flex;"><span>class Solution {
+</span></span><span style="display:flex;"><span>public:
+</span></span><span style="display:flex;"><span>    ListNode *detectCycle(ListNode *head) {
+</span></span><span style="display:flex;"><span>        if (!head || !head-&gt;next) return NULL;
+</span></span><span style="display:flex;"><span>        auto slow = head, fast = head;
+</span></span><span style="display:flex;"><span>        while (fast &amp;&amp; fast-&gt;next) {
+</span></span><span style="display:flex;"><span>            slow = slow-&gt;next;
+</span></span><span style="display:flex;"><span>            fast = fast-&gt;next-&gt;next;
+</span></span><span style="display:flex;"><span>            if (slow == fast) break;
+</span></span><span style="display:flex;"><span>        } 
+</span></span><span style="display:flex;"><span>        if (!fast || !fast-&gt;next) return NULL;
+</span></span><span style="display:flex;"><span>        fast = head;
+</span></span><span style="display:flex;"><span>        while (slow != fast) {
+</span></span><span style="display:flex;"><span>            slow = slow-&gt;next;
+</span></span><span style="display:flex;"><span>            fast = fast-&gt;next;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        return slow;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>};
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h1 id="148-排序链表httpsleetcodecnproblemssort-list"><a href="https://leetcode.cn/problems/sort-list/">148. 排序链表</a></h1>
+<p>题意：</p>
+<p>链表排序</p>
+<p>思路：</p>
+<p>本来以为是和147相同的题目，结果写完直接TLE了，仔细看了一下数据范围发现数据范围是5*10^4，则在O(N^2)的时间复杂度下会超时。</p>
+<p>而且题目要求在O(1)的空间复杂度下，因此只能使用<strong>迭代的堆排序</strong>解决问题。</p>
+<p>就是自下往上，依次两两归并。</p>
       </article>
     </section>
 
@@ -540,6 +1282,12 @@
     
     
     
+    
+      
+    
+      
+    
+      
     
       
     
@@ -806,6 +1554,12 @@
           
           
           
+            <a class="ui label" href="/tags/mysql%E7%B4%A2%E5%BC%95/" title="mysql索引">
+              mysql索引
+            </a>
+          
+          
+          
             <a class="ui label" href="/tags/nginx/" title="nginx">
               nginx
             </a>
@@ -844,6 +1598,18 @@
           
             <a class="ui label" href="/tags/spfa%E7%AE%97%E6%B3%95/" title="spfa算法">
               spfa算法
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/tag1/" title="tag1">
+              tag1
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/tag2/" title="tag2">
+              tag2
             </a>
           
           
@@ -1114,7 +1880,7 @@
   window.background = "#fff"
   window.defaultDark =  null 
   window.backgroundDark =  null 
-  window.backgroundImageDark = "/cover/edge_of_planet.jpg"
+  window.backgroundImageDark = "https://oss.surfaroundtheworld.top/blog-pictures/6-16/edge_of_planet.jpg"
   window.darkNav =  true 
   window.maxTags =  5 
   window.hasTwitterEmbed =  null 

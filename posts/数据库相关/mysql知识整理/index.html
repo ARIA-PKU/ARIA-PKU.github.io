@@ -1,0 +1,984 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>MySQL知识整理 | Aria&#39;s Blog</title>
+
+    
+<link href="/header/icon.jpg" rel="shortcut icon" type="image/x-icon" />
+
+
+
+
+<meta name="author" content="Aria" />
+<meta name="description" content="整理一些学习使用过程中遇到的细碎的知识点
+" />
+
+
+
+<meta name="generator" content="Hugo 0.98.0" />
+
+<link rel="canonical" href="https://blog.surfaroundtheworld.top/posts/%E6%95%B0%E6%8D%AE%E5%BA%93%E7%9B%B8%E5%85%B3/mysql%E7%9F%A5%E8%AF%86%E6%95%B4%E7%90%86/" />
+
+
+<meta property="og:title" content="MySQL知识整理" />
+<meta property="og:description" content="整理一些学习使用过程中遇到的细碎的知识点" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://blog.surfaroundtheworld.top/posts/%E6%95%B0%E6%8D%AE%E5%BA%93%E7%9B%B8%E5%85%B3/mysql%E7%9F%A5%E8%AF%86%E6%95%B4%E7%90%86/" /><meta property="og:image" content="https://oss.surfaroundtheworld.top/blog-pictures/6-16/edge_of_planet.jpg"/><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2022-06-20T17:21:29+08:00" />
+<meta property="article:modified_time" content="2022-06-20T17:21:29+08:00" />
+
+
+
+
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="https://oss.surfaroundtheworld.top/blog-pictures/6-16/edge_of_planet.jpg"/>
+
+<meta name="twitter:title" content="MySQL知识整理"/>
+<meta name="twitter:description" content="整理一些学习使用过程中遇到的细碎的知识点"/>
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.css" integrity="sha256-UXesixbeLkB/UYxVTzuj/gg3+LMzgwAmg3zD+C4ZASQ=" crossorigin="anonymous">
+<link rel="stylesheet" href="/css/icomoon.css" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/overlayscrollbars@1.13.1/css/OverlayScrollbars.min.css" integrity="sha256-WKijf8KI68sbq8Znd6yMepIuFF0wdWfIt6gk3JWcQfk=" crossorigin="anonymous">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4.0.0/github-markdown.min.css">
+<link rel="stylesheet" href="/css/site.css" />
+
+<style>
+  .ui.header a:not(.item, .ui.button):hover {
+    text-decoration: underline;
+  }
+
+  
+  a:not(.item, .ui.button) {
+    color: seagreen !important;
+  }
+  
+
+  
+  .inverted a:not(.item, .ui.button) {
+     color: darkseagreen !important;
+  }
+  
+
+  
+  body.default {
+    
+    background-color: #fff;
+    
+
+    
+    background-image: url(https://oss.surfaroundtheworld.top/blog-pictures/6-16/edge_of_planet.jpg);
+    
+  }
+  
+
+  
+  body.dark {
+    
+
+    
+    background-image: url(https://oss.surfaroundtheworld.top/blog-pictures/6-16/edge_of_planet.jpg);
+    
+  }
+  
+</style>
+
+
+    
+
+
+
+
+
+
+
+    
+    <link rel="stylesheet" href="/css/custom.css" />
+    
+  </head>
+
+  <body class="default">
+    
+<nav class="ui secondary menu dream-menu dream-nav">
+
+  <a class="item dream-flip-toggle" title="翻转！">
+    <i class="large link bullseye icon"></i>
+  </a>
+  <a class="item" href="https://blog.surfaroundtheworld.top/" title="首页">
+    <i class="large link home icon"></i>
+  </a>
+  
+  <a class="item" onclick="themeSwitch(event)">
+    <i class="large link icon theme-switch"></i>
+  </a>
+  
+  
+  <a class="item" title="搜索" onclick="toggleSearch(event)">
+    <i class="large link search icon"></i>
+  </a>
+  
+</nav>
+
+    <div class="flip-container">
+      <div class="flipper">
+        <section class="front">
+          <div class="dream-max-width">
+            
+<div class="ui relaxed centered grid dream-grid dream-grid-single">
+  
+  
+  
+  
+
+  
+  <aside class="sixteen wide mobile sixteen wide tablet three wide computer column dream-single-aside">
+    
+    <div class="ui segment toc">
+      <nav id="TableOfContents">
+  <ul>
+    <li><a href="#一从执行速度上来说"><strong>一、从执行速度上来说</strong></a></li>
+    <li><a href="#二从原理上讲"><strong>二、从原理上讲</strong></a></li>
+    <li><a href="#1delete"><strong>1、DELETE</strong></a></li>
+    <li><a href="#2truncate"><strong>2、truncate</strong></a></li>
+    <li><a href="#3drop"><strong>3、drop</strong></a></li>
+  </ul>
+</nav>
+    </div>
+    
+
+    
+  </aside>
+  
+  <div class="sixteen wide mobile sixteen wide tablet ten wide computer column markdown-body dream-single" id="dream-save-post-as-img">
+    <section class="ui segment">
+      <header>
+        <h1 class="ui large header">MySQL知识整理<span class="sub header">
+            <span class="left">
+              @
+              
+                Aria
+              
+
+              | 
+                  <span data-format="luxon">2022-06-20T17:21:29&#43;08:00</span>
+                
+
+              | 4 分钟阅读
+
+              
+              | 更新于
+                
+                  <span data-format="luxon">2022-06-20T17:21:29&#43;08:00</span>
+                
+              
+            </span>
+
+            
+            <span class="dream-share">
+  <a href="#" class="save-as-image" title="保存为图片" onclick="savePostAsImg()">
+    <i class="save icon"></i>
+  </a>
+  <a href="https://twitter.com/intent/tweet?text=MySQL%e7%9f%a5%e8%af%86%e6%95%b4%e7%90%86&url=https%3a%2f%2fblog.surfaroundtheworld.top%2fposts%2f%25E6%2595%25B0%25E6%258D%25AE%25E5%25BA%2593%25E7%259B%25B8%25E5%2585%25B3%2fmysql%25E7%259F%25A5%25E8%25AF%2586%25E6%2595%25B4%25E7%2590%2586%2f" title="Twitter">
+    <i class="twitter icon"></i>
+  </a>
+  <a href="https://facebook.com/sharer/sharer.php?u=https%3a%2f%2fblog.surfaroundtheworld.top%2fposts%2f%25E6%2595%25B0%25E6%258D%25AE%25E5%25BA%2593%25E7%259B%25B8%25E5%2585%25B3%2fmysql%25E7%259F%25A5%25E8%25AF%2586%25E6%2595%25B4%25E7%2590%2586%2f" title="Facebook">
+    <i class="facebook icon"></i>
+  </a>
+</span>
+
+            
+          </span>
+        </h1>
+      </header>
+
+      <article class="main">
+        
+        <img class="cover" src="https://oss.surfaroundtheworld.top/blog-pictures/6_20/mysql_4.jpg" />
+        
+
+        <p>整理一些学习使用过程中遇到的细碎的知识点</p>
+<h1 id="mysql-的-deletetruncatedrop-有什么区别">MySQL 的 delete、truncate、drop 有什么区别?</h1>
+<h2 id="一从执行速度上来说"><strong>一、从执行速度上来说</strong></h2>
+<p>drop &gt; truncate &raquo; DELETE</p>
+<h2 id="二从原理上讲"><strong>二、从原理上讲</strong></h2>
+<h2 id="1delete"><strong>1、DELETE</strong></h2>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-text" data-lang="text"><span style="display:flex;"><span>DELETE from TABLE_NAME where xxx
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>1、DELETE属于数据库DML操作语言，只删除数据不删除表的结构，会走事务，执行时会触发trigger；</p>
+<p>2、在 InnoDB 中，DELETE其实并不会真的把数据删除，mysql 实际上只是给删除的数据打了个标记为已删除，因此 delete 删除表中的数据时，表文件在磁盘上所占空间不会变小，存储空间不会被释放，只是把删除的数据行设置为不可见。 虽然未释放磁盘空间，但是下次插入数据的时候，仍然可以重用这部分空间（重用 → 覆盖）。</p>
+<p>3、 DELETE执行时，会先将所删除数据缓存到rollback segement中，事务commit之后生效;</p>
+<p>4、 delete from table_name删除表的全部数据,对于MyISAM 会立刻释放磁盘空间，InnoDB 不会释放磁盘空间;</p>
+<p>5、对于delete from table_name where xxx 带条件的删除, 不管是InnoDB还是MyISAM都不会释放磁盘空间;</p>
+<p>6、 delete操作以后使用 optimize table table_name 会立刻释放磁盘空间。不管是InnoDB还是MyISAM 。所以要想达到释放磁盘空间的目的，delete以后执行optimize table 操作。</p>
+<p>7、delete 操作是一行一行执行删除的，并且同时将该行的的删除操作日志记录在redo和undo表空间中以便进行回滚（rollback）和重做操作，生成的大量日志也会占用磁盘空间。</p>
+<h2 id="2truncate"><strong>2、truncate</strong></h2>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-text" data-lang="text"><span style="display:flex;"><span>Truncate table TABLE_NAME
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>1、truncate：属于数据库DDL定义语言，不走事务，原数据不放到 rollback segment 中，操作不触发 trigger。</p>
+<p>执行后立即生效，无法找回 执行后立即生效，无法找回 执行后立即生效，无法找回</p>
+<p>2、 truncate table table_name 立刻释放磁盘空间 ，不管是 InnoDB和MyISAM 。truncate table其实有点类似于drop table 然后creat,只不过这个create table 的过程做了优化，比如表结构文件之前已经有了等等。所以速度上应该是接近drop table的速度;</p>
+<p>3、truncate能够快速清空一个表。并且重置auto_increment的值。</p>
+<p>但对于不同的类型存储引擎需要注意的地方是：</p>
+<ul>
+<li>对于MyISAM，truncate会重置auto_increment（自增序列）的值为1。而delete后表仍然保持auto_increment。</li>
+<li>对于InnoDB，truncate会重置auto_increment的值为1。delete后表仍然保持auto_increment。但是在做delete整个表之后重启MySQL的话，则重启后的auto_increment会被置为1。</li>
+</ul>
+<p>也就是说，InnoDB的表本身是无法持久保存auto_increment。delete表之后auto_increment仍然保存在内存，但是重启后就丢失了，只能从1开始。实质上重启后的auto_increment会从 SELECT 1+MAX(ai_col) FROM t 开始。</p>
+<p>4、 小心使用 truncate，尤其没有备份的时候，如果误删除线上的表，记得及时联系中国民航，订票电话：400-806-9553</p>
+<h2 id="3drop"><strong>3、drop</strong></h2>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-text" data-lang="text"><span style="display:flex;"><span>Drop table Tablename
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>1、drop：属于数据库DDL定义语言，同Truncate；</p>
+<p>执行后立即生效，无法找回 执行后立即生效，无法找回 执行后立即生效，无法找回</p>
+<p>2、 drop table table_name 立刻释放磁盘空间 ，不管是 InnoDB 和 MyISAM; drop 语句将删除表的结构被依赖的约束(constrain)、触发器(trigger)、索引(index); 依赖于该表的存储过程/函数将保留,但是变为 invalid 状态。</p>
+<p>3、 小心使用 drop ，要删表跑路的兄弟，请在订票成功后在执行操作！订票电话：400-806-9553</p>
+<p>可以这么理解，一本书，delete是把目录撕了，truncate是把书的内容撕下来烧了，drop是把书烧了</p>
+<h1 id="参考文章">参考文章</h1>
+<p>1、https://zhuanlan.zhihu.com/p/270331768</p>
+      </article>
+    </section>
+
+    
+
+    
+    <article class="ui segment utterances-comments" data-html2canvas-ignore>
+      <script
+        src="https://utteranc.es/client.js"
+        repo="ARIA-PKU/ARIA-PKU.github.io"
+        issue-term="og:title"
+        theme="github-light"
+        crossorigin="anonymous"
+        async>
+      </script>
+    </article>
+    
+
+    
+  </div>
+</div>
+
+
+            <footer class="ui basic center aligned segment" style="background-color: transparent;">
+              
+              <p>© 2022 Aria&#39;s Blog</p>
+              
+
+              <p>Powered by <a href="https://gohugo.io/" target="_blank">Hugo</a> with theme <a href="https://github.com/g1eny0ung/hugo-theme-dream" target="_blank">Dream</a>.</p>
+
+              
+            </footer>
+          </div>
+        </section>
+        <section class="back">
+          <div class="dream-max-width">
+            <header class="ui basic very padded segment dream-header">
+  
+  <div class="ui small circular image">
+    <img src="/me/cool.jpg" alt="avatar" />
+  </div>
+  
+
+  <div class="content">
+    <h1 class="ui medium header">Aria&#39;s Blog<span class="sub header">今天不做的事情，今后也不会去做。</span>
+    </h1>
+
+    <article class="ui horizontal list">
+      
+      <a class="item" href="/posts">
+        <i class="archive icon" title="归档"></i>
+      </a>
+      
+      <a class="item" href="/categories">
+        <i class="th list icon" title="所有分类"></i>
+      </a>
+      <a class="item" href="/tags">
+        <i class="tags icon" title="所有标签"></i>
+      </a>
+    </article>
+
+    
+    
+    
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+    
+
+    
+
+    
+
+    
+    
+
+    <div class="tags-with-dropdown">
+      <div class="ui accordion">
+        <div class="title">
+          <div class="ui horizontal list">
+            <a class="item dropdown" href="#">
+              <i class="chevron right icon dropdown-icon"></i>
+            </a>
+          </div>
+          <div class="dream-tags">
+          
+          
+          
+            <a class="ui label" href="/tags/base/" title="BASE">
+              BASE
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/bellman-ford%E7%AE%97%E6%B3%95/" title="Bellman-Ford算法">
+              Bellman-Ford算法
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/c&#43;&#43;%E5%A4%9A%E7%BA%BF%E7%A8%8B%E7%BC%96%E7%A8%8B/" title="c&#43;&#43;多线程编程">
+              c&#43;&#43;多线程编程
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/cap/" title="CAP">
+              CAP
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/css/" title="css">
+              css
+            </a>
+          
+          </div>
+        </div>
+        <div class="content">
+    
+          <div class="dream-tags" style="margin-left: 1.5rem;">
+          
+          
+          
+            <a class="ui label" href="/tags/dfs/" title="DFS">
+              DFS
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/dijkstra/" title="Dijkstra">
+              Dijkstra
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/django/" title="Django">
+              Django
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/django_channel/" title="django_channel">
+              django_channel
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/docker%E5%B8%B8%E7%94%A8%E6%93%8D%E4%BD%9C/" title="Docker常用操作">
+              Docker常用操作
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/floyd%E7%AE%97%E6%B3%95/" title="Floyd算法">
+              Floyd算法
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/git/" title="git">
+              git
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/go/" title="go">
+              go
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/html/" title="html">
+              html
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/http/" title="http">
+              http
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/jquery/" title="jquery">
+              jquery
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/js%E5%B8%B8%E7%94%A8%E5%BA%93/" title="Js常用库">
+              Js常用库
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/js%E8%AF%AD%E6%B3%95/" title="Js语法">
+              Js语法
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/leetcode/" title="leetcode">
+              leetcode
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/linux/" title="Linux">
+              Linux
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/mysql%E6%9E%B6%E6%9E%84%E4%B8%8E%E6%97%A5%E5%BF%97/" title="mysql架构与日志">
+              mysql架构与日志
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/mysql%E7%B4%A2%E5%BC%95/" title="mysql索引">
+              mysql索引
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/nginx/" title="nginx">
+              nginx
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/python/" title="python">
+              python
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/raft/" title="Raft">
+              Raft
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/react/" title="React">
+              React
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/redis/" title="redis">
+              redis
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/rpc/" title="RPC">
+              RPC
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/spfa%E7%AE%97%E6%B3%95/" title="spfa算法">
+              spfa算法
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/tag1/" title="tag1">
+              tag1
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/tag2/" title="tag2">
+              tag2
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/thrift/" title="Thrift">
+              Thrift
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/tmux/" title="tmux">
+              tmux
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/uwsgi/" title="uwsgi">
+              uwsgi
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/vim/" title="vim">
+              vim
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/vscode/" title="vscode">
+              vscode
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/vue3/" title="vue3">
+              vue3
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/websocket/" title="websocket">
+              websocket
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/%E4%BA%8C%E5%88%86%E6%B3%95/" title="二分法">
+              二分法
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/%E4%BD%8D%E8%BF%90%E7%AE%97/" title="位运算">
+              位运算
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/%E5%89%8D%E7%BC%80%E5%92%8C/" title="前缀和">
+              前缀和
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92/" title="动态规划">
+              动态规划
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/%E5%8C%BA%E9%97%B4%E5%90%88%E5%B9%B6/" title="区间合并">
+              区间合并
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/%E5%8D%95%E8%B0%83%E6%A0%88/" title="单调栈">
+              单调栈
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/%E5%8D%95%E8%B0%83%E9%98%9F%E5%88%97/" title="单调队列">
+              单调队列
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/%E5%8F%8C%E6%8C%87%E9%92%88%E7%AE%97%E6%B3%95/" title="双指针算法">
+              双指针算法
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/%E5%9B%BE%E8%AE%BA/" title="图论">
+              图论
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/%E5%B7%AE%E5%88%86/" title="差分">
+              差分
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/%E5%BC%82%E6%AD%A5%E7%BC%96%E7%A8%8B/" title="异步编程">
+              异步编程
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/%E5%BD%92%E5%B9%B6%E6%8E%92%E5%BA%8F/" title="归并排序">
+              归并排序
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/%E5%BF%AB%E9%80%9F%E6%8E%92%E5%BA%8F/" title="快速排序">
+              快速排序
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/%E6%9C%80%E5%B0%8F%E7%94%9F%E6%88%90%E6%A0%91/" title="最小生成树">
+              最小生成树
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/%E6%9C%80%E7%9F%AD%E8%B7%AF/" title="最短路">
+              最短路
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/%E6%A0%88/" title="栈">
+              栈
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/%E7%A6%BB%E6%95%A3%E5%8C%96/" title="离散化">
+              离散化
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/%E7%AE%97%E6%B3%95%E9%A2%98/" title="算法题">
+              算法题
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/%E9%93%BE%E8%A1%A8/" title="链表">
+              链表
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/%E9%98%9F%E5%88%97/" title="队列">
+              队列
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/%E9%AB%98%E7%B2%BE%E5%BA%A6%E8%AE%A1%E7%AE%97/" title="高精度计算">
+              高精度计算
+            </a>
+          
+          </div>
+    
+        </div>
+      </div>
+    </div>
+    
+
+    
+  </div>
+</header>
+
+
+<div class="ui relaxed grid dream-grid dream-back">
+  
+  
+  
+
+  <div class="sixteen wide mobile eight wide tablet four wide computer column dream-column">
+    <article class="ui segment">
+      <div class="ui medium header">社交链接</div>
+      <nav class="ui secondary menu dream-menu dream-socials">
+  
+  <a class="item" href="/index.xml">
+    <i class="large rss square icon" title="RSS"></i>
+  </a>
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</nav>
+
+    </article>
+  </div>
+
+  <div class="sixteen wide mobile eight wide tablet four wide computer column dream-column">
+    
+    <article class="ui segment">
+      <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"><img alt="知识共享许可协议" style="border-width:0" src="https://i.creativecommons.org/l/by-nc-sa/4.0/88x31.png" /></a><br />本作品采用<a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/">知识共享署名-非商业性使用-相同方式共享 4.0 国际许可协议</a>进行许可。<br />
+    </article>
+    
+  </div>
+
+  
+</div>
+
+          </div>
+        </section>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.js" integrity="sha256-CgSoWC9w5wNmI1aN8dIMK+6DPelUEtvDr+Bc2m/0Nx8=" crossorigin="anonymous"></script>
+
+    
+    <div class="ui segment" id="dream-search">
+  <div class="ui search">
+    <div class="ui transparent input">
+      <input class="prompt" type="text" placeholder="搜索" />
+    </div>
+    <div class="results"></div>
+  </div>
+</div>
+<script>
+  $(document).ready(function () {
+    $.getJSON('https:\/\/blog.surfaroundtheworld.top\//index.json', function (data) {
+      $('.ui.search').search({
+        source: data,
+        searchFields: ['title'],
+        showNoResults: false,
+      })
+    })
+  })
+</script>
+<script src="/js/search.js"></script>
+
+    
+
+    
+
+    <script>
+  window.background = "#fff"
+  window.defaultDark =  null 
+  window.backgroundDark =  null 
+  window.backgroundImageDark = "https://oss.surfaroundtheworld.top/blog-pictures/6-16/edge_of_planet.jpg"
+  window.darkNav =  true 
+  window.maxTags =  5 
+  window.hasTwitterEmbed =  null 
+  window.fixedNav =  null 
+
+  if (window.hasTwitterEmbed) {
+    
+    window.twttr = (function (d, s, id) {
+      var js,
+        fjs = d.getElementsByTagName(s)[0],
+        t = window.twttr || {}
+      if (d.getElementById(id)) return t
+      js = d.createElement(s)
+      js.id = id
+      js.src = 'https://platform.twitter.com/widgets.js'
+      fjs.parentNode.insertBefore(js, fjs)
+
+      t._e = []
+      t.ready = function (f) {
+        t._e.push(f)
+      }
+
+      return t
+    })(document, 'script', 'twitter-wjs')
+  }
+</script>
+<script src="https://cdn.jsdelivr.net/npm/overlayscrollbars@1.13.1/js/jquery.overlayScrollbars.min.js" integrity="sha256-tBd38uWlvgfps3zHPrUb2ePBg+Z8EjMf0QloFONzpvU=" crossorigin="anonymous"></script>
+<script src="/js/header.js"></script>
+<script src="/js/main.js"></script>
+<script src="/js/theme.js"></script>
+
+    
+
+
+<script src="https://cdn.jsdelivr.net/npm/luxon@1.26.0" integrity="sha256-4sbTzmCCW9LGrIh5OsN8V5Pfdad1F1MwhLAOyXKnsE0=" crossorigin="anonymous"></script>
+<script>
+  format()
+
+  function format() {
+    $('span[data-format="luxon"]').each(function () {
+      var date = $(this).text()
+
+      $(this).text(luxon.DateTime.fromISO(date, { locale: "zh" }).toFormat("yyyy年MM月dd日"))
+    })
+  }
+</script>
+
+
+
+<script src="/js/scrollToTop.js"></script>
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.0.0-rc.1/dist/html2canvas.min.js" integrity="sha256-uacRffSSMP9qpvNWhVmYLykBv9YKMA1d/VSIN1AmfyQ=" crossorigin="anonymous"></script>
+<script src="/js/post.js" defer></script>
+
+
+    
+
+    
+  </body>
+</html>

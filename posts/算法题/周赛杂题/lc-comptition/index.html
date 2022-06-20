@@ -26,7 +26,7 @@
 <meta property="og:title" content="leetcode的算法周赛题整理" />
 <meta property="og:description" content="记录每周周赛题，滴水穿石" />
 <meta property="og:type" content="article" />
-<meta property="og:url" content="https://blog.surfaroundtheworld.top/posts/%E7%AE%97%E6%B3%95%E9%A2%98/%E5%91%A8%E8%B5%9B%E6%9D%82%E9%A2%98/lc-comptition/" /><meta property="og:image" content="https://blog.surfaroundtheworld.top/me/edge_of_planet.jpg"/><meta property="article:section" content="posts" />
+<meta property="og:url" content="https://blog.surfaroundtheworld.top/posts/%E7%AE%97%E6%B3%95%E9%A2%98/%E5%91%A8%E8%B5%9B%E6%9D%82%E9%A2%98/lc-comptition/" /><meta property="og:image" content="https://oss.surfaroundtheworld.top/blog-pictures/6-16/edge_of_planet.jpg"/><meta property="article:section" content="posts" />
 <meta property="article:published_time" content="2022-06-12T14:55:05+08:00" />
 <meta property="article:modified_time" content="2022-06-12T14:55:05+08:00" />
 
@@ -34,7 +34,7 @@
 
 
 <meta name="twitter:card" content="summary_large_image"/>
-<meta name="twitter:image" content="https://blog.surfaroundtheworld.top/me/edge_of_planet.jpg"/>
+<meta name="twitter:image" content="https://oss.surfaroundtheworld.top/blog-pictures/6-16/edge_of_planet.jpg"/>
 
 <meta name="twitter:title" content="leetcode的算法周赛题整理"/>
 <meta name="twitter:description" content="记录每周周赛题，滴水穿石"/>
@@ -70,7 +70,7 @@
     
 
     
-    background-image: url(/cover/edge_of_planet.jpg);
+    background-image: url(https://oss.surfaroundtheworld.top/blog-pictures/6-16/edge_of_planet.jpg);
     
   }
   
@@ -80,7 +80,7 @@
     
 
     
-    background-image: url(/cover/edge_of_planet.jpg);
+    background-image: url(https://oss.surfaroundtheworld.top/blog-pictures/6-16/edge_of_planet.jpg);
     
   }
   
@@ -149,6 +149,10 @@
   <ul>
     <li><a href="#5289-公平分发饼干httpsleetcodecnproblemsfair-distribution-of-cookies"><a href="https://leetcode.cn/problems/fair-distribution-of-cookies/">5289. 公平分发饼干</a></a></li>
   </ul>
+
+  <ul>
+    <li><a href="#5254-卖木头块httpsleetcodecnproblemsselling-pieces-of-wood"><a href="https://leetcode.cn/problems/selling-pieces-of-wood/">5254. 卖木头块</a></a></li>
+  </ul>
 </nav>
     </div>
     
@@ -170,7 +174,7 @@
                   <span data-format="luxon">2022-06-12T14:55:05&#43;08:00</span>
                 
 
-              | 3 分钟阅读
+              | 4 分钟阅读
 
               
               | 更新于
@@ -498,6 +502,74 @@
 </span></span><span style="display:flex;"><span>};
 </span></span></code></pre></td></tr></table>
 </div>
+</div><h1 id="298场周赛">298场周赛</h1>
+<h2 id="5254-卖木头块httpsleetcodecnproblemsselling-pieces-of-wood"><a href="https://leetcode.cn/problems/selling-pieces-of-wood/">5254. 卖木头块</a></h2>
+<p>题意：</p>
+<p>给定木板，和一组模板宽高和价值，求价值最大切法。</p>
+<p>思路：</p>
+<p>DP，一共两种切分方式，横着切和竖着切。对每种切法，枚举切成两块木板的价值总和。</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">23
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">24
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">25
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">26
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">27
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">28
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>typedef long long LL;
+</span></span><span style="display:flex;"><span>class Solution {
+</span></span><span style="display:flex;"><span>public:
+</span></span><span style="display:flex;"><span>    long long sellingWood(int n, int m, vector&lt;vector&lt;int&gt;&gt;&amp; prices) {
+</span></span><span style="display:flex;"><span>        vector&lt;vector&lt;LL&gt;&gt; f(n + 1, vector&lt;LL&gt;(m + 1));
+</span></span><span style="display:flex;"><span>        // 初始化各个板子的价值
+</span></span><span style="display:flex;"><span>        for (auto&amp; p: prices) {
+</span></span><span style="display:flex;"><span>            auto h = p[0], w = p[1], v = p[2];
+</span></span><span style="display:flex;"><span>            f[h][w] = v;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        // 枚举长和宽
+</span></span><span style="display:flex;"><span>        for (int i = 1; i &lt;= n; i ++) {
+</span></span><span style="display:flex;"><span>            for (int j = 1; j &lt;= m; j ++) {
+</span></span><span style="display:flex;"><span>                // 横着切
+</span></span><span style="display:flex;"><span>                for (int k = 1; k &lt; i; k ++) {
+</span></span><span style="display:flex;"><span>                    f[i][j] = max(f[i][j], f[k][j] + f[i - k][j]);
+</span></span><span style="display:flex;"><span>                }
+</span></span><span style="display:flex;"><span>                // 竖着切
+</span></span><span style="display:flex;"><span>                for (int k = 1; k &lt; j; k ++) {
+</span></span><span style="display:flex;"><span>                    f[i][j] = max(f[i][j], f[i][k] + f[i][j - k]);
+</span></span><span style="display:flex;"><span>                }
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        return f[n][m];
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>};
+</span></span></code></pre></td></tr></table>
+</div>
 </div>
       </article>
     </section>
@@ -564,6 +636,12 @@
     
     
     
+    
+      
+    
+      
+    
+      
     
       
     
@@ -830,6 +908,12 @@
           
           
           
+            <a class="ui label" href="/tags/mysql%E7%B4%A2%E5%BC%95/" title="mysql索引">
+              mysql索引
+            </a>
+          
+          
+          
             <a class="ui label" href="/tags/nginx/" title="nginx">
               nginx
             </a>
@@ -868,6 +952,18 @@
           
             <a class="ui label" href="/tags/spfa%E7%AE%97%E6%B3%95/" title="spfa算法">
               spfa算法
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/tag1/" title="tag1">
+              tag1
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/tag2/" title="tag2">
+              tag2
             </a>
           
           
@@ -1138,7 +1234,7 @@
   window.background = "#fff"
   window.defaultDark =  null 
   window.backgroundDark =  null 
-  window.backgroundImageDark = "/cover/edge_of_planet.jpg"
+  window.backgroundImageDark = "https://oss.surfaroundtheworld.top/blog-pictures/6-16/edge_of_planet.jpg"
   window.darkNav =  true 
   window.maxTags =  5 
   window.hasTwitterEmbed =  null 
