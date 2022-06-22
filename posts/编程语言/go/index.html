@@ -139,12 +139,41 @@
     <div class="ui segment toc">
       <nav id="TableOfContents">
   <ul>
-    <li><a href="#1垃圾回收机制">1、垃圾回收机制</a></li>
-    <li><a href="#2gmp模型">2、GMP模型</a></li>
+    <li><a href="#1go的协程">1、Go的协程</a></li>
+    <li><a href="#2gmp模型">2、GMP模型</a>
+      <ul>
+        <li><a href="#21被淘汰的gm模型">2.1、被淘汰的GM模型</a></li>
+        <li><a href="#22gmp">2.2、GMP</a></li>
+      </ul>
+    </li>
+    <li><a href="#3垃圾回收机制">3、垃圾回收机制</a>
+      <ul>
+        <li><a href="#11go的内存管理">1.1、Go的内存管理</a></li>
+        <li><a href="#12gc的版本史">1.2、GC的版本史</a></li>
+        <li><a href="#13gc的四个阶段">1.3、GC的四个阶段</a></li>
+        <li><a href="#14gc触发时机">1.4、GC触发时机</a></li>
+      </ul>
+    </li>
   </ul>
 
   <ul>
-    <li><a href="#1defer">1、defer</a></li>
+    <li><a href="#1闭包">1、闭包</a></li>
+    <li><a href="#2defer">2、defer</a></li>
+    <li><a href="#3go的并发">3、Go的并发</a>
+      <ul>
+        <li><a href="#31syncwaitgroup">3.1、sync.WaitGroup</a></li>
+        <li><a href="#32channel">3.2、channel</a></li>
+        <li><a href="#33锁机制">3.3、锁机制</a></li>
+        <li><a href="#34synconce">3.4、sync.Once</a></li>
+        <li><a href="#35原子操作">3.5、原子操作</a></li>
+      </ul>
+    </li>
+    <li><a href="#4context">4、Context</a></li>
+  </ul>
+
+  <ul>
+    <li><a href="#1空-struct-的用途">1、空 struct{} 的用途</a></li>
+    <li><a href="#2make和new">2、make和new</a></li>
   </ul>
 </nav>
     </div>
@@ -167,7 +196,7 @@
                   <span data-format="luxon">2022-06-15T23:21:48&#43;08:00</span>
                 
 
-              | 1 分钟阅读
+              | 16 分钟阅读
 
               
               | 更新于
@@ -202,10 +231,687 @@
 
         <p>总结一下在go语言的学习与实践中学到的知识</p>
 <h1 id="一底层原理">一、底层原理</h1>
-<h2 id="1垃圾回收机制">1、垃圾回收机制</h2>
+<h2 id="1go的协程">1、Go的协程</h2>
+<p>多进程、多线程已经提高了系统的并发能力，但是在当今互联网高并发场景下，为每个任务都创建一个线程是不现实的，因为会消耗大量的内存(进程虚拟内存会占用4GB[32位操作系统], 而线程也要大约4MB)。</p>
+<p>Go中，协程被称为goroutine，它非常轻量，一个goroutine只占几KB，并且这几KB就足够goroutine运行完，这就能在有限的内存空间内支持大量goroutine，支持了更多的并发。虽然一个goroutine的栈只占几KB，但实际是可伸缩的，如果需要更多内容，<code>runtime</code>会自动为goroutine分配。</p>
+<p>与python和其他语言的协程相比，go的协程有很大不同。</p>
+<p>python的协程是通常意义上的协程，两大特征就是<strong>可中断和可恢复</strong>。无法利用多核，不会并行。更适用于IO密集程序。</p>
+<p><strong>从运行机制上来说</strong>，coroutine 的运行机制属于<strong>协作式任务</strong>处理， 程序需要主动交出控制权，宿主才能获得控制权并将控制权交给其他 coroutine。如果开发者无意间或者故意让应用程序长时间占用 CPU，操作系统也无能为力，表现出来的效果就是计算机很容易失去响应或者死机。goroutine 属于<strong>抢占式任务</strong>处理，已经和现有的多线程和多进程任务处理非常类似， 虽然无法控制自己获取高优先度支持。但如果发现一个应用程序长时间大量地占用 CPU，那么用户有权终止这个任务。</p>
 <h2 id="2gmp模型">2、GMP模型</h2>
+<h3 id="21被淘汰的gm模型">2.1、被淘汰的GM模型</h3>
+<p><img src="http://oss.surfaroundtheworld.top/blog-pictures/6_22/GM.jpg" alt=""></p>
+<p>M想要执行、放回G都必须访问全局G队列，并且M有多个，即多线程访问同一资源需要加锁进行保证互斥/同步，所以全局G队列是有互斥锁进行保护的。</p>
+<p>老调度器有几个缺点：</p>
+<ol>
+<li>创建、销毁、调度G都需要每个M获取锁，这就形成了<strong>激烈的锁竞争</strong>。</li>
+<li>M转移G会造成<strong>延迟和额外的系统负载</strong>。比如当G中包含创建新协程的时候，M创建了G’，为了继续执行G，需要把G’交给M’执行，也造成了<strong>很差的局部性</strong>，因为G’和G是相关的，最好放在M上执行，而不是其他M&rsquo;。</li>
+<li>系统调用(CPU在M之间的切换)导致频繁的线程阻塞和取消阻塞操作增加了系统开销。</li>
+</ol>
+<h3 id="22gmp">2.2、GMP</h3>
+<p><img src="http://oss.surfaroundtheworld.top/blog-pictures/6_22/gpm.png" alt=""></p>
+<p>其中：</p>
+<ul>
+<li>G：表示 goroutine，每执行一次<code>go f()</code>就创建一个 G，包含要执行的函数和上下文信息。</li>
+<li>全局队列（Global Queue）：存放等待运行的 G。</li>
+<li>P：表示 goroutine 执行所需的资源，最多有 GOMAXPROCS 个。</li>
+<li>P 的本地队列：同全局队列类似，存放的也是等待运行的G，存的数量有限，不超过256个。新建 G 时，G 优先加入到 P 的本地队列，如果本地队列满了会批量移动部分 G 到全局队列。</li>
+<li>M：线程想运行任务就得获取 P，从 P 的本地队列获取 G，当 P 的本地队列为空时，M 也会尝试从全局队列或其他 P 的本地队列获取 G。M 运行 G，G 执行之后，M 会从 P 获取下一个 G，不断重复下去。</li>
+<li>Goroutine 调度器和操作系统调度器是通过 M 结合起来的，每个 M 都代表了1个内核线程，操作系统调度器负责把内核线程分配到 CPU 的核上执行。</li>
+</ul>
+<p>单从线程调度讲，Go语言相比起其他语言的优势在于OS线程是由OS内核来调度的， goroutine 则是由Go运行时（runtime）自己的调度器调度的，完全是在用户态下完成的， <strong>不涉及内核态与用户态之间的频繁切换</strong>，包括内存的分配与释放，都是在用户态维护着一块大的内存池， 不直接调用系统的malloc函数（除非内存池需要改变），成本比调度OS线程低很多。 另一方面充分利用了多核的硬件资源，近似的把若干goroutine均分在物理线程上， 再加上本身 goroutine 的超轻量级，以上种种特性保证了 goroutine 调度方面的性能。</p>
+<h2 id="3垃圾回收机制">3、垃圾回收机制</h2>
+<h3 id="11go的内存管理">1.1、Go的内存管理</h3>
+<p>程序在内存上被分为<strong>堆区、栈区、全局数据区、代码段、数据区</strong>五个部分。对于C++等早期编程语言栈上的内存由编译器管理回收，堆上的内存空间需要编程人员负责申请与释放。在Go中<strong>栈上内存仍由编译器负责管理回收</strong>，而<strong>堆上的内存由编译器和垃圾收集器负责管理回收</strong>，给编程人员带来了极大的便利性。</p>
+<h3 id="12gc的版本史">1.2、GC的版本史</h3>
+<h4 id="go13的标记清除法">Go1.3的标记清除法</h4>
+<p>总而言之就是STW时间过长，性能无法满足需求。</p>
+<h4 id="go15的三色标记法">Go1.5的三色标记法</h4>
+<p>三色标记算法将程序中的对象分成白色、黑色和灰色三类。白色对象表示暂无对象引用的潜在垃圾，其内存可能会被垃圾收集器回收；灰色对象表示活跃的对象，黑色到白色的中间状态，因为存在指向白色对象的外部指针，垃圾收集器会扫描这些对象的子对象；黑色对象表示活跃的对象。</p>
+<p><strong>三色标记法分五步进行</strong></p>
+<ol>
+<li>将所有对象标记为白色</li>
+<li>从根节点集合出发，将第一次遍历到的节点标记为灰色放入集合列表中</li>
+<li>遍历灰色集合，将灰色节点遍历到的白色节点标记为灰色，并把灰色节点标记为黑色</li>
+<li>循环这个过程</li>
+<li>直到灰色节点集合为空，回收所有的白色节点</li>
+</ol>
+<blockquote>
+<p><strong>根对象是什么？</strong></p>
+<p>根对象在后面的处理过程中也会进行分类， 不同根对象下的引用堆对象会进行不同的GC标记方式。</p>
+<p>其中栈上的根对象指的是各个协程栈，即G上的栈；</p>
+<p>其他的还有全局变量，全局变量又分为bss段（未初始化的全局变量段）和 data段；</p>
+<p>最后还有span中的finalizer的任务数量，finalizer是Go语言中和某种对象绑定的析构器。当某些对象的内存释放后，需要调用析构器函数，从而完整释放资源。例如os.File对象使用了析构器函数关闭操作系统文件描述符，即便用户忘记了调用close()方法也会释放操作系统资源。</p>
+</blockquote>
+<p>方法本身看起来没有问题，但是当GC和程序并行执行的时候会出现问题。</p>
+<p>在此基础上拓展出强三色不变式和弱三色不变式两种方法，对应的分别是插入写屏障和删除写屏障。插入屏障实现的是强三色不变式，删除屏障则实现了弱三色不变式。<strong>值得注意的是为了保证栈的运行效率，屏障只对堆上的内存对象启用，栈上的内存会在GC结束后启用STW重新扫描。</strong>（这里说的栈上的内存，指的是通过栈上指针引用的堆内对象）</p>
+<p>插入屏障：对象被引用时触发的机制，当白色对象被黑色对象引用时，白色对象被标记为灰色（栈上对象无插入屏障，因此需要结束只会进行STW重新扫描，STW时间约为10-100ms）。</p>
+<p>删除屏障：对象被删除时触发的机制。如果灰色对象引用的白色对象被删除时，那么白色对象会被标记为灰色。这样可以避免删除的对象上还有被引用的对象。</p>
+<p>缺点在于回收精度较低，一个对象即使被删除仍可以活过这一轮再下一轮被回收；同样也存在对栈的二次扫描影响程序的效率。</p>
+<h4 id="go18-三色标记混合写屏障">Go1.8 三色标记+混合写屏障</h4>
+<p>基于插入写屏障和删除写屏障在结束时需要STW来重新扫描栈，所带来的性能瓶颈，Go在1.8引入了混合写屏障的方式实现了弱三色不变式的设计方式，混合写屏障，仅在堆空间启动混合写屏障，不需要在<code>GC</code>结束后对栈空间重新扫描，<code>gc pause</code>时间降低至<code>0.5ms</code>以下</p>
+<p>流程分下面四步：</p>
+<ol>
+<li>GC开始时将栈上可达对象全部标记为黑色（不需要二次扫描，无需STW）</li>
+<li>GC期间，任何栈上创建的新对象均为黑色</li>
+<li>被删除引用的对象标记为灰色</li>
+<li>被添加引用的对象标记为灰色</li>
+</ol>
+<h4 id="go114引入新的页分配器用于优化内存分配的速度">Go1.14：引入新的页分配器用于优化内存分配的速度</h4>
+<h3 id="13gc的四个阶段">1.3、GC的四个阶段</h3>
+<p>Golang的GC属于并发式垃圾回收（意味着不需要长时间的STW，GC大部分执行过程是和用户代码并行的），它可以分为四个阶段：</p>
+<ul>
+<li>清除终止<code>Sweep Termination</code>：
+<ul>
+<li>暂停程序</li>
+<li>清扫未被回收的内存管理单元span，当上一轮GC的清扫工作完成后才可以开始新一轮的GC</li>
+</ul>
+</li>
+<li>标记<code>Mark</code>：</li>
+<li>
+<ul>
+<li>切换至<code>_GCmark</code>，开启写屏障和用户程序协助<code>Mutator Assiste</code>并将根对象添加到三色标记法队列</li>
+<li>恢复程序，标记进程和<code>Mutator Assiste</code>进程会开始并发标记内存中的对象，混合写屏障将被删除的指针和新加入的指针都标记成灰色，新创建的对象标记成黑色</li>
+<li>扫描根对象（包括所有goroutine的栈、全局对象以及不在堆中的运行时数据结构），扫描goroutine栈期间会暂停当前处理器</li>
+<li>依次处理三色标记法队列，将扫描过的对象标记为黑色并将它们指向的对象标记成灰色</li>
+<li>使用分布式终止算法检查剩余的工作，发现标记阶段完成后进入标记终止阶段</li>
+</ul>
+</li>
+<li>标记终止<code>Mark Termination</code></li>
+<li>
+<ul>
+<li>暂停程序，切换至<code>_GCmarktermination</code>并关闭辅助标记的用户程序</li>
+<li>清理处理器上的线程缓存</li>
+</ul>
+</li>
+<li>清除<code>Sweep</code></li>
+<li>
+<ul>
+<li>将状态切换至<code>_GCoff</code>，关闭混合写屏障</li>
+<li>恢复用户程序，所有新创建的对象标记为白色</li>
+<li>后台并发清理所有的内存管理单元span，当goroutine申请新的内存管理单元时就会触发清理</li>
+</ul>
+</li>
+</ul>
+<blockquote>
+<p>在GC过程中会有两种后台任务（G），包括标记任务和清扫任务。可以同时执行的标记任务约是P数量的四分之一，即go所说的25%CPU用于GC的依据。清扫任务会在程序启动后运行，进入清扫阶段时唤醒。当用户分配内存的速度超过GC回收速度时，Golang会通过辅助GC暂停用户程序进行垃圾回收，防止内存因分配对象速度过快消耗殆尽的问题。</p>
+</blockquote>
+<h3 id="14gc触发时机">1.4、GC触发时机</h3>
+<p>触发垃圾回收首先要满足三个前提条件：</p>
+<ul>
+<li><code>memstats.enablegc</code>：允许垃圾回收</li>
+<li><code>panicking == 0</code>：程序没有panic</li>
+<li><code>gcphase == _GCoff</code>：处于<code>_Gcoff</code>阶段</li>
+</ul>
+<p>对应的触发时机包括：</p>
+<ul>
+<li><code>gcTriggerHeap</code>：堆内存的大小达到一定阈值</li>
+<li><code>gcTriggerTime</code>：距离上一次垃圾回收超过一定阈值时</li>
+<li><code>gcTriggerCycle</code>：如果当前没有启动GC则开始新一轮的GC</li>
+</ul>
 <h1 id="二语言特性">二、语言特性</h1>
-<h2 id="1defer">1、defer</h2>
+<h2 id="1闭包">1、闭包</h2>
+<p>闭包的概念在JS中也有，与go中的性质基本一致。</p>
+<p>闭包是由函数及其相关引用环境组合而成的实体(即：闭包=函数+引用环境)。</p>
+<p>Go语言是支持闭包的，这里只是简单地讲一下在Go语言中闭包是如何实现的。</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">6
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>func f(i int) func() int {
+</span></span><span style="display:flex;"><span>    return func() int {
+</span></span><span style="display:flex;"><span>        i++
+</span></span><span style="display:flex;"><span>        return i
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>函数f返回了一个函数，返回的这个函数，返回的这个函数就是一个闭包。这个函数中本身是没有定义变量i的，而是引用了它所在的环境（函数f）中的变量i。</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>c1 := f(0)
+</span></span><span style="display:flex;"><span>c2 := f(0)
+</span></span><span style="display:flex;"><span>c1()    // reference to i, i = 0, return 1
+</span></span><span style="display:flex;"><span>c2()    // reference to another i, i = 0, return 1
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>c1跟c2引用的是不同的环境，在调用i++时修改的不是同一个i，因此两次的输出都是1。函数f每进入一次，就形成了一个新的环境，对应的闭包中，函数都是同一个函数，环境却是引用不同的环境。</p>
+<p>变量i是函数f中的局部变量，假设这个变量是在函数f的栈中分配的，是不可以的。因为函数f返回以后，对应的栈就失效了，f返回的那个函数中变量i就引用一个失效的位置了。所以闭包的环境中引用的变量不能够在栈上分配。</p>
+<p>在go中有一个比较特别的语言特性：</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">6
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>func f() *Cursor {
+</span></span><span style="display:flex;"><span>    var c Cursor
+</span></span><span style="display:flex;"><span>    c.X = 500
+</span></span><span style="display:flex;"><span>    noinline()
+</span></span><span style="display:flex;"><span>    return &amp;c
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>以上的写法是不被C语言允许的，因为变量c在栈上分配，f函数返回后c的栈空间失效了，但在go中会对局部变量进行<strong>逃逸分析</strong>，这会将c分配到堆上。</p>
+<p><strong>go在返回闭包时并不是单纯返回一个函数，而是返回了一个结构体，它记录下函数返回地址和引用的环境中的变量地址。</strong></p>
+<h2 id="2defer">2、defer</h2>
+<p>Go语言中的<code>defer</code>语句会将其后面跟随的语句进行延迟处理。在<code>defer</code>归属的函数即将返回时，将延迟处理的语句按<code>defer</code>定义的逆序进行执行，也就是说，先被<code>defer</code>的语句最后被执行，最后被<code>defer</code>的语句，最先被执行。</p>
+<p>举个例子：</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">6
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">7
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">main</span>() {
+</span></span><span style="display:flex;"><span>	fmt.<span style="color:#50fa7b">Println</span>(<span style="color:#f1fa8c">&#34;start&#34;</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#ff79c6">defer</span> fmt.<span style="color:#50fa7b">Println</span>(<span style="color:#bd93f9">1</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#ff79c6">defer</span> fmt.<span style="color:#50fa7b">Println</span>(<span style="color:#bd93f9">2</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#ff79c6">defer</span> fmt.<span style="color:#50fa7b">Println</span>(<span style="color:#bd93f9">3</span>)
+</span></span><span style="display:flex;"><span>	fmt.<span style="color:#50fa7b">Println</span>(<span style="color:#f1fa8c">&#34;end&#34;</span>)
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>输出结果：</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span>start
+</span></span><span style="display:flex;"><span>end
+</span></span><span style="display:flex;"><span><span style="color:#bd93f9">3</span>
+</span></span><span style="display:flex;"><span><span style="color:#bd93f9">2</span>
+</span></span><span style="display:flex;"><span><span style="color:#bd93f9">1</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>由于<code>defer</code>语句延迟调用的特性，所以<code>defer</code>语句能非常方便的处理资源释放问题。比如：资源清理、文件关闭、解锁及记录时间等。</p>
+<p>**defer还有一个特别的注意点：**在Go语言的函数中<code>return</code>语句在底层并不是原子操作，它分为给返回值赋值和RET指令两步。而<code>defer</code>语句执行的时机就在返回值赋值操作后，RET指令执行前。因此，以下的语句在返回时，返回的实际是5。</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">6
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">7
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>func f() (r int) {
+</span></span><span style="display:flex;"><span>     t := 5
+</span></span><span style="display:flex;"><span>     defer func() {
+</span></span><span style="display:flex;"><span>       t = t + 5
+</span></span><span style="display:flex;"><span>     }()
+</span></span><span style="display:flex;"><span>     return t
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="3go的并发">3、Go的并发</h2>
+<p>Go语言中的并发程序主要是通过基于CSP（communicating sequential processes）的goroutine和channel来实现，当然也支持使用传统的多线程共享内存的并发方式。</p>
+<h3 id="31syncwaitgroup">3.1、sync.WaitGroup</h3>
+<p>go中多个goroutine 的并发可以利用sync.WaitGroup很简单地实现：</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#ff79c6">package</span> main
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#ff79c6">import</span> (
+</span></span><span style="display:flex;"><span>	<span style="color:#f1fa8c">&#34;fmt&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#f1fa8c">&#34;sync&#34;</span>
+</span></span><span style="display:flex;"><span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#8be9fd;font-style:italic">var</span> wg sync.WaitGroup
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">hello</span>(i <span style="color:#8be9fd">int</span>) {
+</span></span><span style="display:flex;"><span>	<span style="color:#ff79c6">defer</span> wg.<span style="color:#50fa7b">Done</span>() <span style="color:#6272a4">// goroutine结束就登记-1
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>	fmt.<span style="color:#50fa7b">Println</span>(<span style="color:#f1fa8c">&#34;hello&#34;</span>, i)
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span><span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">main</span>() {
+</span></span><span style="display:flex;"><span>	<span style="color:#ff79c6">for</span> i <span style="color:#ff79c6">:=</span> <span style="color:#bd93f9">0</span>; i &lt; <span style="color:#bd93f9">10</span>; i<span style="color:#ff79c6">++</span> {
+</span></span><span style="display:flex;"><span>		wg.<span style="color:#50fa7b">Add</span>(<span style="color:#bd93f9">1</span>) <span style="color:#6272a4">// 启动一个goroutine就登记+1
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>		<span style="color:#ff79c6">go</span> <span style="color:#50fa7b">hello</span>(i)
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>	wg.<span style="color:#50fa7b">Wait</span>() <span style="color:#6272a4">// 等待所有登记的goroutine都结束
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>}
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="32channel">3.2、channel</h3>
+<p>上面的方式只能将函数进行并发，但是没有数据通信，go的并发模型是<code>CSP（Communicating Sequential Processes）</code>，提倡<strong>通过通信共享内存</strong>而不是<strong>通过共享内存而实现通信</strong>。go中使用channel作为goroutine之间的通信机制。</p>
+<p>声明的通道类型变量需要使用内置的<code>make</code>函数初始化之后才能使用。具体格式如下：</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#8be9fd;font-style:italic">make</span>(<span style="color:#8be9fd;font-style:italic">chan</span> 元素类型, [缓冲大小])
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>其中：</p>
+<ul>
+<li>channel的缓冲大小是可选的。</li>
+</ul>
+<h4 id="无缓冲通道">无缓冲通道</h4>
+<p>作用和WaitGroup基本一致，示例如下：</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">recv</span>(c <span style="color:#8be9fd;font-style:italic">chan</span> <span style="color:#8be9fd">int</span>) {
+</span></span><span style="display:flex;"><span>	ret <span style="color:#ff79c6">:=</span> <span style="color:#ff79c6">&lt;-</span>c
+</span></span><span style="display:flex;"><span>	fmt.<span style="color:#50fa7b">Println</span>(<span style="color:#f1fa8c">&#34;接收成功&#34;</span>, ret)
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">main</span>() {
+</span></span><span style="display:flex;"><span>	ch <span style="color:#ff79c6">:=</span> <span style="color:#8be9fd;font-style:italic">make</span>(<span style="color:#8be9fd;font-style:italic">chan</span> <span style="color:#8be9fd">int</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#ff79c6">go</span> <span style="color:#50fa7b">recv</span>(ch) <span style="color:#6272a4">// 创建一个 goroutine 从通道接收值
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>	ch <span style="color:#ff79c6">&lt;-</span> <span style="color:#bd93f9">10</span>
+</span></span><span style="display:flex;"><span>	fmt.<span style="color:#50fa7b">Println</span>(<span style="color:#f1fa8c">&#34;发送成功&#34;</span>)
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>首先无缓冲通道<code>ch</code>上的发送操作会阻塞，直到另一个 goroutine 在该通道上执行接收操作，这时数字10才能发送成功，两个 goroutine 将继续执行。相反，如果接收操作先执行，接收方所在的 goroutine 将阻塞，直到 main goroutine 中向该通道发送数字10。</p>
+<p>使用无缓冲通道进行通信将导致发送和接收的 goroutine 同步化。因此，无缓冲通道也被称为<strong>同步通道</strong>。</p>
+<h4 id="有缓冲的通道">有缓冲的通道</h4>
+<p>只要通道的容量大于零，那么该通道就属于有缓冲的通道，通道的容量表示通道中最大能存放的元素数量。当通道内已有元素数达到最大容量后，再向通道执行发送操作就会阻塞，除非有从通道执行接收操作。</p>
+<h4 id="如何判断一个通道是否被关闭">如何判断一个通道是否被关闭？</h4>
+<p>对一个通道执行接收操作时支持使用如下多返回值模式。</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span>value, ok <span style="color:#ff79c6">:=</span> <span style="color:#ff79c6">&lt;-</span> ch
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>其中：</p>
+<ul>
+<li>value：从通道中取出的值，如果通道被关闭则返回对应类型的零值。</li>
+<li>ok：通道ch关闭时返回 false，否则返回 true。</li>
+</ul>
+<h4 id="for-range接收值">for range接收值</h4>
+<p>通常我们会选择使用<code>for range</code>循环从通道中接收值，当通道被关闭后，会在通道内的所有值被接收完毕后会自动退出循环。这样可以无需判断ok是否为false。</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">f3</span>(ch <span style="color:#8be9fd;font-style:italic">chan</span> <span style="color:#8be9fd">int</span>) {
+</span></span><span style="display:flex;"><span>	<span style="color:#ff79c6">for</span> v <span style="color:#ff79c6">:=</span> <span style="color:#ff79c6">range</span> ch {
+</span></span><span style="display:flex;"><span>		fmt.<span style="color:#50fa7b">Println</span>(v)
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h4 id="单向通道">单向通道</h4>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#ff79c6">&lt;-</span> <span style="color:#8be9fd;font-style:italic">chan</span> <span style="color:#8be9fd">int</span> <span style="color:#6272a4">// 只接收通道，只能接收不能发送
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span><span style="color:#8be9fd;font-style:italic">chan</span> <span style="color:#ff79c6">&lt;-</span> <span style="color:#8be9fd">int</span> <span style="color:#6272a4">// 只发送通道，只能发送不能接收
+</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p>其中，箭头<code>&lt;-</code>和关键字<code>chan</code>的相对位置表明了当前通道允许的操作，这种限制将在编译阶段进行检测。另外对一个只接收通道执行close也是不允许的，因为<strong>默认通道的关闭操作应该由发送方来完成</strong>。</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">23
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">24
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">25
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">26
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">27
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">28
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">29
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">30
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">31
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#6272a4">// Producer2 返回一个接收通道
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span><span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">Producer2</span>() <span style="color:#ff79c6">&lt;-</span><span style="color:#8be9fd;font-style:italic">chan</span> <span style="color:#8be9fd">int</span> {
+</span></span><span style="display:flex;"><span>	ch <span style="color:#ff79c6">:=</span> <span style="color:#8be9fd;font-style:italic">make</span>(<span style="color:#8be9fd;font-style:italic">chan</span> <span style="color:#8be9fd">int</span>, <span style="color:#bd93f9">2</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#6272a4">// 创建一个新的goroutine执行发送数据的任务
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>	<span style="color:#ff79c6">go</span> <span style="color:#8be9fd;font-style:italic">func</span>() {
+</span></span><span style="display:flex;"><span>		<span style="color:#ff79c6">for</span> i <span style="color:#ff79c6">:=</span> <span style="color:#bd93f9">0</span>; i &lt; <span style="color:#bd93f9">10</span>; i<span style="color:#ff79c6">++</span> {
+</span></span><span style="display:flex;"><span>			<span style="color:#ff79c6">if</span> i<span style="color:#ff79c6">%</span><span style="color:#bd93f9">2</span> <span style="color:#ff79c6">==</span> <span style="color:#bd93f9">1</span> {
+</span></span><span style="display:flex;"><span>				ch <span style="color:#ff79c6">&lt;-</span> i
+</span></span><span style="display:flex;"><span>			}
+</span></span><span style="display:flex;"><span>		}
+</span></span><span style="display:flex;"><span>		<span style="color:#8be9fd;font-style:italic">close</span>(ch) <span style="color:#6272a4">// 任务完成后关闭通道
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>	}()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#ff79c6">return</span> ch
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#6272a4">// Consumer2 参数为接收通道
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span><span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">Consumer2</span>(ch <span style="color:#ff79c6">&lt;-</span><span style="color:#8be9fd;font-style:italic">chan</span> <span style="color:#8be9fd">int</span>) <span style="color:#8be9fd">int</span> {
+</span></span><span style="display:flex;"><span>	sum <span style="color:#ff79c6">:=</span> <span style="color:#bd93f9">0</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#ff79c6">for</span> v <span style="color:#ff79c6">:=</span> <span style="color:#ff79c6">range</span> ch {
+</span></span><span style="display:flex;"><span>		sum <span style="color:#ff79c6">+=</span> v
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>	<span style="color:#ff79c6">return</span> sum
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">main</span>() {
+</span></span><span style="display:flex;"><span>	ch2 <span style="color:#ff79c6">:=</span> <span style="color:#50fa7b">Producer2</span>()
+</span></span><span style="display:flex;"><span>  
+</span></span><span style="display:flex;"><span>	res2 <span style="color:#ff79c6">:=</span> <span style="color:#50fa7b">Consumer2</span>(ch2)
+</span></span><span style="display:flex;"><span>	fmt.<span style="color:#50fa7b">Println</span>(res2) <span style="color:#6272a4">// 25
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>}
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="33锁机制">3.3、锁机制</h3>
+<p>提供了互斥锁，读写锁等，操作和其他编程语言基本一样。</p>
+<h3 id="34synconce">3.4、sync.Once</h3>
+<p>在某些场景下我们需要确保某些操作即使在高并发的场景下也只会被执行一次，例如只加载一次配置文件等。</p>
+<p>Go语言中的<code>sync</code>包中提供了一个针对只执行一次场景的解决方案——<code>sync.Once</code>.</p>
+<p>这是实现并发安全的单例模式的一种方法：</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#ff79c6">package</span> singleton
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#ff79c6">import</span> (
+</span></span><span style="display:flex;"><span>    <span style="color:#f1fa8c">&#34;sync&#34;</span>
+</span></span><span style="display:flex;"><span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#8be9fd;font-style:italic">type</span> singleton <span style="color:#8be9fd;font-style:italic">struct</span> {}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#8be9fd;font-style:italic">var</span> instance <span style="color:#ff79c6">*</span>singleton
+</span></span><span style="display:flex;"><span><span style="color:#8be9fd;font-style:italic">var</span> once sync.Once
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">GetInstance</span>() <span style="color:#ff79c6">*</span>singleton {
+</span></span><span style="display:flex;"><span>    once.<span style="color:#50fa7b">Do</span>(<span style="color:#8be9fd;font-style:italic">func</span>() {
+</span></span><span style="display:flex;"><span>        instance = <span style="color:#ff79c6">&amp;</span>singleton{}
+</span></span><span style="display:flex;"><span>    })
+</span></span><span style="display:flex;"><span>    <span style="color:#ff79c6">return</span> instance
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p><code>sync.Once</code>其实内部包含一个互斥锁和一个布尔值，互斥锁保证布尔值和数据的安全，而布尔值用来记录初始化是否完成。这样设计就能保证初始化操作的时候是并发安全的并且初始化操作也不会被执行多次。</p>
+<h3 id="35原子操作">3.5、原子操作</h3>
+<p>针对整数数据类型（int32、uint32、int64、uint64）我们还可以使用原子操作来保证并发安全，通常直接使用原子操作比使用锁操作效率更高。Go语言中原子操作由内置的标准库<code>sync/atomic</code>提供。</p>
+<p><code>atomic</code>包提供了底层的原子级内存操作，对于同步算法的实现很有用。这些函数必须谨慎地保证正确使用。<strong>除了某些特殊的底层应用，使用通道或者 sync 包的函数/类型实现同步更好。</strong></p>
+<h2 id="4context">4、Context</h2>
+<p>因为在写项目中，先使用了gin中的context，因此看到Go标准库中对Context的介绍让我迷惑了好久。后来发现，好像这是两个功能不同的东西？</p>
+<p>这里整理一下标准库中的Context的作用。它是专门用来简化 对于处理单个请求的多个 goroutine 之间与请求域的数据、取消信号、截止时间等相关操作，这些操作可能涉及多个 API 调用。</p>
+<p>对服务器传入的请求应该创建上下文，而对服务器的传出调用应该接受上下文。它们之间的函数调用链必须传递上下文，或者可以使用<code>WithCancel</code>、<code>WithDeadline</code>、<code>WithTimeout</code>或<code>WithValue</code>创建的派生上下文。当一个上下文被取消时，它派生的所有上下文也被取消。</p>
+<p><code>context</code>包中还定义了四个With系列函数。分别是WithCancel、WithDeadline、WithTimeout和WithValue。其使用方法也都大同小异。</p>
+<p>以WithCancel为例：</p>
+<p>取消此上下文将释放与其关联的资源，因此代码应该在此上下文中运行的操作完成后立即调用cancel。</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">23
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">24
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">25
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">26
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">gen</span>(ctx context.Context) <span style="color:#ff79c6">&lt;-</span><span style="color:#8be9fd;font-style:italic">chan</span> <span style="color:#8be9fd">int</span> {
+</span></span><span style="display:flex;"><span>		dst <span style="color:#ff79c6">:=</span> <span style="color:#8be9fd;font-style:italic">make</span>(<span style="color:#8be9fd;font-style:italic">chan</span> <span style="color:#8be9fd">int</span>)
+</span></span><span style="display:flex;"><span>		n <span style="color:#ff79c6">:=</span> <span style="color:#bd93f9">1</span>
+</span></span><span style="display:flex;"><span>		<span style="color:#ff79c6">go</span> <span style="color:#8be9fd;font-style:italic">func</span>() {
+</span></span><span style="display:flex;"><span>			<span style="color:#ff79c6">for</span> {
+</span></span><span style="display:flex;"><span>				<span style="color:#ff79c6">select</span> {
+</span></span><span style="display:flex;"><span>				<span style="color:#ff79c6">case</span> <span style="color:#ff79c6">&lt;-</span>ctx.<span style="color:#50fa7b">Done</span>():
+</span></span><span style="display:flex;"><span>					<span style="color:#ff79c6">return</span> <span style="color:#6272a4">// return结束该goroutine，防止泄露
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>				<span style="color:#ff79c6">case</span> dst <span style="color:#ff79c6">&lt;-</span> n:
+</span></span><span style="display:flex;"><span>					n<span style="color:#ff79c6">++</span>
+</span></span><span style="display:flex;"><span>				}
+</span></span><span style="display:flex;"><span>			}
+</span></span><span style="display:flex;"><span>		}()
+</span></span><span style="display:flex;"><span>		<span style="color:#ff79c6">return</span> dst
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span><span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">main</span>() {
+</span></span><span style="display:flex;"><span>	ctx, cancel <span style="color:#ff79c6">:=</span> context.<span style="color:#50fa7b">WithCancel</span>(context.<span style="color:#50fa7b">Background</span>())
+</span></span><span style="display:flex;"><span>	<span style="color:#ff79c6">defer</span> <span style="color:#50fa7b">cancel</span>() <span style="color:#6272a4">// 当我们取完需要的整数后调用cancel
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>
+</span></span><span style="display:flex;"><span>	<span style="color:#ff79c6">for</span> n <span style="color:#ff79c6">:=</span> <span style="color:#ff79c6">range</span> <span style="color:#50fa7b">gen</span>(ctx) {
+</span></span><span style="display:flex;"><span>		fmt.<span style="color:#50fa7b">Println</span>(n)
+</span></span><span style="display:flex;"><span>		<span style="color:#ff79c6">if</span> n <span style="color:#ff79c6">==</span> <span style="color:#bd93f9">5</span> {
+</span></span><span style="display:flex;"><span>			<span style="color:#ff79c6">break</span>
+</span></span><span style="display:flex;"><span>		}
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>上面的示例代码中，<code>gen</code>函数在单独的goroutine中生成整数并将它们发送到返回的通道。 gen的调用者在使用生成的整数之后需要取消上下文，以免<code>gen</code>启动的内部goroutine发生泄漏。</p>
+<h1 id="三使用小技巧">三、使用小技巧</h1>
+<h2 id="1空-struct-的用途">1、空 struct{} 的用途</h2>
+<p>使用空结构体 struct{} 可以节省内存，一般作为占位符使用，表明这里并不需要一个值。</p>
+<p>比如使用 map 表示集合时，只关注 key，value 可以使用 struct{} 作为占位符。如果使用其他类型作为占位符，例如 int，bool，不仅浪费了内存，而且容易引起歧义。</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>type Set map[string]struct{}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>func main() {
+</span></span><span style="display:flex;"><span>	set := make(Set)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	for _, item := range []string{&#34;A&#34;, &#34;A&#34;, &#34;B&#34;, &#34;C&#34;} {
+</span></span><span style="display:flex;"><span>		set[item] = struct{}{}
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>	fmt.Println(len(set)) // 3
+</span></span><span style="display:flex;"><span>	if _, ok := set[&#34;A&#34;]; ok {
+</span></span><span style="display:flex;"><span>		fmt.Println(&#34;A exists&#34;) // A exists
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>再比如，使用信道(channel)控制并发时，我们只是需要一个信号，但并不需要传递值，这个时候，也可以使用 struct{} 代替。</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">6
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">7
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">8
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">9
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>func main() {
+</span></span><span style="display:flex;"><span>	ch := make(chan struct{}, 1)
+</span></span><span style="display:flex;"><span>	go func() {
+</span></span><span style="display:flex;"><span>		&lt;-ch
+</span></span><span style="display:flex;"><span>		// do something
+</span></span><span style="display:flex;"><span>	}()
+</span></span><span style="display:flex;"><span>	ch &lt;- struct{}{}
+</span></span><span style="display:flex;"><span>	// ...
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>再比如，声明只包含方法的结构体。</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">6
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">7
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">8
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">9
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>type Lamp struct{}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>func (l Lamp) On() {
+</span></span><span style="display:flex;"><span>        println(&#34;On&#34;)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>func (l Lamp) Off() {
+</span></span><span style="display:flex;"><span>        println(&#34;Off&#34;)
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="2make和new">2、make和new</h2>
+<p>二者都是内存的分配（堆上），但是<code>make</code>只用于slice、map以及channel的初始化（非零值）；而<code>new</code>用于类型的内存分配，并且内存置为零。</p>
+<p><code>make</code>返回的还是这三个引用类型本身；而<code>new</code>返回的是指向类型的指针。</p>
+<p>但是new不常用，可以直接用<code>:=</code>替代，而make不能被替代。</p>
+<p>make的slice用法：</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>make<span style="color:#ff79c6">([]</span>T, size, cap<span style="color:#ff79c6">)</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>其中：</p>
+<ul>
+<li>T:切片的元素类型</li>
+<li>size:切片中元素的数量</li>
+<li>cap:切片的容量</li>
+</ul>
+<h1 id="参考文章">参考文章</h1>
+<p>1、<a href="https://zhuanlan.zhihu.com/p/390926887">图解Golang垃圾回收机制！</a></p>
+<p>2、<a href="https://zhuanlan.zhihu.com/p/297177002">图示Golang垃圾回收机制</a></p>
+<p>3、<a href="https://zhuanlan.zhihu.com/p/408759905">Python 协程和 Go 协程有什么区别？</a></p>
+<p>4、<a href="https://zhuanlan.zhihu.com/p/323271088">[典藏版]Golang调度器GPM原理与调度全分析</a></p>
+<p>5、https://www.liwenzhou.com/posts/Go/concurrence/</p>
+<p>6、<a href="https://tiancaiamao.gitbooks.io/go-internals/content/zh/03.6.html">闭包的实现</a></p>
+<p>7、<a href="https://mp.weixin.qq.com/s/gaC2gmFhJezH-9-uxpz07w">【Golang】脱胎换骨的defer</a></p>
       </article>
     </section>
 
@@ -271,6 +977,10 @@
     
     
     
+    
+      
+    
+      
     
       
     
@@ -507,6 +1217,12 @@
           
           
           
+            <a class="ui label" href="/tags/javascript/" title="JavaScript">
+              JavaScript
+            </a>
+          
+          
+          
             <a class="ui label" href="/tags/jquery/" title="jquery">
               jquery
             </a>
@@ -659,6 +1375,12 @@
           
             <a class="ui label" href="/tags/%E5%89%8D%E7%BC%80%E5%92%8C/" title="前缀和">
               前缀和
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/%E5%89%91%E6%8C%87offer/" title="剑指offer">
+              剑指offer
             </a>
           
           

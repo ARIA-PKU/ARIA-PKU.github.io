@@ -139,8 +139,8 @@
     <div class="ui segment toc">
       <nav id="TableOfContents">
   <ul>
-    <li><a href="#一从执行速度上来说"><strong>一、从执行速度上来说</strong></a></li>
-    <li><a href="#二从原理上讲"><strong>二、从原理上讲</strong></a></li>
+    <li><a href="#从执行速度上来说">从执行速度上来说</a></li>
+    <li><a href="#从原理上讲">从原理上讲</a></li>
     <li><a href="#1delete"><strong>1、DELETE</strong></a></li>
     <li><a href="#2truncate"><strong>2、truncate</strong></a></li>
     <li><a href="#3drop"><strong>3、drop</strong></a></li>
@@ -166,7 +166,7 @@
                   <span data-format="luxon">2022-06-20T17:21:29&#43;08:00</span>
                 
 
-              | 4 分钟阅读
+              | 5 分钟阅读
 
               
               | 更新于
@@ -200,10 +200,10 @@
         
 
         <p>整理一些学习使用过程中遇到的细碎的知识点</p>
-<h1 id="mysql-的-deletetruncatedrop-有什么区别">MySQL 的 delete、truncate、drop 有什么区别?</h1>
-<h2 id="一从执行速度上来说"><strong>一、从执行速度上来说</strong></h2>
+<h1 id="一mysql-的-deletetruncatedrop-有什么区别">一、MySQL 的 delete、truncate、drop 有什么区别?</h1>
+<h2 id="从执行速度上来说">从执行速度上来说</h2>
 <p>drop &gt; truncate &raquo; DELETE</p>
-<h2 id="二从原理上讲"><strong>二、从原理上讲</strong></h2>
+<h2 id="从原理上讲">从原理上讲</h2>
 <h2 id="1delete"><strong>1、DELETE</strong></h2>
 <div class="highlight"><div style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
 <table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
@@ -254,6 +254,24 @@
 <p>2、 drop table table_name 立刻释放磁盘空间 ，不管是 InnoDB 和 MyISAM; drop 语句将删除表的结构被依赖的约束(constrain)、触发器(trigger)、索引(index); 依赖于该表的存储过程/函数将保留,但是变为 invalid 状态。</p>
 <p>3、 小心使用 drop ，要删表跑路的兄弟，请在订票成功后在执行操作！订票电话：400-806-9553</p>
 <p>可以这么理解，一本书，delete是把目录撕了，truncate是把书的内容撕下来烧了，drop是把书烧了</p>
+<h1 id="二sql的执行顺序">二、sql的执行顺序</h1>
+<p>SELECT语句中子句的执行顺序与SELECT语句中子句的输入顺序是不一样的，所以并不是从SELECT子句开始执行的，而是按照下面的顺序执行：</p>
+<p>开始-&gt;FROM子句-&gt;WHERE子句-&gt;GROUP BY子句-&gt;HAVING子句-&gt;ORDER BY子句-&gt;SELECT子句-&gt;LIMIT子句-&gt;最终结果</p>
+<p>每个子句执行后都会产生一个中间结果，供接下来的子句使用，如果不存在某个子句，就跳过</p>
+<p>对比了一下，mysql和sql执行顺序基本是一样的, 标准顺序的 SQL 语句为:</p>
+<p>select 考生姓名, max(总成绩) as max总成绩</p>
+<p>from tb_Grade</p>
+<p>where 考生姓名 is not null</p>
+<p>group by 考生姓名</p>
+<p>having max(总成绩) &gt; 600</p>
+<p>order by max总成绩</p>
+<p>在上面的示例中 SQL 语句的执行顺序如下:</p>
+<p>　　 (1). 首先执行 FROM 子句, 从 tb_Grade 表组装数据源的数据</p>
+<p>　　 (2). 执行 WHERE 子句, 筛选 tb_Grade 表中所有数据不为 NULL 的数据</p>
+<p>　　 (3). 执行 GROUP BY 子句, 把 tb_Grade 表按 &ldquo;学生姓名&rdquo; 列进行分组(注：这一步开始才可以使用select中的别名，他返回的是一个游标，而不是一个表，所以在where中不可以使用select中的别名，而having却可以使用，感谢网友  zyt1369  提出这个问题)
+　　 (4). 计算 max() 聚集函数, 按 &ldquo;总成绩&rdquo; 求出总成绩中最大的一些数值</p>
+<p>　　 (5). 执行 HAVING 子句, 筛选课程的总成绩大于 600 分的.</p>
+<p>　　 (7). 执行 ORDER BY 子句, 把最后的结果按 &ldquo;Max 成绩&rdquo; 进行排序.</p>
 <h1 id="参考文章">参考文章</h1>
 <p>1、https://zhuanlan.zhihu.com/p/270331768</p>
       </article>
@@ -321,6 +339,10 @@
     
     
     
+    
+      
+    
+      
     
       
     
@@ -557,6 +579,12 @@
           
           
           
+            <a class="ui label" href="/tags/javascript/" title="JavaScript">
+              JavaScript
+            </a>
+          
+          
+          
             <a class="ui label" href="/tags/jquery/" title="jquery">
               jquery
             </a>
@@ -709,6 +737,12 @@
           
             <a class="ui label" href="/tags/%E5%89%8D%E7%BC%80%E5%92%8C/" title="前缀和">
               前缀和
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/%E5%89%91%E6%8C%87offer/" title="剑指offer">
+              剑指offer
             </a>
           
           

@@ -169,6 +169,7 @@
 
   <ul>
     <li><a href="#1-和-is-有什么区别">1、== 和 is 有什么区别？</a></li>
+    <li><a href="#2python的单例模式的使用">2、python的单例模式的使用</a></li>
   </ul>
 </nav>
     </div>
@@ -191,7 +192,7 @@
                   <span data-format="luxon">2022-06-15T23:21:39&#43;08:00</span>
                 
 
-              | 14 分钟阅读
+              | 15 分钟阅读
 
               
               | 更新于
@@ -697,7 +698,7 @@
 </span></span><span style="display:flex;"><span>    print(&#34;Hello again!&#34;)
 </span></span></code></pre></td></tr></table>
 </div>
-</div><h1 id="三python的数据结构相关">三、Python的数据结构相关</h1>
+</div><h1 id="三python的其他特性">三、Python的其他特性</h1>
 <h2 id="1-和-is-有什么区别">1、== 和 is 有什么区别？</h2>
 <p><code>==</code>比较的是两个变量的 value，只要值相等就会返回True</p>
 <p><code>is</code>比较的是两个变量的 id，即<code>id(a) == id(b)</code>，只有两个变量指向同一个对象的时候，才会返回True</p>
@@ -715,6 +716,13 @@
 </span></span></code></pre></td></tr></table>
 </div>
 </div><p>按照上面的解释，应该会输出False，但是事实上会输出True，这是因为Python中对小数据有缓存机制，-5~256之间的数据都会被缓存。这一点和java中的一致。</p>
+<h2 id="2python的单例模式的使用">2、python的单例模式的使用</h2>
+<p>单例模式在菜鸟教程上找到的解释是：这种模式涉及到一个单一的类，该类负责创建自己的对象，同时确保只有单个对象被创建。这个类提供了一种访问其唯一的对象的方式，可以直接访问，不需要实例化该类的对象。</p>
+<p>简单理解，就是为了避免某个实例被频繁创建，而使用的创建方式，保证全局只会创建一次。它的主要目的就是确保只有一个实例对象的存在。换句话说，当一个类的功能比较单一，只需要一个实例对象就可以完成需求的时，就可以使用单例模式来节省内存资源。</p>
+<p>在实习的项目中， 实现单例的方式使用的是利用python的模块引入会生产.pyc文件。</p>
+<p>python 模块是天然的单例模式：需要使用实例的时候，在文件中导入即可使用，从而减少相关实例的创建；</p>
+<p>模块在第一次导入时，会生成 .pyc 文件，当第二次导入时，就会直接加载 .pyc 文件，而不会再次执行模块代码;</p>
+<p>因此，我们只需把相关的函数和数据定义在一个模块中，就可以获得一个单例对象了。</p>
 <h1 id="四参考文章">四、参考文章</h1>
 <p>1、<a href="https://zhuanlan.zhihu.com/p/83251959">Python垃圾回收机制！非常实用</a></p>
 <p>2、<a href="https://zhuanlan.zhihu.com/p/75780308">深入理解Python中的GIL（全局解释器锁）</a></p>
@@ -784,6 +792,10 @@
     
     
     
+    
+      
+    
+      
     
       
     
@@ -1020,6 +1032,12 @@
           
           
           
+            <a class="ui label" href="/tags/javascript/" title="JavaScript">
+              JavaScript
+            </a>
+          
+          
+          
             <a class="ui label" href="/tags/jquery/" title="jquery">
               jquery
             </a>
@@ -1172,6 +1190,12 @@
           
             <a class="ui label" href="/tags/%E5%89%8D%E7%BC%80%E5%92%8C/" title="前缀和">
               前缀和
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/%E5%89%91%E6%8C%87offer/" title="剑指offer">
+              剑指offer
             </a>
           
           
