@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-    <title>Web游戏开发 项目启动 | Aria&#39;s Blog</title>
+    <title>GFS | Aria&#39;s Blog</title>
 
     
 <link href="/header/icon.jpg" rel="shortcut icon" type="image/x-icon" />
@@ -13,22 +13,22 @@
 
 
 <meta name="author" content="Aria" />
-<meta name="description" content="web游戏开发日志
+<meta name="description" content="GFS（Google File System)论文阅读
 " />
 
 
 
 <meta name="generator" content="Hugo 0.98.0" />
 
-<link rel="canonical" href="https://blog.surfaroundtheworld.top/posts/web%E6%B8%B8%E6%88%8F/web%E6%B8%B8%E6%88%8F%E5%BC%80%E5%8F%91-%E9%A1%B9%E7%9B%AE%E5%90%AF%E5%8A%A8/" />
+<link rel="canonical" href="https://blog.surfaroundtheworld.top/posts/%E5%88%86%E5%B8%83%E5%BC%8F%E7%9B%B8%E5%85%B3/mit6.824/gfs/" />
 
 
-<meta property="og:title" content="Web游戏开发 项目启动" />
-<meta property="og:description" content="web游戏开发日志" />
+<meta property="og:title" content="GFS" />
+<meta property="og:description" content="GFS（Google File System)论文阅读" />
 <meta property="og:type" content="article" />
-<meta property="og:url" content="https://blog.surfaroundtheworld.top/posts/web%E6%B8%B8%E6%88%8F/web%E6%B8%B8%E6%88%8F%E5%BC%80%E5%8F%91-%E9%A1%B9%E7%9B%AE%E5%90%AF%E5%8A%A8/" /><meta property="og:image" content="https://oss.surfaroundtheworld.top/blog-pictures/6-16/edge_of_planet.jpg"/><meta property="article:section" content="posts" />
-<meta property="article:published_time" content="2022-05-01T21:11:54+08:00" />
-<meta property="article:modified_time" content="2022-05-01T21:11:54+08:00" />
+<meta property="og:url" content="https://blog.surfaroundtheworld.top/posts/%E5%88%86%E5%B8%83%E5%BC%8F%E7%9B%B8%E5%85%B3/mit6.824/gfs/" /><meta property="og:image" content="https://oss.surfaroundtheworld.top/blog-pictures/6-16/edge_of_planet.jpg"/><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2022-06-28T23:43:28+08:00" />
+<meta property="article:modified_time" content="2022-06-28T23:43:28+08:00" />
 
 
 
@@ -36,8 +36,8 @@
 <meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:image" content="https://oss.surfaroundtheworld.top/blog-pictures/6-16/edge_of_planet.jpg"/>
 
-<meta name="twitter:title" content="Web游戏开发 项目启动"/>
-<meta name="twitter:description" content="web游戏开发日志"/>
+<meta name="twitter:title" content="GFS"/>
+<meta name="twitter:description" content="GFS（Google File System)论文阅读"/>
 
 
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.css" integrity="sha256-UXesixbeLkB/UYxVTzuj/gg3+LMzgwAmg3zD+C4ZASQ=" crossorigin="anonymous">
@@ -139,10 +139,12 @@
     <div class="ui segment toc">
       <nav id="TableOfContents">
   <ul>
-    <li><a href="#1技术栈选择">1、技术栈选择</a></li>
-    <li><a href="#2docker的配置">2、docker的配置</a></li>
-    <li><a href="#3git的配置">3、git的配置</a></li>
-    <li><a href="#4项目的创建">4、项目的创建</a></li>
+    <li><a href="#master节点">Master节点</a></li>
+    <li><a href="#读操作">读操作</a></li>
+    <li><a href="#chunk尺寸">Chunk尺寸</a></li>
+    <li><a href="#操作日志">操作日志</a></li>
+    <li><a href="#写操作">写操作</a></li>
+    <li><a href="#租约机制">租约机制</a></li>
   </ul>
 </nav>
     </div>
@@ -154,7 +156,7 @@
   <div class="sixteen wide mobile sixteen wide tablet ten wide computer column markdown-body dream-single" id="dream-save-post-as-img">
     <section class="ui segment">
       <header>
-        <h1 class="ui large header">Web游戏开发 项目启动<span class="sub header">
+        <h1 class="ui large header">GFS<span class="sub header">
             <span class="left">
               @
               
@@ -162,15 +164,15 @@
               
 
               | 
-                  <span data-format="luxon">2022-05-01T21:11:54&#43;08:00</span>
+                  <span data-format="luxon">2022-06-28T23:43:28&#43;08:00</span>
                 
 
-              | 3 分钟阅读
+              | 7 分钟阅读
 
               
               | 更新于
                 
-                  <span data-format="luxon">2022-05-01T21:11:54&#43;08:00</span>
+                  <span data-format="luxon">2022-06-28T23:43:28&#43;08:00</span>
                 
               
             </span>
@@ -180,10 +182,10 @@
   <a href="#" class="save-as-image" title="保存为图片" onclick="savePostAsImg()">
     <i class="save icon"></i>
   </a>
-  <a href="https://twitter.com/intent/tweet?text=Web%e6%b8%b8%e6%88%8f%e5%bc%80%e5%8f%91%20%e9%a1%b9%e7%9b%ae%e5%90%af%e5%8a%a8&url=https%3a%2f%2fblog.surfaroundtheworld.top%2fposts%2fweb%25E6%25B8%25B8%25E6%2588%258F%2fweb%25E6%25B8%25B8%25E6%2588%258F%25E5%25BC%2580%25E5%258F%2591-%25E9%25A1%25B9%25E7%259B%25AE%25E5%2590%25AF%25E5%258A%25A8%2f" title="Twitter">
+  <a href="https://twitter.com/intent/tweet?text=GFS&url=https%3a%2f%2fblog.surfaroundtheworld.top%2fposts%2f%25E5%2588%2586%25E5%25B8%2583%25E5%25BC%258F%25E7%259B%25B8%25E5%2585%25B3%2fmit6.824%2fgfs%2f" title="Twitter">
     <i class="twitter icon"></i>
   </a>
-  <a href="https://facebook.com/sharer/sharer.php?u=https%3a%2f%2fblog.surfaroundtheworld.top%2fposts%2fweb%25E6%25B8%25B8%25E6%2588%258F%2fweb%25E6%25B8%25B8%25E6%2588%258F%25E5%25BC%2580%25E5%258F%2591-%25E9%25A1%25B9%25E7%259B%25AE%25E5%2590%25AF%25E5%258A%25A8%2f" title="Facebook">
+  <a href="https://facebook.com/sharer/sharer.php?u=https%3a%2f%2fblog.surfaroundtheworld.top%2fposts%2f%25E5%2588%2586%25E5%25B8%2583%25E5%25BC%258F%25E7%259B%25B8%25E5%2585%25B3%2fmit6.824%2fgfs%2f" title="Facebook">
     <i class="facebook icon"></i>
   </a>
 </span>
@@ -195,104 +197,78 @@
 
       <article class="main">
         
-        <img class="cover" src="https://oss.surfaroundtheworld.top/blog-pictures/reverse_world.jpg" />
+        <img class="cover" src="https://oss.surfaroundtheworld.top/blog-pictures/6_15/whale.jpg" />
         
 
-        <p>web游戏开发日志</p>
-<h1 id="一项目准备">一、项目准备</h1>
-<h2 id="1技术栈选择">1、技术栈选择</h2>
-<p>实习期间，一直使用flask框架开发项目，这里选择django框架，熟悉python的另一个框架。项目总结自y总的django课程，项目后端选用django框架，前端使用jquery语言。服务器选用的是阿里云1核4G的学生机。</p>
-<h2 id="2docker的配置">2、docker的配置</h2>
-<p>1）为了方便之后在不同的服务器中迁移自己的项目，所以项目整体选择在docker中搭建运行。在自己的服务器上下载好搭建了Django的镜像。</p>
-<p>2）<code>docker load -i</code>将镜像从本地文件中加载进来</p>
-<p>3）<code>docker run -p 8000:8000 -p 20000:22 --name django -itd django:1.0</code>创建并运行容器，其中<code>8000:8000</code>端口是开放<code>Http</code>,<code>20000:22</code>端口是开放<code>ssh</code>。（需要在服务器放行20000和8000端口）</p>
-<h2 id="3git的配置">3、git的配置</h2>
-<p>1）<code>ssh-keygen</code>生成密钥，并将其复制到github上，实现ssh的免密登录</p>
-<p>2）<code>git init</code>  进到项目目录中将其配置成git仓库</p>
-<p>3） 打开git，在git上创建一个仓库（项目）按照下面的提示在github里面配置一下git</p>
-<p><code>git config --global user.name xxx</code></p>
-<p><code>git config --global user.email xxx@xxx.com</code></p>
-<p><code>git add .</code></p>
-<p><code>git commit -m &quot;xxx&quot;</code></p>
-<p><code>git remote add origin </code></p>
-<p><code>git@xxx/XXX.git </code>  建立连接</p>
-<p><code>git push --set-upstream origin master</code></p>
-<p>4）在目录下创建<code>.gitignore</code>文件，规范上传文件的内容，比如<code>__pycache__</code>文件夹中的<code>.pyc</code>文件等，其中的<code>.pyc</code>文件是为了加速python运行而存在的，在项目中也可以用于单例模式实现。</p>
-<h2 id="4项目的创建">4、项目的创建</h2>
-<p>1） <code>django-admin startproject webapp</code>，会在目录下创建一个名为<code>webapp</code>的文件夹，通过<code>tree .</code>命令查看结构如下：</p>
-<div class="highlight"><div style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
-<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">6
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">7
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">8
-</span></code></pre></td>
-<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>`-- webapp
-</span></span><span style="display:flex;"><span>    |-- manage.py
-</span></span><span style="display:flex;"><span>    `-- webapp
-</span></span><span style="display:flex;"><span>        |-- __init__.py
-</span></span><span style="display:flex;"><span>        |-- asgi.py
-</span></span><span style="display:flex;"><span>        |-- settings.py
-</span></span><span style="display:flex;"><span>        |-- urls.py
-</span></span><span style="display:flex;"><span>        `-- wsgi.py
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>以上就是django的整体框架，将在以后的项目中应用各个模块。</p>
-<p>2）<code>setting.py</code>即时整个项目默认的配置文件，在其中的<code>ALLOWED_HOSTS = []</code>中填入自己服务器的公网IP，和申请的域名地址，通过<code>python3 manage.py runserver 0.0.0.0:8000</code>命令，即可在自己服务器公网IP的8000端口看到最初的项目。</p>
-<p>3）进入到<code>webapp</code>文件夹下，<code>python3 manage.py startapp game</code>生成自己的名为game的app，其树形结构如下：</p>
-<div class="highlight"><div style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
-<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
-</span></code></pre></td>
-<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>`-- webapp
-</span></span><span style="display:flex;"><span>    |-- game
-</span></span><span style="display:flex;"><span>    |   |-- __init__.py
-</span></span><span style="display:flex;"><span>    |   |-- admin.py  # 管理员界面管理
-</span></span><span style="display:flex;"><span>    |   |-- apps.py  
-</span></span><span style="display:flex;"><span>    |   |-- migrations  # 数据库操作 
-</span></span><span style="display:flex;"><span>    |   |   `-- __init__.py
-</span></span><span style="display:flex;"><span>    |   |-- models.py  # 定义网站的数据类
-</span></span><span style="display:flex;"><span>    |   |-- tests.py  # 编写单元测试函数
-</span></span><span style="display:flex;"><span>    |   `-- views.py  # 编写视图函数
-</span></span><span style="display:flex;"><span>    |-- manage.py
-</span></span><span style="display:flex;"><span>    `-- webapp
-</span></span><span style="display:flex;"><span>        |-- __init__.py
-</span></span><span style="display:flex;"><span>        |-- __pycache__
-</span></span><span style="display:flex;"><span>        |   |-- __init__.cpython-38.pyc
-</span></span><span style="display:flex;"><span>        |   `-- settings.cpython-38.pyc
-</span></span><span style="display:flex;"><span>        |-- asgi.py
-</span></span><span style="display:flex;"><span>        |-- settings.py
-</span></span><span style="display:flex;"><span>        |-- urls.py  # 用于实现路由配置
-</span></span><span style="display:flex;"><span>        `-- wsgi.py
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>4）<code>python3 manage.py createsuperuser</code>创建超级管理员，并在<code>/admin</code>界面登录即可。</p>
-<p>5） 在第二层的<code>webapp</code>文件夹下的<code>urls.py</code>为全局路由，可以通过配置实现各个函数的路由，为了便于扩展，在<code>game</code>文件夹下新建<code>url</code>文件夹存储之后的配置信息。</p>
+        <p>GFS（Google File System)论文阅读</p>
+<p>基于GFS论文原文，并结合MIT6.824课上的介绍和其他博客的内容，复习并整理一下GFS的内容。这篇论文非常详尽地介绍了GFS的各个方面，这里只总结论文中较为核心部分设计思想。</p>
+<h1 id="一gfs是什么">一、GFS是什么</h1>
+<p>Google 文件系统（Google File System，缩写为 GFS 或 GoogleFS），一种专有分布式文件系统，由 Google 公司开发，运行于 Linux 平台上。尽管 Google 在 2003 年公布了该系统的一些技术细节，但 Google 并没有将该系统的软件部分作为开源软件发布。</p>
+<p>GFS 这个创时代的分布式文件系统并将该成果发表在了 2003 年的 SOSP 会议上，之后随着 MapReduce 和 BigTable 论文的发表，Google 的三架马车整整齐齐，掀开了大数据时代的帷幕，引领工业界开始了辉煌的 NoSQL 运动。</p>
+<h1 id="二gfs设计的目的">二、GFS设计的目的</h1>
+<p>在GFS之前，存在非常多的单机文件系统，但是单机文件系统的容量有限，随着数据量的增大，单机的性能逐渐达到了其上限。</p>
+<p>GFS就是为了实现高可用、可拓展、高性能、低成本、可容错的大规模分布式文件系统，同时为用户提供简单的接口而屏蔽了底层的复杂实现细节。</p>
+<h1 id="三设计背景">三、设计背景</h1>
+<p>1、组件失效是常态</p>
+<p>2、文件存储量非常巨大</p>
+<p>3、绝大部分的修改是在文件尾部追加数据，而不是覆盖原有数据</p>
+<p>4、协同设计应用程序和文件系统API</p>
+<h1 id="四设计预期">四、设计预期</h1>
+<p>1、系统的工作负载主要由两种读操作组成：<strong>大规模的流式读取和小规模的随机读取</strong>。大规模的流式读取通 常一次读取数百 KB 的数据，更常见的是一次读取 1MB 甚至更多的数据。来自同一个客户机的连续操作通常 是读取同一个文件中连续的一个区域。小规模的随机读取通常是在文件某个随机的位置读取几个 KB 数据。 如果应用程序对性能非常关注，<strong>通常的做法是把小规模的随机读取操作合并并排序，之后按顺序批量读取， 这样就避免了在文件中前后来回的移动读取位置。</strong></p>
+<p>2、<strong>系统的工作负载还包括许多大规模的、顺序的、数据追加方式的写操作</strong>。一般情况下，每次写入的数据的大小和大规模读类似。数据一旦被写入后，文件就很少会被修改了。系统支持小规模的随机位置写入操作， 但是可能效率不彰。</p>
+<p>3、系统需要支持并发写，即支持数百台机器并发地追加数据到一个文件。操作的原子性和同步开销是主要指标。</p>
+<p>4、高性能的稳定网络带宽远比低延迟重要。</p>
+<h1 id="五架构">五、架构</h1>
+<p>一个 GFS cluster（集群）分为两个组件：</p>
+<ul>
+<li><strong>单个</strong> master 节点；</li>
+<li><strong>多个</strong> chunkserver 节点；</li>
+</ul>
+<p>一个 GFS 集群同时可以被多个 client（客户）节点访问。</p>
+<p>一个 GFS 集群的架构可以用下图表示：</p>
+<p><img src="http://oss.surfaroundtheworld.top/blog-pictures/6_28/gfs_fig_1_architecture.png" alt=""></p>
+<h2 id="master节点">Master节点</h2>
+<p>Master 服务器存储 3 种主要类型的元数据，包括：文件和 Chunk 的命名空间、文件和 Chunk 的对应关系、 每个 Chunk 副本的存放地点。</p>
+<p>设计采用的是单一的master节点，其中包含：</p>
+<p>1、file name -&gt; array of chunk handles (nv)</p>
+<p>2、handles -&gt; list of chunk server (v)</p>
+<p>​					  -&gt; version (nv)</p>
+<p>​					  -&gt; primary (v)</p>
+<p>​					   -&gt; lease expiration (v)</p>
+<p>3、LOG（追加写）</p>
+<p>4、checkpoint (disk)</p>
+<h2 id="读操作">读操作</h2>
+<p>在master的基础上，可以实现读操作：</p>
+<p>1、客户端把文件名和程序指定的字节偏移，根据固定 的 Chunk 大小，转换成文件的 Chunk 索引。然后，它把文件名和 Chunk 索引发送给 Master 节点。</p>
+<p>2、Master 节 点将相应的 Chunk 标识和副本的位置信息发还给客户端。客户端用文件名和 Chunk 索引作为 key 缓存这些信 息。</p>
+<p>3、之后客户端发送请求到其中的一个副本处，<strong>一般会选择最近的</strong>。请求信息包含了 Chunk 的标识和字节范 围。在对这个 Chunk 的后续读取操作中，客户端不必再和 Master 节点通讯了，除非缓存的元数据信息过期或 者文件被重新打开。实际上，**客户端通常会在一次请求中查询多个 Chunk 信息，Master 节点的回应也可能包含了紧跟着这些被请求的 Chunk 后面的 Chunk 的信息。**在实际应用中，这些额外的信息在没有任何代价的情 况下，避免了客户端和 Master 节点未来可能会发生的几次通讯。</p>
+<h2 id="chunk尺寸">Chunk尺寸</h2>
+<p>GFS中每个chunk的大小选择了64MB，这个尺寸远远大于一般文件系统的 Block size。 每个 Chunk 的副本都以普通 Linux 文件的形式保存在 Chunk 服务器上。</p>
+<p>论文中对选择大的chunk尺寸做出以下解释：</p>
+<p>1、<strong>减少了客户端和 Master 节点通讯的需求</strong>，因为只 需要一次和 Mater 节点的通信就可以获取 Chunk 的位置信息，之后就可以对同一个 Chunk 进行多次的读写操作。</p>
+<p>2、采用较大的 Chunk 尺寸，客户端能够对一个块进行多次操作，这样就可以 通过与 Chunk 服务器保持较长时间的 TCP 连接来减少网络负载</p>
+<p>3、选用较大的 Chunk 尺寸减少了 Master 节点需要保存的元数据的数量。这就允许我们把元数据全部放在内存中。</p>
+<p>其缺点在于：</p>
+<p>小文件包含较少的 Chunk，甚至只有一个 Chunk。当有许多的客户端对同一个小文件进行多次的访问时，存储这些 Chunk 的 Chunk 服务器就会变成热点。</p>
+<p>论文中通过使用更大的复制参数来保存可执行文件，以及错开批处理队列系统程序的启动时间的方法解决了这个问题。一个可能的长效解决方案是， 在这种的情况下，允许客户端从其它客户端读取数据。</p>
+<h2 id="操作日志">操作日志</h2>
+<p><strong>Operation Log</strong> 包含关键 metadata 数据更改的历史记录。它是 GFS 系统的核心。它不仅是元数据的唯一持久记录，而且还充当定义并发操作顺序的逻辑时间线。文件和块，以及它们的版本，都是唯一的，永远由它们创建的逻辑时间来标识。</p>
+<p>由于 <strong>Operation Log</strong> 日志非常重要，所以我们必须可靠地存储它，并且在元数据的更改被持久化之前，不能使更改对客户端可见。否则，即使块本身存活下来，我们也会丢失整个文件系统或最近的客户端操作。因此，我们将它复制到多个远程机器上，只有在<strong>本地和远程</strong>将相应的日志记录刷新到磁盘之后才响应客户机操作。在刷新之前，Master 批处理多个日志记录，从而减少刷新和复制对总体系统吞吐量的影响。</p>
+<p>Master 通过重播操作日志恢复其文件系统状态。为了最小化启动时间，我们必须保持日志较小。每当日志增长超过一定的大小时，Master 检查其状态，以便通过从本地磁盘加载最新的 checkpoint 并在此之后仅重放有限数量的日志记录来恢复。<strong>checkpoint 是一种紧凑的类似 b 树的形式，可以直接映射到内存中并用于名称空间查找，而无需进行额外的解析。这进一步加快了恢复并提高了可用性</strong>。</p>
+<p>Master 恢复仅仅需要最新的完整检查点（checkpoint)和后续日志文件。旧的检查点和日志文件可以自由删除，但通常还是会保留了一些近期的日志，以防止意外。</p>
+<h2 id="写操作">写操作</h2>
+<p>在实际应用过程中，系统采用的都是追加写而非覆盖写，这样可以并发操作而避免冲突，论文中给出了以下步骤图：</p>
+<p><img src="http://oss.surfaroundtheworld.top/blog-pictures/6_28/gfs_fig_2.jpeg" alt=""></p>
+<p>1、客户机向 Master 节点询问哪一个 Chunk 服务器持有当前的租约，即Primary节点，以及其它副本的位置。如果没有一个 Chunk 持有租约，Master 节点就选择其中一个副本建立一个租约（这个步骤在图上没有显示）。</p>
+<p>2、Master 节点将主 Chunk 的标识符以及其它副本（又称为 secondary 副本、二级副本）的位置返回给客户 机。客户机缓存这些数据以便后续的操作。只有在主 Chunk 不可用，或者主 Chunk 回复信息表明它已不再持 有租约的时候，客户机才需要重新跟 Master 节点联系。</p>
+<p>3、客户端向所有的 replicas 都推送数据，注意此时客户端可以依靠任意顺序进行推送数据，并没有要求此时必须先给 primary 推送数据。所有的 chunkserver(replicas) 都会将推送来的数据存放在内置的 LRU buffer cacahe，缓存中的数据直到被使用或者超时才会被释放。</p>
+<p>4、只要 replicas 回复已经接收到了所有数据，那么 Client 就会发送一个 write 指令给 primary 节点，primary 节点为多个写操作计划执行的序号（写操作可能来自于多个 Client），然后将此顺序应用于其本地 I/O 写操作。</p>
+<p>5、primary 节点将写操作请求转发给其他两个 replica，它们都将按照 primary 的顺序执行本地的 I/O 写操作；</p>
+<p>6、secondaries 从节点返回写成功的响应给 primary 节点；</p>
+<p>7、Primary 响应客户端，并返回该过程中发生的错误。注意，这里的错误不仅仅是 Primary 节点的写操作错误，还包括其他两个 replica 节点的写操作错误。如果 primary 自身发生错误，其就不会向其他两个 replica 节点进行转发。另一方面，如果 Client 收到写失败响应，那么其会重新进行写操作尝试，即重新开始 3-7 步。</p>
+<h2 id="租约机制">租约机制</h2>
+<p>在写操作的过程中，为了减少master的管理负担，会有一个副本作为Primary用来同步其他的副本，Primary副本同时会有租约时间，一般为60s。</p>
+<p>在master与Primary无法通信的时候，master不会重新选择Primary，而是会等租约到期再重新选择，因为可能只是master与Primary连接出现问题，而Primary还在正常工作，如果选择另一个Primary就会产生Split Brain问题。这也是租约机制的设计的目的之一。</p>
       </article>
     </section>
 

@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-    <title>Web游戏开发 项目启动 | Aria&#39;s Blog</title>
+    <title>基础算法 数学 | Aria&#39;s Blog</title>
 
     
 <link href="/header/icon.jpg" rel="shortcut icon" type="image/x-icon" />
@@ -13,22 +13,22 @@
 
 
 <meta name="author" content="Aria" />
-<meta name="description" content="web游戏开发日志
+<meta name="description" content="整理各种数学相关算法，包括求质数的方法整理，最大公约数，快速幂等。
 " />
 
 
 
 <meta name="generator" content="Hugo 0.98.0" />
 
-<link rel="canonical" href="https://blog.surfaroundtheworld.top/posts/web%E6%B8%B8%E6%88%8F/web%E6%B8%B8%E6%88%8F%E5%BC%80%E5%8F%91-%E9%A1%B9%E7%9B%AE%E5%90%AF%E5%8A%A8/" />
+<link rel="canonical" href="https://blog.surfaroundtheworld.top/posts/%E7%AE%97%E6%B3%95%E9%A2%98/%E7%AE%97%E6%B3%95%E5%9F%BA%E7%A1%80%E8%AF%BE/%E5%9F%BA%E7%A1%80%E7%AE%97%E6%B3%95-%E6%95%B0%E5%AD%A6/" />
 
 
-<meta property="og:title" content="Web游戏开发 项目启动" />
-<meta property="og:description" content="web游戏开发日志" />
+<meta property="og:title" content="基础算法 数学" />
+<meta property="og:description" content="整理各种数学相关算法，包括求质数的方法整理，最大公约数，快速幂等。" />
 <meta property="og:type" content="article" />
-<meta property="og:url" content="https://blog.surfaroundtheworld.top/posts/web%E6%B8%B8%E6%88%8F/web%E6%B8%B8%E6%88%8F%E5%BC%80%E5%8F%91-%E9%A1%B9%E7%9B%AE%E5%90%AF%E5%8A%A8/" /><meta property="og:image" content="https://oss.surfaroundtheworld.top/blog-pictures/6-16/edge_of_planet.jpg"/><meta property="article:section" content="posts" />
-<meta property="article:published_time" content="2022-05-01T21:11:54+08:00" />
-<meta property="article:modified_time" content="2022-05-01T21:11:54+08:00" />
+<meta property="og:url" content="https://blog.surfaroundtheworld.top/posts/%E7%AE%97%E6%B3%95%E9%A2%98/%E7%AE%97%E6%B3%95%E5%9F%BA%E7%A1%80%E8%AF%BE/%E5%9F%BA%E7%A1%80%E7%AE%97%E6%B3%95-%E6%95%B0%E5%AD%A6/" /><meta property="og:image" content="https://oss.surfaroundtheworld.top/blog-pictures/6-16/edge_of_planet.jpg"/><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2022-06-30T10:18:31+08:00" />
+<meta property="article:modified_time" content="2022-06-30T10:18:31+08:00" />
 
 
 
@@ -36,8 +36,8 @@
 <meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:image" content="https://oss.surfaroundtheworld.top/blog-pictures/6-16/edge_of_planet.jpg"/>
 
-<meta name="twitter:title" content="Web游戏开发 项目启动"/>
-<meta name="twitter:description" content="web游戏开发日志"/>
+<meta name="twitter:title" content="基础算法 数学"/>
+<meta name="twitter:description" content="整理各种数学相关算法，包括求质数的方法整理，最大公约数，快速幂等。"/>
 
 
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.css" integrity="sha256-UXesixbeLkB/UYxVTzuj/gg3+LMzgwAmg3zD+C4ZASQ=" crossorigin="anonymous">
@@ -139,10 +139,9 @@
     <div class="ui segment toc">
       <nav id="TableOfContents">
   <ul>
-    <li><a href="#1技术栈选择">1、技术栈选择</a></li>
-    <li><a href="#2docker的配置">2、docker的配置</a></li>
-    <li><a href="#3git的配置">3、git的配置</a></li>
-    <li><a href="#4项目的创建">4、项目的创建</a></li>
+    <li><a href="#1试除法">1、试除法</a></li>
+    <li><a href="#2埃式筛法">2、埃式筛法</a></li>
+    <li><a href="#3线性筛法">3、线性筛法</a></li>
   </ul>
 </nav>
     </div>
@@ -154,7 +153,7 @@
   <div class="sixteen wide mobile sixteen wide tablet ten wide computer column markdown-body dream-single" id="dream-save-post-as-img">
     <section class="ui segment">
       <header>
-        <h1 class="ui large header">Web游戏开发 项目启动<span class="sub header">
+        <h1 class="ui large header">基础算法 数学<span class="sub header">
             <span class="left">
               @
               
@@ -162,7 +161,7 @@
               
 
               | 
-                  <span data-format="luxon">2022-05-01T21:11:54&#43;08:00</span>
+                  <span data-format="luxon">2022-06-30T10:18:31&#43;08:00</span>
                 
 
               | 3 分钟阅读
@@ -170,7 +169,7 @@
               
               | 更新于
                 
-                  <span data-format="luxon">2022-05-01T21:11:54&#43;08:00</span>
+                  <span data-format="luxon">2022-06-30T10:18:31&#43;08:00</span>
                 
               
             </span>
@@ -180,10 +179,10 @@
   <a href="#" class="save-as-image" title="保存为图片" onclick="savePostAsImg()">
     <i class="save icon"></i>
   </a>
-  <a href="https://twitter.com/intent/tweet?text=Web%e6%b8%b8%e6%88%8f%e5%bc%80%e5%8f%91%20%e9%a1%b9%e7%9b%ae%e5%90%af%e5%8a%a8&url=https%3a%2f%2fblog.surfaroundtheworld.top%2fposts%2fweb%25E6%25B8%25B8%25E6%2588%258F%2fweb%25E6%25B8%25B8%25E6%2588%258F%25E5%25BC%2580%25E5%258F%2591-%25E9%25A1%25B9%25E7%259B%25AE%25E5%2590%25AF%25E5%258A%25A8%2f" title="Twitter">
+  <a href="https://twitter.com/intent/tweet?text=%e5%9f%ba%e7%a1%80%e7%ae%97%e6%b3%95%20%e6%95%b0%e5%ad%a6&url=https%3a%2f%2fblog.surfaroundtheworld.top%2fposts%2f%25E7%25AE%2597%25E6%25B3%2595%25E9%25A2%2598%2f%25E7%25AE%2597%25E6%25B3%2595%25E5%259F%25BA%25E7%25A1%2580%25E8%25AF%25BE%2f%25E5%259F%25BA%25E7%25A1%2580%25E7%25AE%2597%25E6%25B3%2595-%25E6%2595%25B0%25E5%25AD%25A6%2f" title="Twitter">
     <i class="twitter icon"></i>
   </a>
-  <a href="https://facebook.com/sharer/sharer.php?u=https%3a%2f%2fblog.surfaroundtheworld.top%2fposts%2fweb%25E6%25B8%25B8%25E6%2588%258F%2fweb%25E6%25B8%25B8%25E6%2588%258F%25E5%25BC%2580%25E5%258F%2591-%25E9%25A1%25B9%25E7%259B%25AE%25E5%2590%25AF%25E5%258A%25A8%2f" title="Facebook">
+  <a href="https://facebook.com/sharer/sharer.php?u=https%3a%2f%2fblog.surfaroundtheworld.top%2fposts%2f%25E7%25AE%2597%25E6%25B3%2595%25E9%25A2%2598%2f%25E7%25AE%2597%25E6%25B3%2595%25E5%259F%25BA%25E7%25A1%2580%25E8%25AF%25BE%2f%25E5%259F%25BA%25E7%25A1%2580%25E7%25AE%2597%25E6%25B3%2595-%25E6%2595%25B0%25E5%25AD%25A6%2f" title="Facebook">
     <i class="facebook icon"></i>
   </a>
 </span>
@@ -195,31 +194,16 @@
 
       <article class="main">
         
-        <img class="cover" src="https://oss.surfaroundtheworld.top/blog-pictures/reverse_world.jpg" />
+        <img class="cover" src="/img/cover.jpg" />
         
 
-        <p>web游戏开发日志</p>
-<h1 id="一项目准备">一、项目准备</h1>
-<h2 id="1技术栈选择">1、技术栈选择</h2>
-<p>实习期间，一直使用flask框架开发项目，这里选择django框架，熟悉python的另一个框架。项目总结自y总的django课程，项目后端选用django框架，前端使用jquery语言。服务器选用的是阿里云1核4G的学生机。</p>
-<h2 id="2docker的配置">2、docker的配置</h2>
-<p>1）为了方便之后在不同的服务器中迁移自己的项目，所以项目整体选择在docker中搭建运行。在自己的服务器上下载好搭建了Django的镜像。</p>
-<p>2）<code>docker load -i</code>将镜像从本地文件中加载进来</p>
-<p>3）<code>docker run -p 8000:8000 -p 20000:22 --name django -itd django:1.0</code>创建并运行容器，其中<code>8000:8000</code>端口是开放<code>Http</code>,<code>20000:22</code>端口是开放<code>ssh</code>。（需要在服务器放行20000和8000端口）</p>
-<h2 id="3git的配置">3、git的配置</h2>
-<p>1）<code>ssh-keygen</code>生成密钥，并将其复制到github上，实现ssh的免密登录</p>
-<p>2）<code>git init</code>  进到项目目录中将其配置成git仓库</p>
-<p>3） 打开git，在git上创建一个仓库（项目）按照下面的提示在github里面配置一下git</p>
-<p><code>git config --global user.name xxx</code></p>
-<p><code>git config --global user.email xxx@xxx.com</code></p>
-<p><code>git add .</code></p>
-<p><code>git commit -m &quot;xxx&quot;</code></p>
-<p><code>git remote add origin </code></p>
-<p><code>git@xxx/XXX.git </code>  建立连接</p>
-<p><code>git push --set-upstream origin master</code></p>
-<p>4）在目录下创建<code>.gitignore</code>文件，规范上传文件的内容，比如<code>__pycache__</code>文件夹中的<code>.pyc</code>文件等，其中的<code>.pyc</code>文件是为了加速python运行而存在的，在项目中也可以用于单例模式实现。</p>
-<h2 id="4项目的创建">4、项目的创建</h2>
-<p>1） <code>django-admin startproject webapp</code>，会在目录下创建一个名为<code>webapp</code>的文件夹，通过<code>tree .</code>命令查看结构如下：</p>
+        <p>整理各种数学相关算法，包括求质数的方法整理，最大公约数，快速幂等。</p>
+<h1 id="一质数">一、质数</h1>
+<p>判断n是否是质数一般三种方法：试除法、埃式筛法和线性筛法。思路复杂度递增，时间复杂度递减。</p>
+<h2 id="1试除法">1、试除法</h2>
+<p>最朴素的思路是从2到n - 1全部试除，时间复杂度$O(n)$。</p>
+<p>简单优化，不必到n - 1，根据对称性，只要到sqrt(n)即可，时间复杂度为$O(n^{1/2})$：</p>
+<p>PS：这里是判断一个数是否为质数，如果要判断1到n的则要乘n的时间复杂度。</p>
 <div class="highlight"><div style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
 <table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
 <pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
@@ -229,22 +213,67 @@
 </span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5
 </span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">6
 </span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">7
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">8
 </span></code></pre></td>
 <td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>`-- webapp
-</span></span><span style="display:flex;"><span>    |-- manage.py
-</span></span><span style="display:flex;"><span>    `-- webapp
-</span></span><span style="display:flex;"><span>        |-- __init__.py
-</span></span><span style="display:flex;"><span>        |-- asgi.py
-</span></span><span style="display:flex;"><span>        |-- settings.py
-</span></span><span style="display:flex;"><span>        |-- urls.py
-</span></span><span style="display:flex;"><span>        `-- wsgi.py
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>bool isPrime(int n) {
+</span></span><span style="display:flex;"><span>	// 这里用i &lt;= n / i,可以避免i * i越界
+</span></span><span style="display:flex;"><span>	for (int i = 2; i &lt;= n / i; i ++) {
+</span></span><span style="display:flex;"><span>		if (n % i == 0) return false;
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>	return true;
+</span></span><span style="display:flex;"><span>}
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>以上就是django的整体框架，将在以后的项目中应用各个模块。</p>
-<p>2）<code>setting.py</code>即时整个项目默认的配置文件，在其中的<code>ALLOWED_HOSTS = []</code>中填入自己服务器的公网IP，和申请的域名地址，通过<code>python3 manage.py runserver 0.0.0.0:8000</code>命令，即可在自己服务器公网IP的8000端口看到最初的项目。</p>
-<p>3）进入到<code>webapp</code>文件夹下，<code>python3 manage.py startapp game</code>生成自己的名为game的app，其树形结构如下：</p>
+</div><h2 id="2埃式筛法">2、埃式筛法</h2>
+<p>思路是维护一个数组，每次将当前值在范围内的倍数标记为false，最后判断n是否被标记为false。</p>
+<p>这里也有一个小的优化点：</p>
+<p>如果枚举所有数的倍数，则n之中，2的倍数有 n / 2 个，3的倍数有 n / 3个 &hellip; , n 的倍数有 , n / n个，</p>
+<p>T(n) = n / 2 + n / 3 + &hellip; + n / n = n(lnn + c)</p>
+<p>即时间复杂度是$O(nlogn)$。</p>
+<p>考虑到非质数的倍数被枚举多次，可以只枚举质数的倍数，在1到n中有n / lnn 个质数，</p>
+<p>其实际时间复杂度为$O(nloglogn)$，非常接近O(n)了。</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>int primes[N], cnt;     // primes[]存储所有素数
+</span></span><span style="display:flex;"><span>bool st[N];         // st[x]存储x是否被筛掉
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>void get_primes(int n) {
+</span></span><span style="display:flex;"><span>	for (int i = 2; i &lt;= n; i ++) {
+</span></span><span style="display:flex;"><span>		if (st[i]) continue;  // 非质数则跳过
+</span></span><span style="display:flex;"><span>		primes[cnt ++] = i;
+</span></span><span style="display:flex;"><span>		for (int j = i + i; j &lt;= n; j += i)
+</span></span><span style="display:flex;"><span>			st[j] = true;
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="3线性筛法">3、线性筛法</h2>
+<p>埃式筛法中依然有重复的情况，例如15 = 3 * 5，它会被3筛一遍被5筛一遍，而线性筛法确保n之后被其最小的质因子筛掉，因此每个数只会筛一次，时间复杂度为O(n)。</p>
+<p>关键在于跳出条件确保整个过程是线性的：</p>
+<ol>
+<li>
+<p>当i % primes[j] != 0，此时primes[j]不是i的质因子，即primes[j] &lt; i，则primes[j] * i的最小质因子就是primes[j];</p>
+</li>
+<li>
+<p>当i % primes[j] == 0，此时primes[j]即为i的最小质因子，因为如果不是最小则在之前已经break掉了，所以primes[j] * i的最小质因子依然是primes[j];</p>
+</li>
+<li>
+<p>但是当j取到j + 1时候，此时对应的值为primes[j + 1] * i，已知i的最小质因子是primes[j]，而且primes[j]&lt;primes[j + 1]，因此此时的primes[j + 1] * i的最小质因子不是primes[j + 1]，说明该数在primes[j]的过程中已经被筛掉，所以要在2）的情况下break出来。</p>
+</li>
+</ol>
 <div class="highlight"><div style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
 <table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
 <pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
@@ -261,38 +290,39 @@
 </span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
 </span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
 </span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
 </span></code></pre></td>
 <td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>`-- webapp
-</span></span><span style="display:flex;"><span>    |-- game
-</span></span><span style="display:flex;"><span>    |   |-- __init__.py
-</span></span><span style="display:flex;"><span>    |   |-- admin.py  # 管理员界面管理
-</span></span><span style="display:flex;"><span>    |   |-- apps.py  
-</span></span><span style="display:flex;"><span>    |   |-- migrations  # 数据库操作 
-</span></span><span style="display:flex;"><span>    |   |   `-- __init__.py
-</span></span><span style="display:flex;"><span>    |   |-- models.py  # 定义网站的数据类
-</span></span><span style="display:flex;"><span>    |   |-- tests.py  # 编写单元测试函数
-</span></span><span style="display:flex;"><span>    |   `-- views.py  # 编写视图函数
-</span></span><span style="display:flex;"><span>    |-- manage.py
-</span></span><span style="display:flex;"><span>    `-- webapp
-</span></span><span style="display:flex;"><span>        |-- __init__.py
-</span></span><span style="display:flex;"><span>        |-- __pycache__
-</span></span><span style="display:flex;"><span>        |   |-- __init__.cpython-38.pyc
-</span></span><span style="display:flex;"><span>        |   `-- settings.cpython-38.pyc
-</span></span><span style="display:flex;"><span>        |-- asgi.py
-</span></span><span style="display:flex;"><span>        |-- settings.py
-</span></span><span style="display:flex;"><span>        |-- urls.py  # 用于实现路由配置
-</span></span><span style="display:flex;"><span>        `-- wsgi.py
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>int primes[N], cnt;     // primes[]存储所有素数
+</span></span><span style="display:flex;"><span>bool st[N];         // st[x]存储x是否被筛掉
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>void get_primes(int n) {
+</span></span><span style="display:flex;"><span>	for (int i = 2; i &lt;= n; i ++) {
+</span></span><span style="display:flex;"><span>		if (!st[i]) primes[cnt ++] = i;
+</span></span><span style="display:flex;"><span>		for (int j = 0; j &lt;= cnt &amp;&amp; primes[j] &lt;= n / i; j ++) {
+</span></span><span style="display:flex;"><span>			// 将质数倍数置为true
+</span></span><span style="display:flex;"><span>			st[primes[j] * i] = true;
+</span></span><span style="display:flex;"><span>			// 这里的跳出条件思路比较巧妙，见上述分析
+</span></span><span style="display:flex;"><span>			if (i % primes[j] == 0) break;
+</span></span><span style="display:flex;"><span>		}
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>}
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>4）<code>python3 manage.py createsuperuser</code>创建超级管理员，并在<code>/admin</code>界面登录即可。</p>
-<p>5） 在第二层的<code>webapp</code>文件夹下的<code>urls.py</code>为全局路由，可以通过配置实现各个函数的路由，为了便于扩展，在<code>game</code>文件夹下新建<code>url</code>文件夹存储之后的配置信息。</p>
+</div><h1 id="二最大公约数">二、最大公约数</h1>
+<p>辗转相除法：</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>int gcd(int a, int b) {
+</span></span><span style="display:flex;"><span>	return b ? gcd(b, a % b) : a;
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></td></tr></table>
+</div>
+</div>
       </article>
     </section>
 

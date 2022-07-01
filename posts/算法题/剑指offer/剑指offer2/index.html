@@ -148,7 +148,7 @@
                   <span data-format="luxon">2022-06-20T13:04:08&#43;08:00</span>
                 
 
-              | 15 分钟阅读
+              | 23 分钟阅读
 
               
               | 更新于
@@ -1886,6 +1886,701 @@
 </span></span><span style="display:flex;"><span>};
 </span></span></code></pre></td></tr></table>
 </div>
+</div><h1 id="从1到n整数中1出现的次数">从1到n整数中1出现的次数</h1>
+<p>题目：https://www.acwing.com/problem/content/51/</p>
+<p>思路：</p>
+<p>假设当前数字为abcdef，每个字母对应一位数字，</p>
+<p>以c这一位为例分析，</p>
+<p>1、前面的两位取00到ab-1，则c后面的三位def可以取000到999共1000位，总共ab*1000个1</p>
+<p>2、当前面的两位取ab时，</p>
+<p>​	1）如果c=0，则当前这位无法取1</p>
+<p>​	2）如果c=1，则后面的可以取0到def，共def+1个1</p>
+<p>​	3）如果c&gt;1，则后面的可以取0到999，共1000位</p>
+<p>时间复杂度是$log^2(N)$</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>class Solution {
+</span></span><span style="display:flex;"><span>public:
+</span></span><span style="display:flex;"><span>    int numberOf1Between1AndN_Solution(int n) {
+</span></span><span style="display:flex;"><span>        if (!n) return 0;
+</span></span><span style="display:flex;"><span>        vector&lt;int&gt; numbers;
+</span></span><span style="display:flex;"><span>        while (n) numbers.push_back(n % 10), n /= 10;
+</span></span><span style="display:flex;"><span>        int cnt = 0, len = numbers.size();
+</span></span><span style="display:flex;"><span>        for (int i = len - 1; i &gt;= 0; i --) {
+</span></span><span style="display:flex;"><span>            int left = 0, right = 0, t = 1;
+</span></span><span style="display:flex;"><span>            for (int j = len - 1; j &gt; i; j --) left = left * 10 + numbers[j];
+</span></span><span style="display:flex;"><span>            for (int j = i - 1; j &gt;= 0; j --) right = right * 10 + numbers[j], t *= 10;
+</span></span><span style="display:flex;"><span>            cnt += left * t;
+</span></span><span style="display:flex;"><span>            if (numbers[i] == 1) cnt += right + 1;
+</span></span><span style="display:flex;"><span>            if (numbers[i] &gt; 1) cnt += t;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        return cnt;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>};
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h1 id="数据流中的中位数">数据流中的中位数</h1>
+<p>题目：https://www.acwing.com/problem/content/88/</p>
+<p>思路：</p>
+<p>建一个大根堆存储较小的一半，建一个小根堆存储较大的一半。</p>
+<p>1、每次放入数据先放到大根堆中；</p>
+<p>2、比较大根堆和小根堆堆顶元素，如果较大部分的最小值小于较小部分的最大值，则必然是新加入的这个元素属于较大的一半，交换两个堆顶元素即可；</p>
+<p>3、再判断两个堆个数大小，如果较小部分的个数比较大部分的个数多的个数大于1，则无法直接取得中间元素，所以将较小部分的堆顶元素放入较大部分即可。</p>
+<p>4、中位数在奇数时，是较小部分的堆顶元素，偶数时，是两个堆顶的元素和的平均数。</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">23
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">24
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">25
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>class Solution {
+</span></span><span style="display:flex;"><span>public:
+</span></span><span style="display:flex;"><span>    priority_queue&lt;int&gt; max_heap;
+</span></span><span style="display:flex;"><span>    priority_queue&lt;int, vector&lt;int&gt;, greater&lt;int&gt;&gt; min_heap;
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    void insert(int num){
+</span></span><span style="display:flex;"><span>        max_heap.push(num);
+</span></span><span style="display:flex;"><span>        if (min_heap.size() &amp;&amp; min_heap.top() &lt; max_heap.top()) {
+</span></span><span style="display:flex;"><span>            auto a = min_heap.top(), b = max_heap.top();
+</span></span><span style="display:flex;"><span>            min_heap.pop();
+</span></span><span style="display:flex;"><span>            max_heap.pop();
+</span></span><span style="display:flex;"><span>            max_heap.push(a), min_heap.push(b);
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        if (max_heap.size() &gt; min_heap.size() + 1) {
+</span></span><span style="display:flex;"><span>            auto u = max_heap.top();
+</span></span><span style="display:flex;"><span>            max_heap.pop();
+</span></span><span style="display:flex;"><span>            min_heap.push(u);
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    double getMedian(){
+</span></span><span style="display:flex;"><span>        if (min_heap.size() + max_heap.size() &amp; 1) return max_heap.top();
+</span></span><span style="display:flex;"><span>        else return (min_heap.top() + max_heap.top()) / 2.0;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>};
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h1 id="数字序列中某一位的数字">数字序列中某一位的数字</h1>
+<p>题目：https://www.acwing.com/problem/content/52/</p>
+<p>思路：</p>
+<p>数位模拟，找规律题目。</p>
+<p>先不考虑0，1到9一共9位，占9*1=9位；</p>
+<p>10到99共90位，占90*2 = 180位；</p>
+<p>同理，可以依次递增找到接下来的规律。</p>
+<p>一般这种问题代入实际数字计算边界条件会更容易：</p>
+<p>以5为例，当前起始值为1，1 + 5 / 1 - 1即为5，当前的位所在的数字的可以表示为base + $\lceil$n / i$\rceil$；</p>
+<p>这里带入0，发现也能够满足要求，所以无需特判0的情况；</p>
+<p>以13为例，13 - 1 * 9 = 4，则表示在两位数中的第四位，两位数的起始值为10，4 / 2 = 2，为第二个数的最后一位，如果是12，则是3 / 2 ，因为也是第二个数，所以考虑上取整， $\lceil$n / i$\rceil$ = $\lfloor$(n + i - 1) / i$\rfloor$</p>
+<p>根据余数来看，当余数为0的时候代表的是最后一位即第i位，因此加一个特判。</p>
+<p>现在就找到了哪一个数的第几位，然后依次除掉末尾的几位，输出当前位即可。时间复杂度为log(n)。</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>typedef long long LL;
+</span></span><span style="display:flex;"><span>class Solution {
+</span></span><span style="display:flex;"><span>public:
+</span></span><span style="display:flex;"><span>    int digitAtIndex(int n) {
+</span></span><span style="display:flex;"><span>    	// i记录当前数字有几位，num记录当前位的数字共有多少个
+</span></span><span style="display:flex;"><span>    	// base记录当前数字的起始数字大小
+</span></span><span style="display:flex;"><span>        LL i = 1, num = 9, base = 1;
+</span></span><span style="display:flex;"><span>        while (n &gt; i * num) {
+</span></span><span style="display:flex;"><span>            n -= i * num;
+</span></span><span style="display:flex;"><span>            i += 1;
+</span></span><span style="display:flex;"><span>            num *= 10;
+</span></span><span style="display:flex;"><span>            base *= 10;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        int u = base + (n + i - 1) / i - 1;
+</span></span><span style="display:flex;"><span>        int p = n % i ? n % i : i;
+</span></span><span style="display:flex;"><span>        for (int k = 0; k &lt; i - p; k ++) u /= 10;
+</span></span><span style="display:flex;"><span>        return u % 10;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>};
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h1 id="把数组排成最小的数">把数组排成最小的数</h1>
+<p>题目：https://www.acwing.com/problem/content/54/</p>
+<p>思路：</p>
+<p>可以简单推导传递关系，排序即可。</p>
+<p>传递性：</p>
+<p>ab &lt; ba, bc &lt; cb =&gt; ac &lt; ca</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>class Solution {
+</span></span><span style="display:flex;"><span>public:
+</span></span><span style="display:flex;"><span>    static bool cmp(string&amp; a, string&amp; b) {
+</span></span><span style="display:flex;"><span>        return a + b &lt; b + a;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    string printMinNumber(vector&lt;int&gt;&amp; nums) {
+</span></span><span style="display:flex;"><span>        vector&lt;string&gt; q;
+</span></span><span style="display:flex;"><span>        for (auto&amp; x: nums) q.push_back(to_string(x));
+</span></span><span style="display:flex;"><span>        sort(q.begin(), q.end(), cmp);
+</span></span><span style="display:flex;"><span>        string ans;
+</span></span><span style="display:flex;"><span>        for (auto&amp; x: q) ans += x;
+</span></span><span style="display:flex;"><span>        return ans;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>};
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h1 id="把数字翻译成字符串">把数字翻译成字符串</h1>
+<p>题目：https://www.acwing.com/problem/content/55/</p>
+<p>思路：</p>
+<p>类似斐波那契数列，对当前的数字f[n]，必然可以作为一位来翻译，这对应f[n - 1]的翻译方法；</p>
+<p>如果可以作为两位来翻译，则对应了f[n - 2]的翻译方法。</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>class Solution {
+</span></span><span style="display:flex;"><span>public:
+</span></span><span style="display:flex;"><span>    int getTranslationCount(string s) {
+</span></span><span style="display:flex;"><span>        int n = s.size();
+</span></span><span style="display:flex;"><span>        vector&lt;int&gt; f(n + 1);
+</span></span><span style="display:flex;"><span>        f[0] = f[1] = 1;
+</span></span><span style="display:flex;"><span>        for (int i = 2; i &lt;= n; i ++) {
+</span></span><span style="display:flex;"><span>            f[i] = f[i - 1];
+</span></span><span style="display:flex;"><span>            if ((s[i - 2] == &#39;1&#39;) || (s[i - 2] == &#39;2&#39; &amp;&amp; s[i - 1] &gt;= &#39;0&#39; &amp;&amp; s[i - 1] &lt;= &#39;5&#39;))
+</span></span><span style="display:flex;"><span>                f[i] += f[i - 2];
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        return f[n];
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>};
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h1 id="丑数">丑数</h1>
+<p>题目：https://www.acwing.com/problem/content/58/</p>
+<p>题意：</p>
+<p>我们把只包含质因子 2、3 和 5 的数称作丑数（Ugly Number）。</p>
+<p>例如 6、8 都是丑数，但 14 不是，因为它包含质因子 7。</p>
+<p>求第 n 个丑数的值。</p>
+<p>思路：</p>
+<p>多路归并的思路。维护i，j，k三个指针，取最小值加入队列，然后将对应指针加1，由于有可能对应多个指针，为了避免结果重复要全部判断一遍。</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>class Solution {
+</span></span><span style="display:flex;"><span>public:
+</span></span><span style="display:flex;"><span>    int getUglyNumber(int n) {
+</span></span><span style="display:flex;"><span>        if (n == 1) return n;
+</span></span><span style="display:flex;"><span>        int i = 0, j = 0, k = 0;
+</span></span><span style="display:flex;"><span>        vector&lt;int&gt; u(1, 1);
+</span></span><span style="display:flex;"><span>        while (--n) {
+</span></span><span style="display:flex;"><span>            int t = min(u[i] * 2, min(u[j] * 3, u[k] * 5));
+</span></span><span style="display:flex;"><span>            u.push_back(t);
+</span></span><span style="display:flex;"><span>            if (t == u[i] * 2) i ++;
+</span></span><span style="display:flex;"><span>            if (t == u[j] * 3) j ++;
+</span></span><span style="display:flex;"><span>            if (t == u[k] * 5) k ++;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        return u.back();
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>};
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h1 id="数组中只出现一次的两个数字">数组中只出现一次的两个数字</h1>
+<p>题目：https://www.acwing.com/problem/content/69/</p>
+<p>题意：</p>
+<p>一个整型数组里除了两个数字之外，其他的数字都出现了两次。</p>
+<p>请写程序找出这两个只出现一次的数字。</p>
+<p>你可以假设这两个数字一定存在。</p>
+<p>思路：</p>
+<p>将所有数字异或，相同元素的异或为0，最终的异或结果为两个答案的异或结果；</p>
+<p>然后通过lowbit取最低位的1（可以取任意位的1，lowbit计算简单），这就是两个答案不同的位之一；</p>
+<p>然后按照和当前最低位1与的结果是否为0，将所有元素分为两类，两类中相同元素想与为0，剩下的就是两个所求元素。</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>class Solution {
+</span></span><span style="display:flex;"><span>public:
+</span></span><span style="display:flex;"><span>    vector&lt;int&gt; findNumsAppearOnce(vector&lt;int&gt;&amp; nums) {
+</span></span><span style="display:flex;"><span>        int t = 0;
+</span></span><span style="display:flex;"><span>        for (auto&amp; x: nums) t ^= x;
+</span></span><span style="display:flex;"><span>        int u = t &amp; (-t);
+</span></span><span style="display:flex;"><span>        int res1 = 0, res2 = 0;
+</span></span><span style="display:flex;"><span>        for (auto&amp; x: nums) {
+</span></span><span style="display:flex;"><span>            if (x &amp; u) res1 ^= x;
+</span></span><span style="display:flex;"><span>            else res2 ^= x;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        return {res1, res2};
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>};
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h1 id="数组中唯一只出现一次的数字">数组中唯一只出现一次的数字</h1>
+<p>题目：https://www.acwing.com/problem/content/70/</p>
+<p>题意：</p>
+<p>在一个数组中除了一个数字只出现一次之外，其他数字都出现了三次。</p>
+<p>请找出那个只出现一次的数字。</p>
+<p>你可以假设满足条件的数字一定存在。</p>
+<ul>
+<li>如果要求只使用 O(n)O(n) 的时间和额外 O(1)O(1) 的空间，该怎么做呢？</li>
+</ul>
+<p>思路：</p>
+<p>比较常规的想法是遍历每一位，如果1的个数不是3的倍数，则这个1属于只出现一次的元素，0出现的次数是无需考虑的。</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>class Solution {
+</span></span><span style="display:flex;"><span>public:
+</span></span><span style="display:flex;"><span>    int findNumberAppearingOnce(vector&lt;int&gt;&amp; nums) {
+</span></span><span style="display:flex;"><span>        int ans = 0;
+</span></span><span style="display:flex;"><span>        for (int i = 31; i &gt;= 0; i --) {
+</span></span><span style="display:flex;"><span>            int cnt = 0;
+</span></span><span style="display:flex;"><span>            for (auto&amp; x: nums) {
+</span></span><span style="display:flex;"><span>                if (x &gt;&gt; i &amp; 1) cnt ++;
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>            ans *= 2;
+</span></span><span style="display:flex;"><span>            if (cnt % 3) ans += 1;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        return ans;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>};
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>比较难想而且不太好理解的是状态转移的方式：</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>class Solution {
+</span></span><span style="display:flex;"><span>public:
+</span></span><span style="display:flex;"><span>    int findNumberAppearingOnce(vector&lt;int&gt;&amp; nums) {
+</span></span><span style="display:flex;"><span>        int ones = 0, twos = 0;
+</span></span><span style="display:flex;"><span>        for(auto&amp; x: nums){
+</span></span><span style="display:flex;"><span>            ones = (ones ^ x) &amp; ~twos;
+</span></span><span style="display:flex;"><span>            twos = (twos ^ x) &amp; ~ones;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        return ones;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>};
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h1 id="翻转单词顺序">翻转单词顺序</h1>
+<p>题目：https://www.acwing.com/problem/content/73/</p>
+<p>题意：</p>
+<p>输入一个英文句子，<strong>单词之间用一个空格隔开，且句首和句尾没有多余空格</strong>。</p>
+<p>翻转句子中单词的顺序，但单词内字符的顺序不变。</p>
+<p>为简单起见，标点符号和普通字母一样处理。</p>
+<p>例如输入字符串<code>&quot;I am a student.&quot;</code>，则输出<code>&quot;student. a am I&quot;</code>。</p>
+<p>思路：</p>
+<p>常见的反转思路，先将每一个单词内部反转，再反转整个字符串。</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>class Solution {
+</span></span><span style="display:flex;"><span>public:
+</span></span><span style="display:flex;"><span>    void reverseSingleWord(string&amp; s, int l, int r) {
+</span></span><span style="display:flex;"><span>        while (l &lt; r) {
+</span></span><span style="display:flex;"><span>            swap(s[l ++], s[r --]);
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    string reverseWords(string s) {
+</span></span><span style="display:flex;"><span>        int l = 0, n = s.size();
+</span></span><span style="display:flex;"><span>        for (int i = 0; i &lt; n; i ++) {
+</span></span><span style="display:flex;"><span>            if (s[i] == &#39; &#39;) {
+</span></span><span style="display:flex;"><span>                reverseSingleWord(s, l, i - 1);
+</span></span><span style="display:flex;"><span>                l = i + 1;
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        reverseSingleWord(s, l, n - 1);
+</span></span><span style="display:flex;"><span>        reverse(s.begin(), s.end());
+</span></span><span style="display:flex;"><span>        return s;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>};
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h1 id="二叉搜索树的第k个结点">二叉搜索树的第k个结点</h1>
+<p>题目：https://www.acwing.com/problem/content/66/</p>
+<p>题意：</p>
+<p>给定一棵二叉搜索树，请找出其中的第 kk 小的结点。</p>
+<p>你可以假设树和 kk 都存在，并且 1≤k≤1≤k≤ 树的总结点数。</p>
+<p>思路：</p>
+<p>直接dfs</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">23
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">24
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">25
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">26
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">27
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">28
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">29
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>/**
+</span></span><span style="display:flex;"><span> * Definition for a binary tree node.
+</span></span><span style="display:flex;"><span> * struct TreeNode {
+</span></span><span style="display:flex;"><span> *     int val;
+</span></span><span style="display:flex;"><span> *     TreeNode *left;
+</span></span><span style="display:flex;"><span> *     TreeNode *right;
+</span></span><span style="display:flex;"><span> *     TreeNode(int x) : val(x), left(NULL), right(NULL) {}
+</span></span><span style="display:flex;"><span> * };
+</span></span><span style="display:flex;"><span> */
+</span></span><span style="display:flex;"><span>class Solution {
+</span></span><span style="display:flex;"><span>public:
+</span></span><span style="display:flex;"><span>    TreeNode* ans;
+</span></span><span style="display:flex;"><span>    int cnt;
+</span></span><span style="display:flex;"><span>    void dfs(TreeNode* root) {
+</span></span><span style="display:flex;"><span>        if (!root) return;
+</span></span><span style="display:flex;"><span>        dfs(root-&gt;left);
+</span></span><span style="display:flex;"><span>        if (-- cnt == 0) {
+</span></span><span style="display:flex;"><span>            ans = root;
+</span></span><span style="display:flex;"><span>            return;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        dfs(root-&gt;right);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    TreeNode* kthNode(TreeNode* root, int k) {
+</span></span><span style="display:flex;"><span>        cnt = k;
+</span></span><span style="display:flex;"><span>        dfs(root);
+</span></span><span style="display:flex;"><span>        return ans;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>};
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>利用栈：</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">23
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">24
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">25
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">26
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">27
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>/**
+</span></span><span style="display:flex;"><span> * Definition for a binary tree node.
+</span></span><span style="display:flex;"><span> * struct TreeNode {
+</span></span><span style="display:flex;"><span> *     int val;
+</span></span><span style="display:flex;"><span> *     TreeNode *left;
+</span></span><span style="display:flex;"><span> *     TreeNode *right;
+</span></span><span style="display:flex;"><span> *     TreeNode(int x) : val(x), left(NULL), right(NULL) {}
+</span></span><span style="display:flex;"><span> * };
+</span></span><span style="display:flex;"><span> */
+</span></span><span style="display:flex;"><span>class Solution {
+</span></span><span style="display:flex;"><span>public:
+</span></span><span style="display:flex;"><span>    TreeNode* kthNode(TreeNode* root, int k) {
+</span></span><span style="display:flex;"><span>        stack&lt;TreeNode*&gt; st;
+</span></span><span style="display:flex;"><span>        auto u = root;
+</span></span><span style="display:flex;"><span>        while (st.size() || u) {
+</span></span><span style="display:flex;"><span>            while (u) {
+</span></span><span style="display:flex;"><span>                st.push(u);
+</span></span><span style="display:flex;"><span>                u = u-&gt;left;
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>            u = st.top();
+</span></span><span style="display:flex;"><span>            st.pop();
+</span></span><span style="display:flex;"><span>            if (-- k == 0) return u;
+</span></span><span style="display:flex;"><span>            u = u-&gt;right;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        return NULL;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>};
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h1 id="平衡二叉树">平衡二叉树</h1>
+<p>题目：https://www.acwing.com/problem/content/68/</p>
+<p>题意：</p>
+<p>输入一棵二叉树的根结点，判断该树是不是平衡二叉树。</p>
+<p>如果某二叉树中任意结点的左右子树的深度相差不超过 11，那么它就是一棵平衡二叉树。</p>
+<p>思路：</p>
+<p>这题需要结合求深度的题目，根据当前左右节点深度，先判断当前节点是否满足，再递归左右节点。</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>/**
+</span></span><span style="display:flex;"><span> * Definition for a binary tree node.
+</span></span><span style="display:flex;"><span> * struct TreeNode {
+</span></span><span style="display:flex;"><span> *     int val;
+</span></span><span style="display:flex;"><span> *     TreeNode *left;
+</span></span><span style="display:flex;"><span> *     TreeNode *right;
+</span></span><span style="display:flex;"><span> *     TreeNode(int x) : val(x), left(NULL), right(NULL) {}
+</span></span><span style="display:flex;"><span> * };
+</span></span><span style="display:flex;"><span> */
+</span></span><span style="display:flex;"><span>class Solution {
+</span></span><span style="display:flex;"><span>public:
+</span></span><span style="display:flex;"><span>    int depth(TreeNode* root) {
+</span></span><span style="display:flex;"><span>        if (!root) return 0;
+</span></span><span style="display:flex;"><span>        return max(depth(root-&gt;left), depth(root-&gt;right)) + 1;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    bool isBalanced(TreeNode* root) {
+</span></span><span style="display:flex;"><span>    	// 记得返回空为true
+</span></span><span style="display:flex;"><span>        if (!root) return true;
+</span></span><span style="display:flex;"><span>        int l = depth(root-&gt;left), r = depth(root-&gt;right);
+</span></span><span style="display:flex;"><span>        return abs(l - r) &lt;= 1 &amp;&amp; isBalanced(root-&gt;left) &amp;&amp; isBalanced(root-&gt;right);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>};
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h1 id="求12n">求1+2+…+n</h1>
+<p>题目：https://www.acwing.com/problem/content/80/</p>
+<p>题意：</p>
+<p>求 1+2+…+n，要求不能使用乘除法、for、while、if、else、switch、case 等关键字及条件判断语句 (A?B:C)。</p>
+<p>思路：</p>
+<p>递归加短路判断</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">6
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">7
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">8
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">9
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>class Solution {
+</span></span><span style="display:flex;"><span>public:
+</span></span><span style="display:flex;"><span>    int getSum(int n) {
+</span></span><span style="display:flex;"><span>        int res = n;
+</span></span><span style="display:flex;"><span>        // 利用n &gt; 0短路
+</span></span><span style="display:flex;"><span>        (n &gt; 0) &amp;&amp; (res += getSum(n - 1));
+</span></span><span style="display:flex;"><span>        return res;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>};
+</span></span></code></pre></td></tr></table>
+</div>
 </div>
       </article>
     </section>
@@ -1952,6 +2647,10 @@
     
     
     
+    
+      
+    
+      
     
       
     
@@ -2172,6 +2871,12 @@
           
           
           
+            <a class="ui label" href="/tags/gfs/" title="GFS">
+              GFS
+            </a>
+          
+          
+          
             <a class="ui label" href="/tags/git/" title="git">
               git
             </a>
@@ -2268,8 +2973,8 @@
           
           
           
-            <a class="ui label" href="/tags/raft/" title="Raft">
-              Raft
+            <a class="ui label" href="/tags/raft/" title="raft">
+              raft
             </a>
           
           
@@ -2432,6 +3137,12 @@
           
             <a class="ui label" href="/tags/%E5%BF%AB%E9%80%9F%E6%8E%92%E5%BA%8F/" title="快速排序">
               快速排序
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/%E6%95%B0%E5%AD%A6/" title="数学">
+              数学
             </a>
           
           
