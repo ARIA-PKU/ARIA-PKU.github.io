@@ -1,22 +1,13 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>mysql on Aria&#39;s Blog</title>
-    <link>https://blog.surfaroundtheworld.top/tags/mysql/</link>
-    <description>Recent content in mysql on Aria&#39;s Blog</description>
+    <title>隔离级别 on Aria&#39;s Blog</title>
+    <link>https://blog.surfaroundtheworld.top/tags/%E9%9A%94%E7%A6%BB%E7%BA%A7%E5%88%AB/</link>
+    <description>Recent content in 隔离级别 on Aria&#39;s Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-Hans</language>
     <copyright>&lt;a rel=&#34;license&#34; href=&#34;http://creativecommons.org/licenses/by-nc-sa/4.0/&#34;&gt;&lt;img alt=&#34;知识共享许可协议&#34; style=&#34;border-width:0&#34; src=&#34;https://i.creativecommons.org/l/by-nc-sa/4.0/88x31.png&#34; /&gt;&lt;/a&gt;&lt;br /&gt;本作品采用&lt;a rel=&#34;license&#34; href=&#34;http://creativecommons.org/licenses/by-nc-sa/4.0/&#34;&gt;知识共享署名-非商业性使用-相同方式共享 4.0 国际许可协议&lt;/a&gt;进行许可。&lt;br /&gt;</copyright>
-    <lastBuildDate>Mon, 20 Jun 2022 17:21:29 +0800</lastBuildDate><atom:link href="https://blog.surfaroundtheworld.top/tags/mysql/index.xml" rel="self" type="application/rss+xml" />
-    <item>
-      <title>MySQL知识整理</title>
-      <link>https://blog.surfaroundtheworld.top/posts/%E6%95%B0%E6%8D%AE%E5%BA%93%E7%9B%B8%E5%85%B3/mysql%E7%9F%A5%E8%AF%86%E6%95%B4%E7%90%86/</link>
-      <pubDate>Mon, 20 Jun 2022 17:21:29 +0800</pubDate>
-      
-      <guid>https://blog.surfaroundtheworld.top/posts/%E6%95%B0%E6%8D%AE%E5%BA%93%E7%9B%B8%E5%85%B3/mysql%E7%9F%A5%E8%AF%86%E6%95%B4%E7%90%86/</guid>
-      <description>&lt;p&gt;整理一些学习使用过程中遇到的细碎的知识点&lt;/p&gt;</description>
-    </item>
-    
+    <lastBuildDate>Mon, 20 Jun 2022 17:18:48 +0800</lastBuildDate><atom:link href="https://blog.surfaroundtheworld.top/tags/%E9%9A%94%E7%A6%BB%E7%BA%A7%E5%88%AB/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>MySQL事务与日志</title>
       <link>https://blog.surfaroundtheworld.top/posts/%E6%95%B0%E6%8D%AE%E5%BA%93%E7%9B%B8%E5%85%B3/mysql%E4%BA%8B%E5%8A%A1/</link>

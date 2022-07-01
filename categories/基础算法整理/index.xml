@@ -7,7 +7,16 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-Hans</language>
     <copyright>&lt;a rel=&#34;license&#34; href=&#34;http://creativecommons.org/licenses/by-nc-sa/4.0/&#34;&gt;&lt;img alt=&#34;知识共享许可协议&#34; style=&#34;border-width:0&#34; src=&#34;https://i.creativecommons.org/l/by-nc-sa/4.0/88x31.png&#34; /&gt;&lt;/a&gt;&lt;br /&gt;本作品采用&lt;a rel=&#34;license&#34; href=&#34;http://creativecommons.org/licenses/by-nc-sa/4.0/&#34;&gt;知识共享署名-非商业性使用-相同方式共享 4.0 国际许可协议&lt;/a&gt;进行许可。&lt;br /&gt;</copyright>
-    <lastBuildDate>Thu, 26 May 2022 00:41:33 +0800</lastBuildDate><atom:link href="https://blog.surfaroundtheworld.top/categories/%E5%9F%BA%E7%A1%80%E7%AE%97%E6%B3%95%E6%95%B4%E7%90%86/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Thu, 30 Jun 2022 10:18:31 +0800</lastBuildDate><atom:link href="https://blog.surfaroundtheworld.top/categories/%E5%9F%BA%E7%A1%80%E7%AE%97%E6%B3%95%E6%95%B4%E7%90%86/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>基础算法 数学</title>
+      <link>https://blog.surfaroundtheworld.top/posts/%E7%AE%97%E6%B3%95%E9%A2%98/%E7%AE%97%E6%B3%95%E5%9F%BA%E7%A1%80%E8%AF%BE/%E5%9F%BA%E7%A1%80%E7%AE%97%E6%B3%95-%E6%95%B0%E5%AD%A6/</link>
+      <pubDate>Thu, 30 Jun 2022 10:18:31 +0800</pubDate>
+      
+      <guid>https://blog.surfaroundtheworld.top/posts/%E7%AE%97%E6%B3%95%E9%A2%98/%E7%AE%97%E6%B3%95%E5%9F%BA%E7%A1%80%E8%AF%BE/%E5%9F%BA%E7%A1%80%E7%AE%97%E6%B3%95-%E6%95%B0%E5%AD%A6/</guid>
+      <description>&lt;p&gt;整理各种数学相关算法，包括求质数的方法整理，最大公约数，快速幂等。&lt;/p&gt;</description>
+    </item>
+    
     <item>
       <title>最小生成树</title>
       <link>https://blog.surfaroundtheworld.top/posts/%E7%AE%97%E6%B3%95%E9%A2%98/%E7%AE%97%E6%B3%95%E5%9F%BA%E7%A1%80%E8%AF%BE/%E5%9F%BA%E7%A1%80%E7%AE%97%E6%B3%95-%E6%9C%80%E5%B0%8F%E7%94%9F%E6%88%90%E6%A0%91/</link>
