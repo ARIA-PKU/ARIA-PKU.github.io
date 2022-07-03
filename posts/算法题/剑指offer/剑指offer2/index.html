@@ -148,7 +148,7 @@
                   <span data-format="luxon">2022-06-20T13:04:08&#43;08:00</span>
                 
 
-              | 23 分钟阅读
+              | 27 分钟阅读
 
               
               | 更新于
@@ -2577,6 +2577,362 @@
 </span></span><span style="display:flex;"><span>        // 利用n &gt; 0短路
 </span></span><span style="display:flex;"><span>        (n &gt; 0) &amp;&amp; (res += getSum(n - 1));
 </span></span><span style="display:flex;"><span>        return res;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>};
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h1 id="滑动窗口的最大值">滑动窗口的最大值</h1>
+<p>题目：https://www.acwing.com/problem/content/75/</p>
+<p>思路：</p>
+<p>双端队列，队列中存放数组下标；</p>
+<p>每次往队列里放置元素时候，先把队列中比它小的pop出来，因为比它小的不可能是当前结果；</p>
+<p>再判断一次队头元素是否超过滑动窗口大小，是则把队头pop出来；</p>
+<p>当前位置大于滑动窗口大小存放答案。</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>class Solution {
+</span></span><span style="display:flex;"><span>public:
+</span></span><span style="display:flex;"><span>    vector&lt;int&gt; maxInWindows(vector&lt;int&gt;&amp; nums, int k) {
+</span></span><span style="display:flex;"><span>        vector&lt;int&gt; ans;
+</span></span><span style="display:flex;"><span>        deque&lt;int&gt; q;
+</span></span><span style="display:flex;"><span>        for (int i = 0; i &lt; nums.size(); i ++) {
+</span></span><span style="display:flex;"><span>            while (q.size() &amp;&amp; nums[i] &gt; nums[q.back()]) q.pop_back();
+</span></span><span style="display:flex;"><span>            q.push_back(i);
+</span></span><span style="display:flex;"><span>            if (q.size() &amp;&amp; i - q.front() &gt;= k) q.pop_front();
+</span></span><span style="display:flex;"><span>            if (i &gt;= k - 1) ans.push_back(nums[q.front()]);
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        return ans;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>};
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h1 id="骰子的点数">骰子的点数</h1>
+<p>题目：https://www.acwing.com/problem/content/76/</p>
+<p>题意：</p>
+<p>请求出投掷 n 次，掷出 n∼6n 点分别有多少种掷法。</p>
+<p>思路：</p>
+<p>dp，f[i][j]表示第i轮次，掷出结果j的方法次数。</p>
+<p>每轮掷出的结果只有1到6，如果要掷出结果j，则只需要累加上一轮次j - k掷出的次数即可。</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>class Solution {
+</span></span><span style="display:flex;"><span>public:
+</span></span><span style="display:flex;"><span>    vector&lt;int&gt; numberOfDice(int n) {
+</span></span><span style="display:flex;"><span>        vector&lt;vector&lt;int&gt;&gt; f(n + 1, vector&lt;int&gt;(6 * n + 1));
+</span></span><span style="display:flex;"><span>        f[0][0] = 1;
+</span></span><span style="display:flex;"><span>        for (int i = 1; i &lt;= n; i ++) {  // 枚举轮次
+</span></span><span style="display:flex;"><span>            for (int j = i; j &lt;= 6 * i; j ++) {  // 枚举总和可能的结果
+</span></span><span style="display:flex;"><span>                for (int k = 1; k &lt;= 6; k ++) {  // 枚举当前轮次的结果
+</span></span><span style="display:flex;"><span>                    if (j &gt;= k)
+</span></span><span style="display:flex;"><span>                        f[i][j] += f[i - 1][j - k];
+</span></span><span style="display:flex;"><span>                }
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        return vector&lt;int&gt;(f[n].begin() + n, f[n].end());
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>};
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h1 id="扑克牌的顺子">扑克牌的顺子</h1>
+<p>题目：https://www.acwing.com/problem/content/77/</p>
+<p>题意：</p>
+<p>从扑克牌中随机抽 55 张牌，判断是不是一个顺子，即这 55 张牌是不是连续的。</p>
+<p>思路：</p>
+<p>五张牌先排序，跳过0的元素，然后判断是否相等，差值是否大于等于5。</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>class Solution {
+</span></span><span style="display:flex;"><span>public:
+</span></span><span style="display:flex;"><span>    bool isContinuous( vector&lt;int&gt; numbers ) {
+</span></span><span style="display:flex;"><span>        if (numbers.empty()) return false;
+</span></span><span style="display:flex;"><span>        sort(numbers.begin(), numbers.end());
+</span></span><span style="display:flex;"><span>        int st = 0, k = 0;
+</span></span><span style="display:flex;"><span>        while (numbers[k] == 0) st ++, k ++;
+</span></span><span style="display:flex;"><span>        while (k &lt; 5) {
+</span></span><span style="display:flex;"><span>            if ((k &gt; 1 &amp;&amp; numbers[k] == numbers[k - 1]) || (numbers[k] - numbers[st] &gt;= 5))
+</span></span><span style="display:flex;"><span>                return false;
+</span></span><span style="display:flex;"><span>            k ++;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        return true;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>};
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h1 id="圆圈中最后剩下的数字">圆圈中最后剩下的数字</h1>
+<p>题目：https://www.acwing.com/problem/content/78/</p>
+<p>思路：</p>
+<p>约瑟夫问题，求环内最后剩余的数字。</p>
+<p>可以采用递归的方式求解，已知函数返回的就是最后结果，只需要递归地找到其在上一轮递归中的结果的位置对应当前轮次的实际值，直到n=1的时候返回0.</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">6
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">7
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>class Solution {
+</span></span><span style="display:flex;"><span>public:
+</span></span><span style="display:flex;"><span>    int lastRemaining(int n, int m){
+</span></span><span style="display:flex;"><span>        if (n == 1) return 0;
+</span></span><span style="display:flex;"><span>        return (lastRemaining(n - 1, m) + m ) % n ;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>};
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h1 id="不用加减乘除做加法">不用加减乘除做加法</h1>
+<p>题目：https://www.acwing.com/problem/content/81/</p>
+<p>题意：</p>
+<p>写一个函数，求两个整数之和，要求在函数体内不得使用 ＋、－、×、÷四则运算符号。</p>
+<p>思路：</p>
+<p>位运算相关的题目。</p>
+<p>两数异或，同0异1，利用这个可以求得两数不带进位的结果；</p>
+<p>两数相与，同1异0，利用它可以将每个有进位的位置的值赋给1，然后将其左移一位获得进位后的值；</p>
+<p>重复上面两个步骤，直到进位的值为0中止。</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>class Solution {
+</span></span><span style="display:flex;"><span>public:
+</span></span><span style="display:flex;"><span>    int add(int num1, int num2){
+</span></span><span style="display:flex;"><span>        while (num2) {
+</span></span><span style="display:flex;"><span>            int sum = num1 ^ num2;
+</span></span><span style="display:flex;"><span>            int carry = num1 &amp; num2;
+</span></span><span style="display:flex;"><span>            num1 = sum;
+</span></span><span style="display:flex;"><span>            num2 = carry &lt;&lt; 1;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        return num1;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>};
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h1 id="构建乘积数组">构建乘积数组</h1>
+<p>题目：https://www.acwing.com/problem/content/82/</p>
+<p>题意：</p>
+<p>给定一个数组<code>A[0, 1, …, n-1]</code>，请构建一个数组<code>B[0, 1, …, n-1]</code>，其中B中的元素<code>B[i]=A[0]×A[1]×… ×A[i-1]×A[i+1]×…×A[n-1]</code>。</p>
+<p>不能使用除法。</p>
+<p>思路：</p>
+<p>首先从前到后，存储当前元素左半的乘积，再从后到前，存储右半乘积。从前到后可以直接利用f存储之前的值，从后到前可以定义一个临时变量存放右半乘积。</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>class Solution {
+</span></span><span style="display:flex;"><span>public:
+</span></span><span style="display:flex;"><span>    vector&lt;int&gt; multiply(const vector&lt;int&gt;&amp; A) {
+</span></span><span style="display:flex;"><span>        int n = A.size();
+</span></span><span style="display:flex;"><span>        vector&lt;int&gt; f(n, 1);
+</span></span><span style="display:flex;"><span>        for (int i = 1; i &lt; n; i ++) {
+</span></span><span style="display:flex;"><span>            f[i] = f[i - 1] * A[i - 1];
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        int t = 1;
+</span></span><span style="display:flex;"><span>        for (int i = n - 2; i &gt;= 0; i --) {
+</span></span><span style="display:flex;"><span>            t *= A[i + 1];
+</span></span><span style="display:flex;"><span>            f[i] *= t;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        return f;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>};
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h1 id="树中两个结点的最低公共祖先">树中两个结点的最低公共祖先</h1>
+<p>题目：https://www.acwing.com/problem/content/84/</p>
+<p>题意：</p>
+<p>给出一个二叉树，输入两个树节点，求它们的最低公共祖先。</p>
+<p>一个树节点的祖先节点包括它本身。</p>
+<p>思路：</p>
+<p>经典递归题。</p>
+<p>返回条件是当前节点为空，或者等于所要找的p或q节点。</p>
+<p>递归找左节点和右节点是否包含p或q节点，有以下两种情况：</p>
+<p>1）左右节点都存在p或q，则表明当前节点就是最低公共祖先；</p>
+<p>2）只有左节点或者只有右节点非空，则递归求得的非空的节点就是最低公共祖先；</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>/**
+</span></span><span style="display:flex;"><span> * Definition for a binary tree node.
+</span></span><span style="display:flex;"><span> * struct TreeNode {
+</span></span><span style="display:flex;"><span> *     int val;
+</span></span><span style="display:flex;"><span> *     TreeNode *left;
+</span></span><span style="display:flex;"><span> *     TreeNode *right;
+</span></span><span style="display:flex;"><span> *     TreeNode(int x) : val(x), left(NULL), right(NULL) {}
+</span></span><span style="display:flex;"><span> * };
+</span></span><span style="display:flex;"><span> */
+</span></span><span style="display:flex;"><span>class Solution {
+</span></span><span style="display:flex;"><span>public:
+</span></span><span style="display:flex;"><span>    TreeNode* lowestCommonAncestor(TreeNode* root, TreeNode* p, TreeNode* q) {
+</span></span><span style="display:flex;"><span>        if (!root || root == p || root == q) return root;
+</span></span><span style="display:flex;"><span>        auto l = lowestCommonAncestor(root-&gt;left, p, q);
+</span></span><span style="display:flex;"><span>        auto r = lowestCommonAncestor(root-&gt;right, p, q);
+</span></span><span style="display:flex;"><span>        if (l &amp;&amp; r) return root;
+</span></span><span style="display:flex;"><span>        if (l) return l;
+</span></span><span style="display:flex;"><span>        return r;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>};
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h1 id="把字符串转换成整数">把字符串转换成整数</h1>
+<p>题目：https://www.acwing.com/problem/content/83/</p>
+<p>思路：</p>
+<p>模拟题，注意边界</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">23
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">24
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">25
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">26
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>class Solution {
+</span></span><span style="display:flex;"><span>public:
+</span></span><span style="display:flex;"><span>    int strToInt(string str) {
+</span></span><span style="display:flex;"><span>        int res = 0, u = 0;
+</span></span><span style="display:flex;"><span>        bool isNeg = false;
+</span></span><span style="display:flex;"><span>        while (str[u] == &#39; &#39;) u ++;
+</span></span><span style="display:flex;"><span>        if (str[u] == &#39;+&#39;) u ++;
+</span></span><span style="display:flex;"><span>        if (str[u] == &#39;-&#39;) {
+</span></span><span style="display:flex;"><span>            isNeg = true;
+</span></span><span style="display:flex;"><span>            u ++;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        while (u &lt; str.size()) {
+</span></span><span style="display:flex;"><span>            if (str[u] &lt; &#39;0&#39; || str[u] &gt; &#39;9&#39;) break;
+</span></span><span style="display:flex;"><span>            int cur = str[u] - &#39;0&#39;;
+</span></span><span style="display:flex;"><span>            if (res == INT_MAX / 10) {
+</span></span><span style="display:flex;"><span>                if (isNeg &amp;&amp; cur &gt;= abs(INT_MIN % 10)) return INT_MIN;
+</span></span><span style="display:flex;"><span>                if (!isNeg &amp;&amp; cur &gt;= INT_MAX % 10) return INT_MAX;
+</span></span><span style="display:flex;"><span>            } else if (res &gt; INT_MAX / 10) {
+</span></span><span style="display:flex;"><span>                return isNeg ? INT_MIN : INT_MAX;
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>            u ++;
+</span></span><span style="display:flex;"><span>            res = res * 10 + cur;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        return isNeg ? -res : res;
 </span></span><span style="display:flex;"><span>    }
 </span></span><span style="display:flex;"><span>};
 </span></span></code></pre></td></tr></table>
