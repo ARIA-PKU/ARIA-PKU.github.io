@@ -7,10 +7,9 @@ cover: https://oss.surfaroundtheworld.top/blog-pictures/6_20/mysql_4.jpg
 # images:
 #   - /img/cover.jpg
 categories:
-  - category1
+  - 数据库
 tags:
-  - tag1
-  - tag2
+  - mysql
 # nolastmod: true
 draft: false
 ---

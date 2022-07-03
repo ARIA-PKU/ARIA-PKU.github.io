@@ -6,10 +6,10 @@ lastmod: 2022-06-20T17:18:48+08:00
 cover: https://oss.surfaroundtheworld.top/blog-pictures/6_20/mysql_3.jpg
 
 categories:
-  - category1
+  - 数据库
 tags:
-  - tag1
-  - tag2
+  - mysql
+  - 隔离级别
 # nolastmod: true
 draft: false
 ---

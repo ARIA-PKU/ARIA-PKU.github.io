@@ -4,10 +4,9 @@ date: 2022-06-20T13:04:08+08:00
 lastmod: 2022-06-20T13:04:08+08:00
 
 cover: https://oss.surfaroundtheworld.top/blog-pictures/6_15/sky.jpg
-# images:
-#   - /img/cover.jpg
+
 categories:
-  - 算法题
+  - 算法题整理
 tags:
   - 剑指offer
 # nolastmod: true
@@ -1641,4 +1640,269 @@ public:
     }
 };
 ```
+
+# 滑动窗口的最大值
+
+题目：https://www.acwing.com/problem/content/75/
+
+思路：
+
+双端队列，队列中存放数组下标；
+
+每次往队列里放置元素时候，先把队列中比它小的pop出来，因为比它小的不可能是当前结果；
+
+再判断一次队头元素是否超过滑动窗口大小，是则把队头pop出来；
+
+当前位置大于滑动窗口大小存放答案。
+
+```
+class Solution {
+public:
+    vector<int> maxInWindows(vector<int>& nums, int k) {
+        vector<int> ans;
+        deque<int> q;
+        for (int i = 0; i < nums.size(); i ++) {
+            while (q.size() && nums[i] > nums[q.back()]) q.pop_back();
+            q.push_back(i);
+            if (q.size() && i - q.front() >= k) q.pop_front();
+            if (i >= k - 1) ans.push_back(nums[q.front()]);
+        }
+        return ans;
+    }
+};
+```
+
+# 骰子的点数
+
+题目：https://www.acwing.com/problem/content/76/
+
+题意：
+
+请求出投掷 n 次，掷出 n∼6n 点分别有多少种掷法。
+
+思路：
+
+dp，f\[i]\[j]表示第i轮次，掷出结果j的方法次数。
+
+每轮掷出的结果只有1到6，如果要掷出结果j，则只需要累加上一轮次j - k掷出的次数即可。
+
+```
+class Solution {
+public:
+    vector<int> numberOfDice(int n) {
+        vector<vector<int>> f(n + 1, vector<int>(6 * n + 1));
+        f[0][0] = 1;
+        for (int i = 1; i <= n; i ++) {  // 枚举轮次
+            for (int j = i; j <= 6 * i; j ++) {  // 枚举总和可能的结果
+                for (int k = 1; k <= 6; k ++) {  // 枚举当前轮次的结果
+                    if (j >= k)
+                        f[i][j] += f[i - 1][j - k];
+                }
+            }
+        }
+        return vector<int>(f[n].begin() + n, f[n].end());
+    }
+};
+
+```
+
+# 扑克牌的顺子
+
+题目：https://www.acwing.com/problem/content/77/
+
+题意：
+
+从扑克牌中随机抽 55 张牌，判断是不是一个顺子，即这 55 张牌是不是连续的。
+
+思路：
+
+五张牌先排序，跳过0的元素，然后判断是否相等，差值是否大于等于5。
+
+```
+class Solution {
+public:
+    bool isContinuous( vector<int> numbers ) {
+        if (numbers.empty()) return false;
+        sort(numbers.begin(), numbers.end());
+        int st = 0, k = 0;
+        while (numbers[k] == 0) st ++, k ++;
+        while (k < 5) {
+            if ((k > 1 && numbers[k] == numbers[k - 1]) || (numbers[k] - numbers[st] >= 5))
+                return false;
+            k ++;
+        }
+        return true;
+    }
+};
+```
+
+# 圆圈中最后剩下的数字
+
+题目：https://www.acwing.com/problem/content/78/
+
+思路：
+
+约瑟夫问题，求环内最后剩余的数字。
+
+可以采用递归的方式求解，已知函数返回的就是最后结果，只需要递归地找到其在上一轮递归中的结果的位置对应当前轮次的实际值，直到n=1的时候返回0.
+
+```
+class Solution {
+public:
+    int lastRemaining(int n, int m){
+        if (n == 1) return 0;
+        return (lastRemaining(n - 1, m) + m ) % n ;
+    }
+};
+```
+
+# 不用加减乘除做加法
+
+题目：https://www.acwing.com/problem/content/81/
+
+题意：
+
+写一个函数，求两个整数之和，要求在函数体内不得使用 ＋、－、×、÷四则运算符号。
+
+思路：
+
+位运算相关的题目。
+
+两数异或，同0异1，利用这个可以求得两数不带进位的结果；
+
+两数相与，同1异0，利用它可以将每个有进位的位置的值赋给1，然后将其左移一位获得进位后的值；
+
+重复上面两个步骤，直到进位的值为0中止。
+
+```
+class Solution {
+public:
+    int add(int num1, int num2){
+        while (num2) {
+            int sum = num1 ^ num2;
+            int carry = num1 & num2;
+            num1 = sum;
+            num2 = carry << 1;
+        }
+        return num1;
+    }
+};
+```
+
+# 构建乘积数组
+
+题目：https://www.acwing.com/problem/content/82/
+
+题意：
+
+给定一个数组`A[0, 1, …, n-1]`，请构建一个数组`B[0, 1, …, n-1]`，其中B中的元素`B[i]=A[0]×A[1]×… ×A[i-1]×A[i+1]×…×A[n-1]`。
+
+不能使用除法。
+
+思路：
+
+首先从前到后，存储当前元素左半的乘积，再从后到前，存储右半乘积。从前到后可以直接利用f存储之前的值，从后到前可以定义一个临时变量存放右半乘积。
+
+```
+class Solution {
+public:
+    vector<int> multiply(const vector<int>& A) {
+        int n = A.size();
+        vector<int> f(n, 1);
+        for (int i = 1; i < n; i ++) {
+            f[i] = f[i - 1] * A[i - 1];
+        }
+        int t = 1;
+        for (int i = n - 2; i >= 0; i --) {
+            t *= A[i + 1];
+            f[i] *= t;
+        }
+        return f;
+    }
+};
+```
+
+# 树中两个结点的最低公共祖先
+
+题目：https://www.acwing.com/problem/content/84/
+
+题意：
+
+给出一个二叉树，输入两个树节点，求它们的最低公共祖先。
+
+一个树节点的祖先节点包括它本身。
+
+思路：
+
+经典递归题。
+
+返回条件是当前节点为空，或者等于所要找的p或q节点。
+
+递归找左节点和右节点是否包含p或q节点，有以下两种情况：
+
+1）左右节点都存在p或q，则表明当前节点就是最低公共祖先；
+
+2）只有左节点或者只有右节点非空，则递归求得的非空的节点就是最低公共祖先；
+
+```
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode(int x) : val(x), left(NULL), right(NULL) {}
+ * };
+ */
+class Solution {
+public:
+    TreeNode* lowestCommonAncestor(TreeNode* root, TreeNode* p, TreeNode* q) {
+        if (!root || root == p || root == q) return root;
+        auto l = lowestCommonAncestor(root->left, p, q);
+        auto r = lowestCommonAncestor(root->right, p, q);
+        if (l && r) return root;
+        if (l) return l;
+        return r;
+    }
+};
+```
+
+# 把字符串转换成整数
+
+题目：https://www.acwing.com/problem/content/83/
+
+思路：
+
+模拟题，注意边界
+
+```
+class Solution {
+public:
+    int strToInt(string str) {
+        int res = 0, u = 0;
+        bool isNeg = false;
+        while (str[u] == ' ') u ++;
+        if (str[u] == '+') u ++;
+        if (str[u] == '-') {
+            isNeg = true;
+            u ++;
+        }
+        while (u < str.size()) {
+            if (str[u] < '0' || str[u] > '9') break;
+            int cur = str[u] - '0';
+            if (res == INT_MAX / 10) {
+                if (isNeg && cur >= abs(INT_MIN % 10)) return INT_MIN;
+                if (!isNeg && cur >= INT_MAX % 10) return INT_MAX;
+            } else if (res > INT_MAX / 10) {
+                return isNeg ? INT_MIN : INT_MAX;
+            }
+            u ++;
+            res = res * 10 + cur;
+        }
+        return isNeg ? -res : res;
+    }
+};
+```
+
+
 
