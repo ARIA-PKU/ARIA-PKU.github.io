@@ -19,9 +19,9 @@ draft: false
 
 <!--more-->
 
-# 294场周赛
+## 294场周赛
 
-## [2281. 巫师的总力量和](https://leetcode.cn/problems/sum-of-total-strength-of-wizards/)
+### [2281. 巫师的总力量和](https://leetcode.cn/problems/sum-of-total-strength-of-wizards/)
 
 题意为，一个子数组的力量为子数组最小值乘数组元素个数，求所有子数组的力量总和。
 
@@ -103,9 +103,9 @@ public:
 };
 ```
 
-# 80场双周赛
+## 80场双周赛
 
-## [6098. 统计得分小于 K 的子数组数目](https://leetcode.cn/problems/count-subarrays-with-score-less-than-k/)
+### [6098. 统计得分小于 K 的子数组数目](https://leetcode.cn/problems/count-subarrays-with-score-less-than-k/)
 
 思路：
 
@@ -159,9 +159,9 @@ public:
 };
 ```
 
-# 297场周赛
+## 297场周赛
 
-## [5289. 公平分发饼干](https://leetcode.cn/problems/fair-distribution-of-cookies/)
+### [5289. 公平分发饼干](https://leetcode.cn/problems/fair-distribution-of-cookies/)
 
 题意大致是最均匀地将所有饼干分配成k份。
 
@@ -199,9 +199,9 @@ public:
 };
 ```
 
-# 298场周赛
+## 298场周赛
 
-## [5254. 卖木头块](https://leetcode.cn/problems/selling-pieces-of-wood/)
+### [5254. 卖木头块](https://leetcode.cn/problems/selling-pieces-of-wood/)
 
 题意：
 
@@ -242,9 +242,9 @@ public:
 };
 ```
 
-# 299场周赛
+## 299场周赛
 
-## [6103. 从树中删除边的最小分数](https://leetcode.cn/problems/minimum-score-after-removals-on-a-tree/)
+### [6103. 从树中删除边的最小分数](https://leetcode.cn/problems/minimum-score-after-removals-on-a-tree/)
 
 **题意：**
 
@@ -309,6 +309,51 @@ public:
             dfs(y, -1, sumy, sumx);
         }
         return ans;
+    }
+};
+```
+
+## 300场周赛
+
+### [6109. 知道秘密的人数](https://leetcode.cn/problems/number-of-people-aware-of-a-secret/)
+
+**题意：**
+
+在第 1 天，有一个人发现了一个秘密。
+
+给你一个整数 delay ，表示每个人会在发现秘密后的 delay 天之后，每天 给一个新的人 分享 秘密。同时给你一个整数 forget ，表示每个人在发现秘密 forget 天之后会 忘记 这个秘密。一个人 不能 在忘记秘密那一天及之后的日子里分享秘密。
+
+给你一个整数 n ，请你返回在第 n 天结束时，知道秘密的人数。由于答案可能会很大，请你将结果对 10^9 + 7 取余 后返回。
+
+**思路：**
+
+周赛时候实现的方法，用f存储当前知道秘密的人数，add存储该天增加的人数，sadd存储增加人数的增速。
+
+关于这个增速，当时想法就是差分的一种思路，当前天增加的人数，在delay天之后增速会加上人数的个数，在forget天之后，增速会减去人数的个数，利用add加上sadd获得当天实际增加的人数。当然，在forget天之后，还要减去当前天增加的人数。
+
+但是周赛的时候，能通过大部分样例，有个别样例出现了负值，后面才想明白，在对值取mod的时候有的结果会是负值，这样最终结果也会变为负值，先加上mod再取模就可以解决这个问题。
+
+```
+const int N = 2010, mod = 1e9 + 7;
+typedef long long LL;
+LL f[N], sadd[N], add[N];
+class Solution {
+public:
+    int peopleAwareOfSecret(int n, int delay, int forget) {
+        memset(add, 0, sizeof add);
+        memset(sadd, 0, sizeof sadd);
+        memset(f, 0, sizeof sadd);
+        f[1] = 1, sadd[delay + 1] += 1, sadd[forget + 1] -= 1, f[forget + 1] -= 1;
+        for (int i = 2; i <= n; i ++) {
+            add[i] = (sadd[i] + add[i - 1]) % mod;
+            f[i] = (f[i] + f[i - 1] + add[i]) % mod;
+            if (add[i])  {
+                sadd[i + delay] = (sadd[i + delay] + add[i]) % mod;
+                sadd[i + forget] = (sadd[i + forget] - add[i]) % mod; 
+                f[i + forget] = (f[i + forget] - add[i]) % mod;
+            }
+        }
+        return (f[n] + mod) % mod;
     }
 };
 ```

@@ -14,8 +14,6 @@ tags:
 draft: false
 ---
 
-Raft论文阅读与实践
-
 Raft课程笔记整理。
 
 <!--more-->
@@ -134,7 +132,184 @@ leader当选必须要获得大多数服务器的"yes"，每一个服务器在一
 
 新的leader产生会使得大多数服务器都增加了 currentTerm，所以旧leader（带旧任期编号）无法获得 AppendEntries 的多数，所以旧leader不会提交或执行任何新的日志条目，因此没有发生split brain，但少数人可能会接受旧服务器的 AppendEntries，所以日志可能会在旧期限结束时diverge。
 
+## 六、日志进阶
 
+以下面的leader崩溃为例：
+
+```
+        10 11 12 13  <- log entry #
+    S1:  3
+    S2:  3  3  4
+    S3:  3  3  5
+```
+
+raft是通过使得followers采用新的leader日志来确保一致的。
+
+日志对S2同步的流程如下：
+
+1）当前S3被选为了term 6的leader，此时它需要向follower发送同步日志；
+
+2）S3发送AppendEntries给S2，包含信息有：entry 13的内容，preLogIndex = 12, prevLogTerm = 5;
+
+3）S2收到后，发现preLogIndex和prevLogTerm无法匹配，返回false
+
+4）S3 将nextIndex[S2]降低到12， 然后发送AppendEntries，包含：
+
+entry 12和13的内容，prevLogIndex=11, prevLogTerm=3；
+
+5）S2删除自己entry 12的内容，同步新的日志。
+
+同理，可以同步S1的日志。
+
+总结一下，所有存活的follwers会删除结尾和leader不同的日志，然后在相同的位置之后，添加leader中的日志内容。
+
+### Question：为什么可以遗忘S2的index=12， term=4的entry？
+
+回滚这个entry的前提是该entry未被提交，如果以已经被提交则无法回滚该entry。因此，在选举新的leader的时候，需要确保被选中的leader拥有所有被提交的entry日志。
+
+### 谁是合适的leader？
+
+**错误的猜想：选择日志最长的服务器**
+
+这里一种直观但是错误的猜想，举例如下：
+
+```
+    S1: 5 6 7
+    S2: 5 8
+    S3: 5 8
+```
+
+以上情况发生的条件：
+
+1）在term 6的时候，S1作为leader，崩溃重启；在term 7又当选leader，再次崩溃，并且在两次崩溃之前都仅把日志保存到了自己的服务器上，而没有发送出去。
+
+2）S2和S3经过选举后，假定确认S2作为leader，S2将日志发送给S3，再次崩溃。（这里S2的下一次term是8，因为S2或S3在给S1投票的时候，收到了term 7，因此必然会加一）。
+
+在以上的情况下，谁应该成为新的leader？
+
+S1的日志最长，但是entry 8的内容可能已经提交了，因此新的leader只能从S2和S3中选择，而不能选择最长日志。
+
+在论文5.4.1小节的结尾解释了“election restriction":
+
+RequestVote处理程序，只会投票给”at least as up to date“的candidate：
+
+1）candidate的最后一个log的term更高；
+
+2）candidate的最后一个log的term相同，但日志更长。
+
+以上回答了为什么可以回滚follwer里先前的日志的问题。
+
+### 如何进行日志的快速回滚
+
+论文中的Figure 2给出的设计是，每次RPC回退一个entry，这对于落后大量日志的节点来说会非常的慢，在论文的5.3小节的某位概述了一种方案。论文中没有给出细节，但是lecture中老师给出了一种具体实现的猜测：
+
+```
+      Case 1      Case 2       Case 3
+  S1: 4 5 5       4 4 4        4
+  S2: 4 6 6 6 or  4 6 6 6  or  4 6 6 6
+```
+
+S2是term 6的leader，此时S1恢复工作，S2发送AppendEntries(以下简称AE)，AE的prevLogTerm=6；
+
+S1发送的拒绝信息里包括：
+
+1）XTerm： 存在冲突entry的term（如果存在）
+
+2）XIndex：该term下的第一条entry（如果存在）
+
+3）Xlen： 日志的长度
+
+ case 1（leader没有 XTerm）：
+
+​    nextIndex = XIndex
+
+ case 2（领导者有 XTerm）：
+
+​    nextIndex = 领导者在 XTerm 中的最后一个entry
+
+ case 3（follwer日志太短）：
+
+​    nextIndex = XLen
+
+### 日志持久化
+
+**如果服务器崩溃并且重启，raft需要将哪些内容持久化？**
+
+在论文的Figure 2中列举出需要持久化的状态（需要在每次change的时候或在RPC发送或回复的时候持久化）：
+
+1）log[]，日志。
+
+在leader的majority发送的服务器中，这些服务器需要记住commited的log entry，这样能确保在未来选举的leader能看到所有commited的内容。log是唯一记录这些状态的数据结构。而且重启的时候，需要通过log来重新执行所有命令。
+
+2) currentTerm，当前term。
+
+记录currentTerm，可以确保term是递增的，从而确保每个term中至多只有一个leader。只有log不能确保的，实际的例子上面合适leader中最长日志不能作为leader中给出了。
+
+3）votedFor，投票给了谁。
+
+考虑以下情况：
+
+如果服务器崩溃前已经投票，在恢复后没有记录是否投票，则会重新投票，这样会发生多个candidate当选的情况。
+
+因此，必须将投票给了谁持久化。
+
+**其他内容为什么不需要持久化？**
+
+例如commitIndex, lastApplied, next/matchIndex[]这些内容，有的可以直接在log中恢复，有的即使丢失也没有关系。
+
+持久化是系统的性能瓶颈，硬盘的写入需要10ms，SSD的写入需要0.1ms；
+
+所以，持久化的操作需要限制在100到10000次 ops/sec;（另一个瓶颈是RPC，在LAN中花费 << 1ms每次）
+
+有许多解决持久化慢的技巧：
+
+1）每次硬盘写入的时候批处理多条新的 log entries
+
+2）持久化到RAM中，而不是disk中
+
+**一个服务（例如k/v服务器）如何在崩溃重启后恢复它的状态？**
+
+直接重新执行raft的整个持久化日志，因为lastApplied（已经执行日志的最大编号）是volatile（易失的），因此直接从0开始。这就是论文中Figure 2给出的方案。
+
+但是对于长时间运行的系统，重新执行日志会太缓慢，因此可以采用快照加重新执行快照后的日志的方法 。
+
+### 日志压缩与快照
+
+可能遇到的问题：日志可能会变得非常庞大——远大于存储原本数据的状态。这样在重启replay日志或者发送日志给新的server会花费大量时间。
+
+服务器可以采用快照的方式，存储所有状态，因为原本的状态所占的大小会远小于日志大小。
+
+**哪些entries不能被server丢弃？**
+
+1）未被执行的entries，没有在数据库中被记录下来
+
+2）未提交的entries，可能是leader的majority一部分
+
+**增加快照后崩溃重启如何执行？**
+
+服务会从disk中读取快照；
+
+raft会从disk中读取持久化的日志；
+
+服务会告诉raft将lastApplied设置成快照中保存的最后的日志索引，避免从头执行日志。
+
+**problem：如果follwer的日志在leader日志开始之前就结束怎么办？**
+
+详细点说，就是follwer结束的位置在leader的快照中，如果快照中的日志已经被清除，则leader无法通过AE RPCs同步日志。
+
+因此会采用InstallSnapshot RPC，即发送其快照及快照后的日志给follower。
+
+**philosophical note：**
+
+存储状态（即存储的内容）和操作历史是等价的，两者可以选择一个进行保存或者传递消息，这个思想在很多地方都能用到。
+
+**practical notes：**
+
+raft的快照在存储量较小的时候是合理的；
+
+但是对于大的数据库，例如，复制千兆的数据就会非常缓慢；这种情况，可能直接将数据存放在磁盘中B树的数据库中，而不是显式的快照中会更好；
+
+不过这对于处理已经滞后的副本很困难，因此leader应该保存一段时间的日志，或者记录下被更新过的部分。
 
 ## 参考资料：
 
