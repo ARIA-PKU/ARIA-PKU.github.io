@@ -13,8 +13,7 @@
 
 
 <meta name="author" content="Aria" />
-<meta name="description" content="Raft论文阅读与实践
-Raft课程笔记整理。
+<meta name="description" content="Raft课程笔记整理。
 " />
 
 
@@ -25,8 +24,7 @@ Raft课程笔记整理。
 
 
 <meta property="og:title" content="Raft" />
-<meta property="og:description" content="Raft论文阅读与实践
-Raft课程笔记整理。" />
+<meta property="og:description" content="Raft课程笔记整理。" />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://blog.surfaroundtheworld.top/posts/%E5%88%86%E5%B8%83%E5%BC%8F%E7%9B%B8%E5%85%B3/mit6.824/raft/" /><meta property="og:image" content="https://oss.surfaroundtheworld.top/blog-pictures/6-16/edge_of_planet.jpg"/><meta property="article:section" content="posts" />
 <meta property="article:published_time" content="2022-06-28T23:43:36+08:00" />
@@ -39,8 +37,7 @@ Raft课程笔记整理。" />
 <meta name="twitter:image" content="https://oss.surfaroundtheworld.top/blog-pictures/6-16/edge_of_planet.jpg"/>
 
 <meta name="twitter:title" content="Raft"/>
-<meta name="twitter:description" content="Raft论文阅读与实践
-Raft课程笔记整理。"/>
+<meta name="twitter:description" content="Raft课程笔记整理。"/>
 
 
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.css" integrity="sha256-UXesixbeLkB/UYxVTzuj/gg3+LMzgwAmg3zD+C4ZASQ=" crossorigin="anonymous">
@@ -164,6 +161,15 @@ Raft课程笔记整理。"/>
         <li><a href="#59旧leader没有意识到新leader选举成功会怎么样">5.9、旧leader没有意识到新leader选举成功会怎么样</a></li>
       </ul>
     </li>
+    <li><a href="#六日志进阶">六、日志进阶</a>
+      <ul>
+        <li><a href="#question为什么可以遗忘s2的index12-term4的entry">Question：为什么可以遗忘S2的index=12， term=4的entry？</a></li>
+        <li><a href="#谁是合适的leader">谁是合适的leader？</a></li>
+        <li><a href="#如何进行日志的快速回滚">如何进行日志的快速回滚</a></li>
+        <li><a href="#日志持久化">日志持久化</a></li>
+        <li><a href="#日志压缩与快照">日志压缩与快照</a></li>
+      </ul>
+    </li>
     <li><a href="#参考资料">参考资料：</a></li>
   </ul>
 </nav>
@@ -187,7 +193,7 @@ Raft课程笔记整理。"/>
                   <span data-format="luxon">2022-06-28T23:43:36&#43;08:00</span>
                 
 
-              | 5 分钟阅读
+              | 11 分钟阅读
 
               
               | 更新于
@@ -220,8 +226,7 @@ Raft课程笔记整理。"/>
         <img class="cover" src="https://oss.surfaroundtheworld.top/blog-pictures/7_1/%E7%A9%BA.jpg" />
         
 
-        <p>Raft论文阅读与实践</p>
-<p>Raft课程笔记整理。</p>
+        <p>Raft课程笔记整理。</p>
 <h2 id="一容错系统的模式">一、容错系统的模式</h2>
 <p>1、MR采用复制计算，依赖于单个master节点组织；</p>
 <p>2、GFS采用复制数据，依赖于master节点选择的primary节点管理；</p>
@@ -279,6 +284,126 @@ Raft课程笔记整理。"/>
 <h3 id="59旧leader没有意识到新leader选举成功会怎么样">5.9、旧leader没有意识到新leader选举成功会怎么样</h3>
 <p>也许旧leader没有看到选举信息，或者在少数网络分区。</p>
 <p>新的leader产生会使得大多数服务器都增加了 currentTerm，所以旧leader（带旧任期编号）无法获得 AppendEntries 的多数，所以旧leader不会提交或执行任何新的日志条目，因此没有发生split brain，但少数人可能会接受旧服务器的 AppendEntries，所以日志可能会在旧期限结束时diverge。</p>
+<h2 id="六日志进阶">六、日志进阶</h2>
+<p>以下面的leader崩溃为例：</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>        10 11 12 13  &lt;- log entry #
+</span></span><span style="display:flex;"><span>    S1:  3
+</span></span><span style="display:flex;"><span>    S2:  3  3  4
+</span></span><span style="display:flex;"><span>    S3:  3  3  5
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>raft是通过使得followers采用新的leader日志来确保一致的。</p>
+<p>日志对S2同步的流程如下：</p>
+<p>1）当前S3被选为了term 6的leader，此时它需要向follower发送同步日志；</p>
+<p>2）S3发送AppendEntries给S2，包含信息有：entry 13的内容，preLogIndex = 12, prevLogTerm = 5;</p>
+<p>3）S2收到后，发现preLogIndex和prevLogTerm无法匹配，返回false</p>
+<p>4）S3 将nextIndex[S2]降低到12， 然后发送AppendEntries，包含：</p>
+<p>entry 12和13的内容，prevLogIndex=11, prevLogTerm=3；</p>
+<p>5）S2删除自己entry 12的内容，同步新的日志。</p>
+<p>同理，可以同步S1的日志。</p>
+<p>总结一下，所有存活的follwers会删除结尾和leader不同的日志，然后在相同的位置之后，添加leader中的日志内容。</p>
+<h3 id="question为什么可以遗忘s2的index12-term4的entry">Question：为什么可以遗忘S2的index=12， term=4的entry？</h3>
+<p>回滚这个entry的前提是该entry未被提交，如果以已经被提交则无法回滚该entry。因此，在选举新的leader的时候，需要确保被选中的leader拥有所有被提交的entry日志。</p>
+<h3 id="谁是合适的leader">谁是合适的leader？</h3>
+<p><strong>错误的猜想：选择日志最长的服务器</strong></p>
+<p>这里一种直观但是错误的猜想，举例如下：</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>    S1: 5 6 7
+</span></span><span style="display:flex;"><span>    S2: 5 8
+</span></span><span style="display:flex;"><span>    S3: 5 8
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>以上情况发生的条件：</p>
+<p>1）在term 6的时候，S1作为leader，崩溃重启；在term 7又当选leader，再次崩溃，并且在两次崩溃之前都仅把日志保存到了自己的服务器上，而没有发送出去。</p>
+<p>2）S2和S3经过选举后，假定确认S2作为leader，S2将日志发送给S3，再次崩溃。（这里S2的下一次term是8，因为S2或S3在给S1投票的时候，收到了term 7，因此必然会加一）。</p>
+<p>在以上的情况下，谁应该成为新的leader？</p>
+<p>S1的日志最长，但是entry 8的内容可能已经提交了，因此新的leader只能从S2和S3中选择，而不能选择最长日志。</p>
+<p>在论文5.4.1小节的结尾解释了“election restriction&quot;:</p>
+<p>RequestVote处理程序，只会投票给”at least as up to date“的candidate：</p>
+<p>1）candidate的最后一个log的term更高；</p>
+<p>2）candidate的最后一个log的term相同，但日志更长。</p>
+<p>以上回答了为什么可以回滚follwer里先前的日志的问题。</p>
+<h3 id="如何进行日志的快速回滚">如何进行日志的快速回滚</h3>
+<p>论文中的Figure 2给出的设计是，每次RPC回退一个entry，这对于落后大量日志的节点来说会非常的慢，在论文的5.3小节的某位概述了一种方案。论文中没有给出细节，但是lecture中老师给出了一种具体实现的猜测：</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>      Case 1      Case 2       Case 3
+</span></span><span style="display:flex;"><span>  S1: 4 5 5       4 4 4        4
+</span></span><span style="display:flex;"><span>  S2: 4 6 6 6 or  4 6 6 6  or  4 6 6 6
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>S2是term 6的leader，此时S1恢复工作，S2发送AppendEntries(以下简称AE)，AE的prevLogTerm=6；</p>
+<p>S1发送的拒绝信息里包括：</p>
+<p>1）XTerm： 存在冲突entry的term（如果存在）</p>
+<p>2）XIndex：该term下的第一条entry（如果存在）</p>
+<p>3）Xlen： 日志的长度</p>
+<p>case 1（leader没有 XTerm）：</p>
+<p>​    nextIndex = XIndex</p>
+<p>case 2（领导者有 XTerm）：</p>
+<p>​    nextIndex = 领导者在 XTerm 中的最后一个entry</p>
+<p>case 3（follwer日志太短）：</p>
+<p>​    nextIndex = XLen</p>
+<h3 id="日志持久化">日志持久化</h3>
+<p><strong>如果服务器崩溃并且重启，raft需要将哪些内容持久化？</strong></p>
+<p>在论文的Figure 2中列举出需要持久化的状态（需要在每次change的时候或在RPC发送或回复的时候持久化）：</p>
+<p>1）log[]，日志。</p>
+<p>在leader的majority发送的服务器中，这些服务器需要记住commited的log entry，这样能确保在未来选举的leader能看到所有commited的内容。log是唯一记录这些状态的数据结构。而且重启的时候，需要通过log来重新执行所有命令。</p>
+<ol start="2">
+<li>currentTerm，当前term。</li>
+</ol>
+<p>记录currentTerm，可以确保term是递增的，从而确保每个term中至多只有一个leader。只有log不能确保的，实际的例子上面合适leader中最长日志不能作为leader中给出了。</p>
+<p>3）votedFor，投票给了谁。</p>
+<p>考虑以下情况：</p>
+<p>如果服务器崩溃前已经投票，在恢复后没有记录是否投票，则会重新投票，这样会发生多个candidate当选的情况。</p>
+<p>因此，必须将投票给了谁持久化。</p>
+<p><strong>其他内容为什么不需要持久化？</strong></p>
+<p>例如commitIndex, lastApplied, next/matchIndex[]这些内容，有的可以直接在log中恢复，有的即使丢失也没有关系。</p>
+<p>持久化是系统的性能瓶颈，硬盘的写入需要10ms，SSD的写入需要0.1ms；</p>
+<p>所以，持久化的操作需要限制在100到10000次 ops/sec;（另一个瓶颈是RPC，在LAN中花费 &laquo; 1ms每次）</p>
+<p>有许多解决持久化慢的技巧：</p>
+<p>1）每次硬盘写入的时候批处理多条新的 log entries</p>
+<p>2）持久化到RAM中，而不是disk中</p>
+<p><strong>一个服务（例如k/v服务器）如何在崩溃重启后恢复它的状态？</strong></p>
+<p>直接重新执行raft的整个持久化日志，因为lastApplied（已经执行日志的最大编号）是volatile（易失的），因此直接从0开始。这就是论文中Figure 2给出的方案。</p>
+<p>但是对于长时间运行的系统，重新执行日志会太缓慢，因此可以采用快照加重新执行快照后的日志的方法 。</p>
+<h3 id="日志压缩与快照">日志压缩与快照</h3>
+<p>可能遇到的问题：日志可能会变得非常庞大——远大于存储原本数据的状态。这样在重启replay日志或者发送日志给新的server会花费大量时间。</p>
+<p>服务器可以采用快照的方式，存储所有状态，因为原本的状态所占的大小会远小于日志大小。</p>
+<p><strong>哪些entries不能被server丢弃？</strong></p>
+<p>1）未被执行的entries，没有在数据库中被记录下来</p>
+<p>2）未提交的entries，可能是leader的majority一部分</p>
+<p><strong>增加快照后崩溃重启如何执行？</strong></p>
+<p>服务会从disk中读取快照；</p>
+<p>raft会从disk中读取持久化的日志；</p>
+<p>服务会告诉raft将lastApplied设置成快照中保存的最后的日志索引，避免从头执行日志。</p>
+<p><strong>problem：如果follwer的日志在leader日志开始之前就结束怎么办？</strong></p>
+<p>详细点说，就是follwer结束的位置在leader的快照中，如果快照中的日志已经被清除，则leader无法通过AE RPCs同步日志。</p>
+<p>因此会采用InstallSnapshot RPC，即发送其快照及快照后的日志给follower。</p>
+<p><strong>philosophical note：</strong></p>
+<p>存储状态（即存储的内容）和操作历史是等价的，两者可以选择一个进行保存或者传递消息，这个思想在很多地方都能用到。</p>
+<p><strong>practical notes：</strong></p>
+<p>raft的快照在存储量较小的时候是合理的；</p>
+<p>但是对于大的数据库，例如，复制千兆的数据就会非常缓慢；这种情况，可能直接将数据存放在磁盘中B树的数据库中，而不是显式的快照中会更好；</p>
+<p>不过这对于处理已经滞后的副本很困难，因此leader应该保存一段时间的日志，或者记录下被更新过的部分。</p>
 <h2 id="参考资料">参考资料：</h2>
 <p>1、<a href="http://nil.csail.mit.edu/6.824/2020/notes/l-raft.txt">6.824 2020 Lecture 6: Raft (1)</a></p>
 <p>2、<a href="http://nil.csail.mit.edu/6.824/2020/notes/l-raft2.txt">6.824 2020 Lecture 7: Raft (2)</a></p>
