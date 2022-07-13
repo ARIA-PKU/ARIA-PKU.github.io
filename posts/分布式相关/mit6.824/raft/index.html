@@ -153,7 +153,7 @@
         <li><a href="#51为什么需要leader">5.1、为什么需要leader</a></li>
         <li><a href="#52raft为leaders编号">5.2、raft为leaders编号</a></li>
         <li><a href="#53什么时候raft开始leader选举">5.3、什么时候raft开始leader选举</a></li>
-        <li><a href="#54如何确保任期至多一个leader">5.4、如何确保任期至多一个leader</a></li>
+        <li><a href="#54如何确保一个term内至多一个leader">5.4、如何确保一个term内至多一个leader</a></li>
         <li><a href="#55服务器如何得知新选出的leader">5.5、服务器如何得知新选出的leader</a></li>
         <li><a href="#56选举失败后会发生什么">5.6、选举失败后会发生什么</a></li>
         <li><a href="#57raft如何避免split-votes">5.7、raft如何避免split votes</a></li>
@@ -170,7 +170,12 @@
         <li><a href="#日志压缩与快照">日志压缩与快照</a></li>
       </ul>
     </li>
-    <li><a href="#参考资料">参考资料：</a></li>
+    <li><a href="#七线性化语义">七、线性化语义</a>
+      <ul>
+        <li></li>
+      </ul>
+    </li>
+    <li><a href="#参考资料">参考资料</a></li>
   </ul>
 </nav>
     </div>
@@ -193,7 +198,7 @@
                   <span data-format="luxon">2022-06-28T23:43:36&#43;08:00</span>
                 
 
-              | 11 分钟阅读
+              | 12 分钟阅读
 
               
               | 更新于
@@ -264,7 +269,7 @@
 <h3 id="53什么时候raft开始leader选举">5.3、什么时候raft开始leader选举</h3>
 <p>当它在超过“election timeout”的时间后，没有收到当前leader的信息时候，该节点会增加自己的任期编号，然后收集投票。</p>
 <p>这会导致不必要的选举，但是这是一种慢但是安全的方式。旧leader此时仍认为自己是leader。</p>
-<h3 id="54如何确保任期至多一个leader">5.4、如何确保任期至多一个leader</h3>
+<h3 id="54如何确保一个term内至多一个leader">5.4、如何确保一个term内至多一个leader</h3>
 <p>leader当选必须要获得大多数服务器的&quot;yes&quot;，每一个服务器在一个term内只能投票一次：</p>
 <p>1）如果是candidate则只会投给自己；</p>
 <p>2）如果不是candidate则会投给收到请求的第一个服务器（服务器还要满足论文中Figure 2中的规则）。</p>
@@ -404,9 +409,34 @@
 <p>raft的快照在存储量较小的时候是合理的；</p>
 <p>但是对于大的数据库，例如，复制千兆的数据就会非常缓慢；这种情况，可能直接将数据存放在磁盘中B树的数据库中，而不是显式的快照中会更好；</p>
 <p>不过这对于处理已经滞后的副本很困难，因此leader应该保存一段时间的日志，或者记录下被更新过的部分。</p>
-<h2 id="参考资料">参考资料：</h2>
+<h2 id="七线性化语义">七、线性化语义</h2>
+<p>线性化语义的提出是为了解决在用户请求超时的情况下，重试导致的多次应用的问题。</p>
+<h4 id="重复rpc检测">重复RPC检测</h4>
+<p>如果put或get超时，即call函数返回false，对服务器而言有两种情况：</p>
+<p>1）服务器崩溃，请求未被执行，则重新发送即可；</p>
+<p>2）服务器已经执行，但是请求丢失，这种情况下重新发送会很危险。</p>
+<p><strong>解决方法：</strong></p>
+<p>让服务端检测client发送的重复请求</p>
+<p>client为每个请求选择一个ID， 如果是重复发送的请求则使用同一个ID；</p>
+<p>k/v服务维护一个由ID作为索引的表，对每个RPC请求执行后记录值；</p>
+<p>如果接收到重复ID则返回表中的结果。</p>
+<h4 id="如何使得duplicate表较小">如何使得duplicate表较小？</h4>
+<p>1）为每个客户端保存一个表格entry，而不是每个RPC</p>
+<p>2）每个客户端一次只能有一个超时的RPC</p>
+<p>3）每个客户段按顺序编号RPC，当收到客户端的#10RPC，删掉客户端更小的entry，即客户端不会请求更小的RPC了</p>
+<p><strong>细节：</strong></p>
+<p>每个client需要一个唯一的ID，在duplicate表中，通过client的ID索引;</p>
+<p>RPC处理先检查表，只有收到编号大于表entry的时候，执行Start();</p>
+<p>applyCh中出现操作后，更新client的表entry并唤醒对应的RPC处理程序（如果存在）。</p>
+<h4 id="新的leader如何获取duplicate表">新的leader如何获取duplicate表？</h4>
+<p>所有的复制都应该在执行后更新到表中，因此在成为leader前表中内容已经存在。</p>
+<h4 id="如果服务器崩溃如何恢复duplicate表">如果服务器崩溃，如何恢复duplicate表？</h4>
+<p>如果没有快照，则重播能填充表的日志；</p>
+<p>如果有快照，快照中会包含表的复制。</p>
+<h2 id="参考资料">参考资料</h2>
 <p>1、<a href="http://nil.csail.mit.edu/6.824/2020/notes/l-raft.txt">6.824 2020 Lecture 6: Raft (1)</a></p>
 <p>2、<a href="http://nil.csail.mit.edu/6.824/2020/notes/l-raft2.txt">6.824 2020 Lecture 7: Raft (2)</a></p>
+<p>3、https://www.zhihu.com/question/278551592</p>
       </article>
     </section>
 
