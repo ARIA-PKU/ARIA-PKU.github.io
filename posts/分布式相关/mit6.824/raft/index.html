@@ -151,7 +151,7 @@
     <li><a href="#五leader选举">五、leader选举</a>
       <ul>
         <li><a href="#51为什么需要leader">5.1、为什么需要leader</a></li>
-        <li><a href="#52raft为leaders编号">5.2、raft为leaders编号</a></li>
+        <li><a href="#52raft记录leaders编号">5.2、raft记录leaders编号</a></li>
         <li><a href="#53什么时候raft开始leader选举">5.3、什么时候raft开始leader选举</a></li>
         <li><a href="#54如何确保一个term内至多一个leader">5.4、如何确保一个term内至多一个leader</a></li>
         <li><a href="#55服务器如何得知新选出的leader">5.5、服务器如何得知新选出的leader</a></li>
@@ -254,7 +254,7 @@
 <h2 id="四日志">四、日志</h2>
 <h3 id="41日志的作用">4.1、日志的作用</h3>
 <p>1、日志可以记录命令的顺序。可以确保副本按照相同的执行顺序执行，也可以帮助人leader确保其他follwer的日志一致。</p>
-<p>2、日志可以存储零时的命令，等到收到committed时候再执行。</p>
+<p>2、日志可以存储临时的命令，等到收到committed时候再执行。</p>
 <p>3、日志也可以使得leader重新发送命令给followers</p>
 <p>4、日志持久化命令，可以在重启后重新执行。</p>
 <h3 id="42日志是强一致的吗">4.2、日志是强一致的吗</h3>
@@ -262,7 +262,7 @@
 <h2 id="五leader选举">五、leader选举</h2>
 <h3 id="51为什么需要leader">5.1、为什么需要leader</h3>
 <p>为了确保所有副本能够以相同的顺序执行相同的命令。（在Paxos等设计中是没有leader的）</p>
-<h3 id="52raft为leaders编号">5.2、raft为leaders编号</h3>
+<h3 id="52raft记录leaders编号">5.2、raft记录leaders编号</h3>
 <p>新的leader -&gt; 新的term(任期)</p>
 <p>一个任期内最多只有一个leader，也可能没有leader；</p>
 <p>这个编号帮助服务器确定最新的leader而不是被取代的leader。</p>
@@ -341,7 +341,7 @@
 <p>RequestVote处理程序，只会投票给”at least as up to date“的candidate：</p>
 <p>1）candidate的最后一个log的term更高；</p>
 <p>2）candidate的最后一个log的term相同，但日志更长。</p>
-<p>以上回答了为什么可以回滚follwer里先前的日志的问题。</p>
+<p>其实，这也确保了整个选举只会选出带有最新commit的日志的节点作为下一任leader。</p>
 <h3 id="如何进行日志的快速回滚">如何进行日志的快速回滚</h3>
 <p>论文中的Figure 2给出的设计是，每次RPC回退一个entry，这对于落后大量日志的节点来说会非常的慢，在论文的5.3小节的某位概述了一种方案。论文中没有给出细节，但是lecture中老师给出了一种具体实现的猜测：</p>
 <div class="highlight"><div style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
