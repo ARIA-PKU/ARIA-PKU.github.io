@@ -2,7 +2,7 @@
 title: Thrift
 date: 2022-05-26T21:48:34+08:00
 lastmod: 2022-05-26T21:48:34+08:00
-cover: https://oss.surfaroundtheworld.top/blog-pictures/cup_green.jpg
+cover: http://oss.surfaroundtheworld.top/blog-pictures/cup_green.jpg
 # images:
 #   - /img/cover.jpg
 categories:

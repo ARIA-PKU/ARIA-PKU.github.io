@@ -34,18 +34,18 @@ hasCJKLanguage = true
  
 [params]
   background = "#fff"
-  backgroundImage = "https://oss.surfaroundtheworld.top/blog-pictures/6-16/edge_of_planet.jpg"
+  backgroundImage = "http://oss.surfaroundtheworld.top/blog-pictures/6-16/edge_of_planet.jpg"
   linkColor = "seagreen"
 
   # dark mode
   # defaultDark = true
   # backgroundDark = "#222"
-  backgroundImageDark = "https://oss.surfaroundtheworld.top/blog-pictures/6-16/edge_of_planet.jpg"
+  backgroundImageDark = "http://oss.surfaroundtheworld.top/blog-pictures/6-16/edge_of_planet.jpg"
   darkLinkColor = "darkseagreen"
   darkNav = true
   dark404 = true
 
-  images = ["https://oss.surfaroundtheworld.top/blog-pictures/6-16/edge_of_planet.jpg"]
+  images = ["http://oss.surfaroundtheworld.top/blog-pictures/6-16/edge_of_planet.jpg"]
   author = "Aria"
   description = "Aria 的生活记录~"
   avatar = "/me/cool.jpg" # 设置头像

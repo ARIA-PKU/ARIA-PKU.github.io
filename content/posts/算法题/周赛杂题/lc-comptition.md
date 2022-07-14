@@ -3,7 +3,7 @@ title: leetcode的算法周赛题整理
 date: 2022-06-12T14:55:05+08:00
 lastmod: 2022-06-12T14:55:05+08:00
 
-cover: https://oss.surfaroundtheworld.top/blog-pictures/butterfly.jpg
+cover: http://oss.surfaroundtheworld.top/blog-pictures/butterfly.jpg
 # images:
 #   - /img/cover.jpg
 categories:

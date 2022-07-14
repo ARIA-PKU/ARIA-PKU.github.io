@@ -3,7 +3,7 @@ title: Raft
 date: 2022-06-28T23:43:36+08:00
 lastmod: 2022-06-28T23:43:36+08:00
 
-cover: https://oss.surfaroundtheworld.top/blog-pictures/7_1/%E7%A9%BA.jpg
+cover: http://oss.surfaroundtheworld.top/blog-pictures/7_1/%E7%A9%BA.jpg
 
 categories:
   - 分布式
@@ -62,7 +62,7 @@ raft是一种共识算法，是实际解决分布式中的一致性问题的一�
 
 1、日志可以记录命令的顺序。可以确保副本按照相同的执行顺序执行，也可以帮助人leader确保其他follwer的日志一致。
 
-2、日志可以存储零时的命令，等到收到committed时候再执行。
+2、日志可以存储临时的命令，等到收到committed时候再执行。
 
 3、日志也可以使得leader重新发送命令给followers
 
@@ -78,7 +78,7 @@ raft是一种共识算法，是实际解决分布式中的一致性问题的一�
 
 为了确保所有副本能够以相同的顺序执行相同的命令。（在Paxos等设计中是没有leader的）
 
-### 5.2、raft为leaders编号
+### 5.2、raft记录leaders编号
 
 新的leader -> 新的term(任期)
 
@@ -92,7 +92,7 @@ raft是一种共识算法，是实际解决分布式中的一致性问题的一�
 
 这会导致不必要的选举，但是这是一种慢但是安全的方式。旧leader此时仍认为自己是leader。
 
-### 5.4、如何确保任期至多一个leader
+### 5.4、如何确保一个term内至多一个leader
 
 leader当选必须要获得大多数服务器的"yes"，每一个服务器在一个term内只能投票一次：
 
@@ -197,7 +197,7 @@ RequestVote处理程序，只会投票给”at least as up to date“的candidat
 
 2）candidate的最后一个log的term相同，但日志更长。
 
-以上回答了为什么可以回滚follwer里先前的日志的问题。
+其实，这也确保了整个选举只会选出带有最新commit的日志的节点作为下一任leader。
 
 ### 如何进行日志的快速回滚
 
@@ -311,8 +311,58 @@ raft的快照在存储量较小的时候是合理的；
 
 不过这对于处理已经滞后的副本很困难，因此leader应该保存一段时间的日志，或者记录下被更新过的部分。
 
-## 参考资料：
+## 七、线性化语义
+
+线性化语义的提出是为了解决在用户请求超时的情况下，重试导致的多次应用的问题。
+
+#### 重复RPC检测
+
+如果put或get超时，即call函数返回false，对服务器而言有两种情况：
+
+1）服务器崩溃，请求未被执行，则重新发送即可；
+
+2）服务器已经执行，但是请求丢失，这种情况下重新发送会很危险。
+
+**解决方法：**
+
+让服务端检测client发送的重复请求
+
+client为每个请求选择一个ID， 如果是重复发送的请求则使用同一个ID；
+
+k/v服务维护一个由ID作为索引的表，对每个RPC请求执行后记录值；
+
+如果接收到重复ID则返回表中的结果。
+
+#### 如何使得duplicate表较小？
+
+1）为每个客户端保存一个表格entry，而不是每个RPC
+
+2）每个客户端一次只能有一个超时的RPC
+
+3）每个客户段按顺序编号RPC，当收到客户端的#10RPC，删掉客户端更小的entry，即客户端不会请求更小的RPC了
+
+**细节：**
+
+每个client需要一个唯一的ID，在duplicate表中，通过client的ID索引;
+
+RPC处理先检查表，只有收到编号大于表entry的时候，执行Start();
+
+applyCh中出现操作后，更新client的表entry并唤醒对应的RPC处理程序（如果存在）。
+
+#### 新的leader如何获取duplicate表？
+
+所有的复制都应该在执行后更新到表中，因此在成为leader前表中内容已经存在。
+
+#### 如果服务器崩溃，如何恢复duplicate表？
+
+如果没有快照，则重播能填充表的日志；
+
+如果有快照，快照中会包含表的复制。
+
+## 参考资料
 
 1、[6.824 2020 Lecture 6: Raft (1)](http://nil.csail.mit.edu/6.824/2020/notes/l-raft.txt)
 
 2、[6.824 2020 Lecture 7: Raft (2)](http://nil.csail.mit.edu/6.824/2020/notes/l-raft2.txt)
+
+3、https://www.zhihu.com/question/278551592

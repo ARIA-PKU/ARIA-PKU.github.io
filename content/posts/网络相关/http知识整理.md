@@ -1,11 +1,9 @@
 ---
-title: Http协议整理
+title: Http协议
 date: 2022-05-16T22:00:56+08:00
 lastmod: 2022-05-16T22:00:56+08:00
-author: Author Name
-# avatar: /img/author.jpg
-# authorlink: https://author.site
-cover: https://oss.surfaroundtheworld.top/blog-pictures/cup_green.jpg
+
+cover: http://oss.surfaroundtheworld.top/blog-pictures/cup_green.jpg
 # images:
 #   - /img/cover.jpg
 categories:

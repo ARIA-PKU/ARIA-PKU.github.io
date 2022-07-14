@@ -3,7 +3,7 @@ title: 周赛题整理
 date: 2022-05-29T15:35:29+08:00
 lastmod: 2022-05-29T15:35:29+08:00
 
-cover: https://oss.surfaroundtheworld.top/blog-pictures/butterfly.jpg
+cover: http://oss.surfaroundtheworld.top/blog-pictures/butterfly.jpg
 # images:
 #   - /img/cover.jpg
 categories:

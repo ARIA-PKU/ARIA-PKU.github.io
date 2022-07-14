@@ -1,5 +1,5 @@
 ---
-cover: https://oss.surfaroundtheworld.top/blog-pictures/mysql.jpg
+cover: http://oss.surfaroundtheworld.top/blog-pictures/mysql.jpg
 title: "MySQL基础架构与执行流程"
 date: 2022-04-29T17:54:08+08:00
 author: ARIA

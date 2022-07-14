@@ -3,7 +3,7 @@ title: MySQL事务与日志
 date: 2022-06-20T17:18:48+08:00
 lastmod: 2022-06-20T17:18:48+08:00
 
-cover: https://oss.surfaroundtheworld.top/blog-pictures/6_20/mysql_3.jpg
+cover: http://oss.surfaroundtheworld.top/blog-pictures/6_20/mysql_3.jpg
 
 categories:
   - 数据库

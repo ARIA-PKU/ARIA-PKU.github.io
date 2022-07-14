@@ -3,7 +3,7 @@ title: 剑指offer2
 date: 2022-06-20T13:04:08+08:00
 lastmod: 2022-06-20T13:04:08+08:00
 
-cover: https://oss.surfaroundtheworld.top/blog-pictures/6_15/sky.jpg
+cover: http://oss.surfaroundtheworld.top/blog-pictures/6_15/sky.jpg
 
 categories:
   - 算法题整理

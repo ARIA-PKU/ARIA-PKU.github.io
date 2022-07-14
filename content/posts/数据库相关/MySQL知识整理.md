@@ -3,7 +3,7 @@ title: MySQL知识整理
 date: 2022-06-20T17:21:29+08:00
 lastmod: 2022-06-20T17:21:29+08:00
 
-cover: https://oss.surfaroundtheworld.top/blog-pictures/6_20/mysql_4.jpg
+cover: http://oss.surfaroundtheworld.top/blog-pictures/6_20/mysql_4.jpg
 # images:
 #   - /img/cover.jpg
 categories:

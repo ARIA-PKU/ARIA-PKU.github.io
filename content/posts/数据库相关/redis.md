@@ -3,7 +3,7 @@ title: Redis
 date: 2022-06-16T11:13:14+08:00
 lastmod: 2022-06-16T11:13:14+08:00
 
-cover: https://oss.surfaroundtheworld.top/blog-pictures/6_15/redis.jpg
+cover: http://oss.surfaroundtheworld.top/blog-pictures/6_15/redis.jpg
 
 categories:
   - 数据库
