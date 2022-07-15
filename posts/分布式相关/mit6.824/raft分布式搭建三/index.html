@@ -13,7 +13,7 @@
 
 
 <meta name="author" content="Aria" />
-<meta name="description" content="MIT8.624中的lab4的实践，实现shard功能。
+<meta name="description" content="MIT8.624中的lab4与challenges的实践，实现shard功能。
 " />
 
 
@@ -24,7 +24,7 @@
 
 
 <meta property="og:title" content="Raft分布式搭建（三）" />
-<meta property="og:description" content="MIT8.624中的lab4的实践，实现shard功能。" />
+<meta property="og:description" content="MIT8.624中的lab4与challenges的实践，实现shard功能。" />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://blog.surfaroundtheworld.top/posts/%E5%88%86%E5%B8%83%E5%BC%8F%E7%9B%B8%E5%85%B3/mit6.824/raft%E5%88%86%E5%B8%83%E5%BC%8F%E6%90%AD%E5%BB%BA%E4%B8%89/" /><meta property="og:image" content="http://oss.surfaroundtheworld.top/blog-pictures/6-16/edge_of_planet.jpg"/><meta property="article:section" content="posts" />
 <meta property="article:published_time" content="2022-07-14T19:36:33+08:00" />
@@ -37,7 +37,7 @@
 <meta name="twitter:image" content="http://oss.surfaroundtheworld.top/blog-pictures/6-16/edge_of_planet.jpg"/>
 
 <meta name="twitter:title" content="Raft分布式搭建（三）"/>
-<meta name="twitter:description" content="MIT8.624中的lab4的实践，实现shard功能。"/>
+<meta name="twitter:description" content="MIT8.624中的lab4与challenges的实践，实现shard功能。"/>
 
 
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.css" integrity="sha256-UXesixbeLkB/UYxVTzuj/gg3+LMzgwAmg3zD+C4ZASQ=" crossorigin="anonymous">
@@ -134,6 +134,36 @@
   
 
   
+  <aside class="sixteen wide mobile sixteen wide tablet three wide computer column dream-single-aside">
+    
+    <div class="ui segment toc">
+      <nav id="TableOfContents">
+  <ul>
+    <li><a href="#lab介绍">lab介绍</a></li>
+    <li><a href="#论文中figure-8讨论的是什么问题会带来什么问题">论文中Figure 8讨论的是什么问题？会带来什么问题？</a></li>
+    <li><a href="#如何实现高可用的集群配置管理">如何实现高可用的集群配置管理？</a></li>
+    <li><a href="#实现高可用的分片容错kv存储服务">实现高可用的分片容错KV存储服务</a>
+      <ul>
+        <li><a href="#客户端及rpc的设计">客户端及RPC的设计</a></li>
+        <li><a href="#shard的数据结构的设计">shard的数据结构的设计</a></li>
+        <li><a href="#服务端的整体设计">服务端的整体设计</a></li>
+        <li><a href="#定时拉取配置信息">定时拉取配置信息</a></li>
+        <li><a href="#定时迁移数据">定时迁移数据</a></li>
+        <li><a href="#定时进行垃圾回收">定时进行垃圾回收</a></li>
+        <li><a href="#定时进行no-op日志发送">定时进行no-op日志发送</a></li>
+        <li><a href="#处理所有请求的协程">处理所有请求的协程</a></li>
+        <li><a href="#分片kv的快照需要添加什么">分片KV的快照需要添加什么？</a></li>
+      </ul>
+    </li>
+    <li><a href="#参考文章">参考文章</a></li>
+  </ul>
+</nav>
+    </div>
+    
+
+    
+  </aside>
+  
   <div class="sixteen wide mobile sixteen wide tablet ten wide computer column markdown-body dream-single" id="dream-save-post-as-img">
     <section class="ui segment">
       <header>
@@ -148,7 +178,7 @@
                   <span data-format="luxon">2022-07-14T19:36:33&#43;08:00</span>
                 
 
-              | 1 分钟阅读
+              | 14 分钟阅读
 
               
               | 更新于
@@ -181,8 +211,1285 @@
         <img class="cover" src="http://oss.surfaroundtheworld.top/blog-pictures/7_1/%E5%A4%9C.jpg" />
         
 
-        <p>MIT8.624中的lab4的实践，实现shard功能。</p>
-<p>The remaining content of your post.</p>
+        <p>MIT8.624中的lab4与challenges的实践，实现shard功能。</p>
+<h2 id="lab介绍">lab介绍</h2>
+<p>lab4在lab2的基础上更进一步，需要利用shard（分片）实现一个multi-raft的系统。每个副本组拥有一些shard，并且每个副本组包含很多server，构成一个raft系统对外提供服务，所有的副本组对外是并行工作的，因此这能大大提高系统的并发量。</p>
+<p>lab4分为两个部分，第一个部分是实现一个shardmaster，提供一个高可用的集群配置管理服务，负责分片的迁移与配置的查询；第二个部分是实现高可用的分片容错KV存储服务，同时在challenge中要求副本组能够实现对shard的垃圾回收与配置更改期间对客户端请求的响应。</p>
+<p>在总结实现之前，需要先整理一下论文中的重要知识点。</p>
+<h2 id="论文中figure-8讨论的是什么问题会带来什么问题">论文中Figure 8讨论的是什么问题？会带来什么问题？</h2>
+<p>这个问题在lab2中遇到过，但是没有详细整理，这里重新梳理一下这个问题。在实际生产过程中存在，以及在lab4的实现过程中又遇到了这个问题的衍生问题。</p>
+<p>Figure 8 用来说明为什么 Leader <strong>不能提交之前任期的日志，只能通过提交自己任期的日志，从而间接提交之前任期的日志。</strong></p>
+<p>以下根据参考文章1中的内容整理：</p>
+<ul>
+<li>图（a）中，S1是leader，将日志复制到S2中</li>
+<li>图（b）中，S1宕机，S5获得S3、S4、S5的选票称为leader，将日志index=2，term=3写入</li>
+<li>图（c）中，S5写完后宕机，S1重新当选leader，此时currentTerm=4，<strong>没有新的请求进来</strong>，S1如果将index=2，term=2复制到S3后，S1会提交该日志（term=2并不是当前任期，这里讨论的是错误情况）。此时请求进来，S1刚刚写完index=3和term=4的日志，S1故障。</li>
+<li>图（d）中，S5通过S2、S3、S4的投票当选leader，然后将index=2，term=3的日志复制到其他节点并提交，**此时index=2的日志提交了两次。**这是存在问题的，因为已经提交的日志不能覆盖。</li>
+<li>图（e）中，讨论的则是正确的情况，S1在宕机前将term=4的日志复制到大多数服务器，正常运行。</li>
+</ul>
+<p>因此，leader不能提交之前任期的日志，只有等新的请求进来，超过半数节点复制了先前日志之后，先前term的日志才能跟着新日志一起提交。</p>
+<p><img src="https://aria9766.oss-cn-beijing.aliyuncs.com/blog-pictures/raft/figure_8.png" alt=""></p>
+<p>在加上这个约束之后不会重复提交了，但是如果一直没有新的请求进来，index=2的日志就一直无法提交，如果此时有读请求来请求index=2的内容，就会一直被阻塞，<strong>这就会阻塞读请求。</strong></p>
+<p>因此raft论文中又引入了no-op日志来解决这个问题，这个在etcd中有实现。</p>
+<p>no-op日志只有index和term，command的信息为空，也需要持久化到磁盘与其他log一样。</p>
+<p>具体实现是在leader当选后追加一条no-op日志，并将其复制到其他节点，no-op提交后，leader中哪些未提交的日志全都被间接提交，这样就能快速响应客户端的查询。</p>
+<h2 id="如何实现高可用的集群配置管理">如何实现高可用的集群配置管理？</h2>
+<p>首先，需要理解整个配置的实现流程，先看lab4中给出的如下配置。shardmaster的目的就是维护这样的一个配置，并且需要记录下所有版本的配置信息，即把所有配置存放到一个数组里。</p>
+<p>其中，Num代表的是配置的编号，每次查询都是请求获得最新的（即编号最大的）配置信息；Shards是一个数组，将shard编号与group id对应，通过给定的shard编号可以知道该shard属于哪个group；Groups是一个map，将group id与server对应，可以根据gid获得该group下的所有server节点。</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">6
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">7
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>// A configuration -- an assignment of shards to groups.
+</span></span><span style="display:flex;"><span>// Please don&#39;t change this.
+</span></span><span style="display:flex;"><span>type Config struct {
+</span></span><span style="display:flex;"><span>	Num    int              // config number
+</span></span><span style="display:flex;"><span>	Shards [NShards]int     // shard -&gt; gid
+</span></span><span style="display:flex;"><span>	Groups map[int][]string // gid -&gt; servers[]
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>再分析一下lab中需要完成的四个操作：</p>
+<ul>
+<li>Join：增加一些新的groups（即上面的Groups数据结构），并且要求shard在各个group之间尽可能均匀。增加group就是增加raft集群，再将所有的shard均匀分配。</li>
+<li>Leave：删除一些groups，要求shard尽可能均匀。与Join相反的操作，将删除的groups的shard再分给其他存活的groups。</li>
+<li>Move：给定一个shard number和GID，将该shard移动到指定group中。lab中表示这个操作是为了测试软件。</li>
+<li>Query：询问指定配置Num下的配置，默认询问最新配置。</li>
+</ul>
+<p>简单来说，集群配置的管理就是实现对config中shards数组与Groups的map进行高并发的KV存储操作，可以发现处理stateMachine处理过程比简单KV增加了一些操作外，其余的内容与lab3基本一致。同时考虑到配置的大小，甚至无需使用日志压缩的快照系统。</p>
+<p>这里不再赘述lab3中的KV实现，关于如何使得shard在group中尽可能均匀，可以采用每次选取最多和最少分片的两个group，将最多的分一个给最少的，循环直至相差小于等于一。需要注意的细节是，在go中map是无序的，为了保证各个节点apply到状态机的结果一致，现将map按key排序再寻找最大最小值即可。</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">23
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">24
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">25
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">26
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">27
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">28
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">29
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">30
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">31
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">32
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">33
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">34
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">35
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">36
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">37
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">38
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">39
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">40
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">41
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">42
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">43
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">44
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">45
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">46
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">47
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">48
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">49
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">50
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">51
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">52
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">53
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">54
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">55
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">56
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">57
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">58
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">59
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">60
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">61
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">62
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">63
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">64
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">65
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">66
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">67
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">68
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">69
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>// Join(servers) -- add a set of groups (gid -&gt; server-list mapping).
+</span></span><span style="display:flex;"><span>func (cf *MemoryConfigStateMachine) Join(groups map[int][]string) Err {
+</span></span><span style="display:flex;"><span>	lastConfig := cf.Configs[len(cf.Configs) - 1]
+</span></span><span style="display:flex;"><span>	newConfig := Config{
+</span></span><span style="display:flex;"><span>		Num:	len(cf.Configs),
+</span></span><span style="display:flex;"><span>		Shards:	lastConfig.Shards,
+</span></span><span style="display:flex;"><span>		Groups:	deepCopy(lastConfig.Groups),
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>	for gid, servers := range groups {
+</span></span><span style="display:flex;"><span>		if _, ok := newConfig.Groups[gid]; !ok {
+</span></span><span style="display:flex;"><span>			newServers := make([]string, len(servers))
+</span></span><span style="display:flex;"><span>			copy(newServers, servers)
+</span></span><span style="display:flex;"><span>			newConfig.Groups[gid] = newServers
+</span></span><span style="display:flex;"><span>		}
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>	g2s := Group2Shards(newConfig)
+</span></span><span style="display:flex;"><span>	for {
+</span></span><span style="display:flex;"><span>		source, target := GetGidWithMaxShards(g2s), GetGidWithMinShards(g2s)
+</span></span><span style="display:flex;"><span>		if source != 0 &amp;&amp; len(g2s[source]) - len(g2s[target]) &lt;= 1 {
+</span></span><span style="display:flex;"><span>			break
+</span></span><span style="display:flex;"><span>		}
+</span></span><span style="display:flex;"><span>		g2s[target] = append(g2s[target], g2s[source][0])
+</span></span><span style="display:flex;"><span>		g2s[source] = g2s[source][1:]
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>	var newShards [NShards]int
+</span></span><span style="display:flex;"><span>	for gid, shards := range g2s {
+</span></span><span style="display:flex;"><span>		for _, shard := range shards {
+</span></span><span style="display:flex;"><span>			newShards[shard] = gid
+</span></span><span style="display:flex;"><span>		}
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>	newConfig.Shards = newShards
+</span></span><span style="display:flex;"><span>	cf.Configs = append(cf.Configs, newConfig)
+</span></span><span style="display:flex;"><span>	return OK
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>func GetGidWithMinShards(g2s map[int][]int) int {
+</span></span><span style="display:flex;"><span>	var keys []int
+</span></span><span style="display:flex;"><span>	for k := range g2s {
+</span></span><span style="display:flex;"><span>		keys = append(keys, k)
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>	sort.Ints(keys)
+</span></span><span style="display:flex;"><span>	index, min := -1, NShards + 1
+</span></span><span style="display:flex;"><span>	for _, gid := range keys {
+</span></span><span style="display:flex;"><span>		if gid != 0 &amp;&amp; len(g2s[gid]) &lt; min {
+</span></span><span style="display:flex;"><span>			index, min = gid, len(g2s[gid])
+</span></span><span style="display:flex;"><span>		}
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>	return index
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>func GetGidWithMaxShards(g2s map[int][]int) int {
+</span></span><span style="display:flex;"><span>	// left shards by operation Leave will be in position 0
+</span></span><span style="display:flex;"><span>	if shards, ok := g2s[0]; ok &amp;&amp; len(shards) &gt; 0 {
+</span></span><span style="display:flex;"><span>		return 0
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	var keys []int
+</span></span><span style="display:flex;"><span>	for k := range g2s {
+</span></span><span style="display:flex;"><span>		keys = append(keys, k)
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>	sort.Ints(keys)
+</span></span><span style="display:flex;"><span>	index, max := -1, -1
+</span></span><span style="display:flex;"><span>	for _, gid := range keys {
+</span></span><span style="display:flex;"><span>		if len(g2s[gid]) &gt; max {
+</span></span><span style="display:flex;"><span>			index, max = gid, len(g2s[gid])
+</span></span><span style="display:flex;"><span>		}
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>	return index
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Leave的操作类似，Move是简单地修改，Query则是直接返回最新配置：</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>func NewMemoryConfigStateMachine() *MemoryConfigStateMachine {
+</span></span><span style="display:flex;"><span>	cf := &amp;MemoryConfigStateMachine{make([]Config, 1)}
+</span></span><span style="display:flex;"><span>	cf.Configs[0] = DefaultConfig()
+</span></span><span style="display:flex;"><span>	return cf
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>// Query(num) -&gt; fetch Config # num, or latest config if num==-1.
+</span></span><span style="display:flex;"><span>func (cf *MemoryConfigStateMachine) Query(num int) (Config, Err) {
+</span></span><span style="display:flex;"><span>	if num &lt; 0 || num &gt;= len(cf.Configs) {
+</span></span><span style="display:flex;"><span>		return cf.Configs[len(cf.Configs) - 1], OK
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>	return cf.Configs[num], OK
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="实现高可用的分片容错kv存储服务">实现高可用的分片容错KV存储服务</h2>
+<p>在节点宕机，节点重启，网络分区等状况可能发生的条件下，实现存在分片的系统上进行KV存储服务并不算困难，但是需要在shard迁移过程中动态提供服务线性一致性服务，并且还要及时清理不属于本分片的数据需要注意很多细节。</p>
+<h3 id="客户端及rpc的设计">客户端及RPC的设计</h3>
+<p>先从简单的部分出发，在client.go中发现，lab给了key与shard的直接映射函数，可以快速确定key对应的shard。</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>//
+</span></span><span style="display:flex;"><span>// which shard is a key in?
+</span></span><span style="display:flex;"><span>// please use this function,
+</span></span><span style="display:flex;"><span>// and please do not change it.
+</span></span><span style="display:flex;"><span>//
+</span></span><span style="display:flex;"><span>func key2shard(key string) int {
+</span></span><span style="display:flex;"><span>	shard := 0
+</span></span><span style="display:flex;"><span>	if len(key) &gt; 0 {
+</span></span><span style="display:flex;"><span>		shard = int(key[0])
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>	shard %= shardmaster.NShards
+</span></span><span style="display:flex;"><span>	return shard
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>线性一致性请求的部分与lab3一致，多了一个config信息：</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">6
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">7
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">8
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>type Clerk struct {
+</span></span><span style="display:flex;"><span>	sm       	*shardmaster.Clerk
+</span></span><span style="display:flex;"><span>	config   	shardmaster.Config
+</span></span><span style="display:flex;"><span>	makeEnd 	func(string) *labrpc.ClientEnd
+</span></span><span style="display:flex;"><span>	leaderIds	map[int]int   // store current raft&#39;s leaderId
+</span></span><span style="display:flex;"><span>	clientId 	int64
+</span></span><span style="display:flex;"><span>	commandId	int64
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>在RPC接口设计的时候，没有采用lab中给定的设计模式，为了使得操作更统一，将Get、Put和Append操作的接口统一设计：</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>type CommandRequest struct {
+</span></span><span style="display:flex;"><span>	Key			string
+</span></span><span style="display:flex;"><span>	Value		string
+</span></span><span style="display:flex;"><span>	Op			OperationOp
+</span></span><span style="display:flex;"><span>	ClientId	int64
+</span></span><span style="display:flex;"><span>	CommandId   int64
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>type CommandReply struct {
+</span></span><span style="display:flex;"><span>	Err 	Err
+</span></span><span style="display:flex;"><span>	Value 	string
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>command函数的设计与lab3中类似，寻找raft组的leader，发送请求，更新配置。</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">23
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">24
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">25
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">26
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">27
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">28
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">29
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">30
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">31
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">32
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">33
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">34
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">35
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">36
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">37
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">38
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">39
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">40
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">41
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">42
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">43
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">44
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">45
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">46
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">47
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">48
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">49
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">50
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">51
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">52
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">53
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">54
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>//
+</span></span><span style="display:flex;"><span>// fetch the current value for a key.
+</span></span><span style="display:flex;"><span>// returns &#34;&#34; if the key does not exist.
+</span></span><span style="display:flex;"><span>// keeps trying forever in the face of all other errors.
+</span></span><span style="display:flex;"><span>// You will have to modify this function.
+</span></span><span style="display:flex;"><span>//
+</span></span><span style="display:flex;"><span>func (ck *Clerk) Get(key string) string {
+</span></span><span style="display:flex;"><span>	return ck.Command(&amp;CommandRequest{Key: key, Op: OpGet})
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>//
+</span></span><span style="display:flex;"><span>// shared by Put and Append.
+</span></span><span style="display:flex;"><span>// You will have to modify this function.
+</span></span><span style="display:flex;"><span>//
+</span></span><span style="display:flex;"><span>func (ck *Clerk) Put(key string, value string) {
+</span></span><span style="display:flex;"><span>	ck.Command(&amp;CommandRequest{Key: key, Value: value, Op: OpPut})
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>func (ck *Clerk) Append(key string, value string) {
+</span></span><span style="display:flex;"><span>	ck.Command(&amp;CommandRequest{Key: key, Value: value, Op: OpAppend})
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>func (ck *Clerk) Command(request *CommandRequest) string {
+</span></span><span style="display:flex;"><span>	request.ClientId, request.CommandId = ck.clientId, ck.commandId
+</span></span><span style="display:flex;"><span>	for {
+</span></span><span style="display:flex;"><span>		shard := key2shard(request.Key)
+</span></span><span style="display:flex;"><span>		gid := ck.config.Shards[shard]
+</span></span><span style="display:flex;"><span>		if servers, ok := ck.config.Groups[gid]; ok {
+</span></span><span style="display:flex;"><span>			if _, ok = ck.leaderIds[gid]; !ok {
+</span></span><span style="display:flex;"><span>				ck.leaderIds[gid] = 0
+</span></span><span style="display:flex;"><span>			}
+</span></span><span style="display:flex;"><span>			preLeaderId := ck.leaderIds[gid]
+</span></span><span style="display:flex;"><span>			newLeaderId := preLeaderId
+</span></span><span style="display:flex;"><span>			for {
+</span></span><span style="display:flex;"><span>				var reply CommandReply
+</span></span><span style="display:flex;"><span>				ok := ck.makeEnd(servers[newLeaderId]).Call(&#34;ShardKV.Command&#34;, request, &amp;reply)
+</span></span><span style="display:flex;"><span>				if ok &amp;&amp; (reply.Err == OK || reply.Err == ErrNoKey) {
+</span></span><span style="display:flex;"><span>					ck.commandId ++
+</span></span><span style="display:flex;"><span>					return reply.Value
+</span></span><span style="display:flex;"><span>				} else if ok &amp;&amp; reply.Err == ErrWrongGroup {
+</span></span><span style="display:flex;"><span>					// the shard&#39;s group may have changed
+</span></span><span style="display:flex;"><span>					break
+</span></span><span style="display:flex;"><span>				} else {
+</span></span><span style="display:flex;"><span>					newLeaderId = (newLeaderId + 1) % len(servers)
+</span></span><span style="display:flex;"><span>					if newLeaderId == preLeaderId {
+</span></span><span style="display:flex;"><span>						break
+</span></span><span style="display:flex;"><span>					}
+</span></span><span style="display:flex;"><span>					continue
+</span></span><span style="display:flex;"><span>				}
+</span></span><span style="display:flex;"><span>			}	
+</span></span><span style="display:flex;"><span>		}
+</span></span><span style="display:flex;"><span>		time.Sleep(100 * time.Millisecond)
+</span></span><span style="display:flex;"><span>		ck.config = ck.sm.Query(-1)
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>调用服务端的command请求大体与lab3类似，但是增加了shard状态判断的步骤，shard状态的判断主要是为了实现challege中的垃圾回收功能。</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>// deal with the command from client
+</span></span><span style="display:flex;"><span>func (kv *ShardKV) Command(request *CommandRequest, reply *CommandReply) {
+</span></span><span style="display:flex;"><span>	kv.mu.RLock()
+</span></span><span style="display:flex;"><span>	// if get the duplicate rpc, return result without the participation of raft layer
+</span></span><span style="display:flex;"><span>	if request.Op != OpGet &amp;&amp; kv.isDuplicateRequest(request.ClientId, request.CommandId) {
+</span></span><span style="display:flex;"><span>		lastReply := kv.lastOperations[request.ClientId].LastReply
+</span></span><span style="display:flex;"><span>		reply.Value, reply.Err = lastReply.Value, lastReply.Err
+</span></span><span style="display:flex;"><span>		kv.mu.RUnlock()
+</span></span><span style="display:flex;"><span>		return
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>	// 
+</span></span><span style="display:flex;"><span>	if !kv.canServe(key2shard(request.Key)) {
+</span></span><span style="display:flex;"><span>		reply.Err = ErrWrongGroup
+</span></span><span style="display:flex;"><span>		kv.mu.RUnlock()
+</span></span><span style="display:flex;"><span>		return
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>	kv.mu.RUnlock()
+</span></span><span style="display:flex;"><span>	kv.Execute(NewOperationCommand(request), reply)
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="shard的数据结构的设计">shard的数据结构的设计</h3>
+<p>shard是存放最终KV值的位置，每个server会保存对应Group负责的shard的数据，最简单的设计就是将shard设计为一个存放KV值的map，但是这样无法实现垃圾回收与配置更改期间的动态请求返回了。为了提高可用性，需要将每个shard独立起来，因此为每个shard增加一个Status信息，开启多个协程异步处理shard的维护。</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>type Shard struct {
+</span></span><span style="display:flex;"><span>	KV		map[string]string
+</span></span><span style="display:flex;"><span>	Status	ShardStatus
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>可以根据需求，将shard的状态分为以下四种：</p>
+<ul>
+<li>Serving，默认可用状态</li>
+<li>Pulling，不可用。会从上一个config该分片所在的raft组中拉取数据</li>
+<li>BePulling，不可用。当前config下，该分片不属于当前raft，会在拉取完后进行垃圾回收</li>
+<li>GCing，可用。注意这里的GCing并不是代表当前raft组下的分片正在进行GC，而是指当前分片在上个config下的所在raft组中的分片信息需要被GC。GC成功后，当前分片会变为serving，因此GCing状态也是可用的。</li>
+</ul>
+<h3 id="服务端的整体设计">服务端的整体设计</h3>
+<p>服务端的每一个节点是属于各自Group的一个节点，除了与基本raft相同的数据结构外，还需要保存GID来记录自己所属的Group，stateMachines记录shardID与shard的对应（这里的shard是自己设计的数据结构，后面会介绍）以及lastOperations作为去重表。</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>type ShardKV struct {
+</span></span><span style="display:flex;"><span>	mu           sync.RWMutex
+</span></span><span style="display:flex;"><span>	dead         int32
+</span></span><span style="display:flex;"><span>	rf           *raft.Raft
+</span></span><span style="display:flex;"><span>	applyCh      chan raft.ApplyMsg
+</span></span><span style="display:flex;"><span>	makeEnd      func(string) *labrpc.ClientEnd
+</span></span><span style="display:flex;"><span>	gid          int
+</span></span><span style="display:flex;"><span>	masters      []*labrpc.ClientEnd
+</span></span><span style="display:flex;"><span>	sm			 *shardmaster.Clerk
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	maxRaftState 	int // snapshot if log grows this big
+</span></span><span style="display:flex;"><span>	lastApplied 	int	// record the lastApplied to prevent StateMachine from rollback
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	lastConfig		shardmaster.Config
+</span></span><span style="display:flex;"><span>	currentConfig	shardmaster.Config
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	stateMachines	map[int]*Shard		// shardId -&gt; Shard
+</span></span><span style="display:flex;"><span>	lastOperations	map[int64]OperationContext	
+</span></span><span style="display:flex;"><span>	notifyChans		map[int]chan *CommandReply  // notify applier&#39;s goroutine to reply
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>在启动server的时候，除了初始化相关变量外，还开启了applier与四个serve协程，既为了提高整体并发度，也为了实现lab中的challenge要求。后面会逐一介绍各个协程的作用。</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">23
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">24
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">25
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">26
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">27
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">28
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">29
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">30
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">31
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">32
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">33
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">34
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">35
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">36
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">37
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">38
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">39
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">40
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">41
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">42
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">43
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">44
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">45
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">46
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">47
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>func StartServer(servers []*labrpc.ClientEnd, me int, persister *raft.Persister, maxraftstate int, gid int, masters []*labrpc.ClientEnd, make_end func(string) *labrpc.ClientEnd) *ShardKV {
+</span></span><span style="display:flex;"><span>	// call labgob.Register on structures you want
+</span></span><span style="display:flex;"><span>	// Go&#39;s RPC library to marshall/unmarshall.
+</span></span><span style="display:flex;"><span>	labgob.Register(Command{})
+</span></span><span style="display:flex;"><span>	labgob.Register(ShardOperationRequest{})
+</span></span><span style="display:flex;"><span>	labgob.Register(ShardOperationReply{})
+</span></span><span style="display:flex;"><span>	labgob.Register(shardmaster.Config{})
+</span></span><span style="display:flex;"><span>	labgob.Register(CommandRequest{})
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	applyCh := make(chan raft.ApplyMsg)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	kv := &amp;ShardKV {
+</span></span><span style="display:flex;"><span>		maxRaftState: 	maxraftstate,
+</span></span><span style="display:flex;"><span>		makeEnd:		make_end,
+</span></span><span style="display:flex;"><span>		gid:			gid,
+</span></span><span style="display:flex;"><span>		sm:				shardmaster.MakeClerk(masters),
+</span></span><span style="display:flex;"><span>		applyCh:		applyCh,
+</span></span><span style="display:flex;"><span>		dead:			0,
+</span></span><span style="display:flex;"><span>		rf:				raft.Make(servers, me, persister, applyCh),
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>		lastApplied:	0,
+</span></span><span style="display:flex;"><span>		currentConfig:	shardmaster.DefaultConfig(),
+</span></span><span style="display:flex;"><span>		lastConfig:		shardmaster.DefaultConfig(),
+</span></span><span style="display:flex;"><span>		notifyChans:	make(map[int]chan *CommandReply),
+</span></span><span style="display:flex;"><span>		stateMachines:	make(map[int]*Shard),
+</span></span><span style="display:flex;"><span>		lastOperations:	make(map[int64]OperationContext),
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	kv.restoreSnapshot(persister.ReadSnapshot())
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	// start a goroutine to apply committed to stateMachine
+</span></span><span style="display:flex;"><span>	go kv.applier()
+</span></span><span style="display:flex;"><span>	
+</span></span><span style="display:flex;"><span>	// start a goroutine to update config
+</span></span><span style="display:flex;"><span>	go kv.Serve(kv.configureAction, ConfigureTimeout)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	// start a goroutine to check migration
+</span></span><span style="display:flex;"><span>	go kv.Serve(kv.migrationAction, MigrationTimeout)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	// start a goroutine to check gc
+</span></span><span style="display:flex;"><span>	go kv.Serve(kv.gcAction, GCTimeout)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	// start a goroutine to solve empty entry problems
+</span></span><span style="display:flex;"><span>	go kv.Serve(kv.checkEntryInCurrentTermAction, EmptyEntryDetectorTimeout)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	return kv
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="定时拉取配置信息">定时拉取配置信息</h3>
+<p>需要强调的是，拉取配置，迁移，垃圾回收和发送no-op日志都是leader才能进行的，否则会引起brain split问题。</p>
+<p><strong>需要注意的是操作最终是被放入applyCh中，等待applier协程统一处理，这样可以确保高并发且安全地处理。以下定时执行的所有操作都是，这个的实现类似在raft底层的实现。</strong></p>
+<p>Serve是一个定期执行函数：</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">6
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">7
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">8
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>func (kv *ShardKV) Serve(action func(), timeout time.Duration) {
+</span></span><span style="display:flex;"><span>	for kv.killed() == false {
+</span></span><span style="display:flex;"><span>		if _, isLeader := kv.rf.GetState(); isLeader {
+</span></span><span style="display:flex;"><span>			action()
+</span></span><span style="display:flex;"><span>		}
+</span></span><span style="display:flex;"><span>		time.Sleep(timeout)
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>当所有shard都处于serving状态时，说明需要拉取新的配置，拉取配置的等待时间需要大于迁移和GC的时间。因此，将迁移和GC的等待时间设置为50ms，将拉取配置的等待时间设为100ms。</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>// fetch latest configuration
+</span></span><span style="display:flex;"><span>func (kv *ShardKV) configureAction() {
+</span></span><span style="display:flex;"><span>	canGetNextConfig := true
+</span></span><span style="display:flex;"><span>	kv.mu.RLock()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	for _, shard := range kv.stateMachines {
+</span></span><span style="display:flex;"><span>		if shard.Status != Serving {
+</span></span><span style="display:flex;"><span>			canGetNextConfig = false
+</span></span><span style="display:flex;"><span>			break
+</span></span><span style="display:flex;"><span>		}
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	currentConfigNum := kv.currentConfig.Num
+</span></span><span style="display:flex;"><span>	kv.mu.RUnlock()
+</span></span><span style="display:flex;"><span>	if canGetNextConfig {
+</span></span><span style="display:flex;"><span>		nextConfig := kv.sm.Query(currentConfigNum + 1)
+</span></span><span style="display:flex;"><span>		if nextConfig.Num == currentConfigNum + 1 {
+</span></span><span style="display:flex;"><span>			kv.Execute(NewConfigurationCommand(&amp;nextConfig), &amp;CommandReply{})
+</span></span><span style="display:flex;"><span>		}
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="定时迁移数据">定时迁移数据</h3>
+<p>定时检查当前raft组下的shard处于pulling的shard，从其他的raft组异步拉取数据更新到本地。</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>// migrate related shards by pull
+</span></span><span style="display:flex;"><span>func (kv *ShardKV) migrationAction() {
+</span></span><span style="display:flex;"><span>	kv.mu.RLock()
+</span></span><span style="display:flex;"><span>	gid2shardIds := kv.getShardIdsByStatus(Pulling)
+</span></span><span style="display:flex;"><span>	var wg sync.WaitGroup
+</span></span><span style="display:flex;"><span>	for gid, shardIds := range gid2shardIds {
+</span></span><span style="display:flex;"><span>		wg.Add(1)
+</span></span><span style="display:flex;"><span>		go func(servers []string, configNum int, shardIds []int) {
+</span></span><span style="display:flex;"><span>			defer wg.Done()
+</span></span><span style="display:flex;"><span>			pullTaskRequest := ShardOperationRequest{configNum, shardIds}
+</span></span><span style="display:flex;"><span>			for _, server := range servers {
+</span></span><span style="display:flex;"><span>				var pullTaskReply ShardOperationReply
+</span></span><span style="display:flex;"><span>				serverEnd := kv.makeEnd(server) 
+</span></span><span style="display:flex;"><span>				if serverEnd.Call(&#34;ShardKV.GetShardsData&#34;, &amp;pullTaskRequest, &amp;pullTaskReply) &amp;&amp; pullTaskReply.Err == OK {
+</span></span><span style="display:flex;"><span>					kv.Execute(NewInsertShardsCommand(&amp;pullTaskReply), &amp;CommandReply{})
+</span></span><span style="display:flex;"><span>				}
+</span></span><span style="display:flex;"><span>			}
+</span></span><span style="display:flex;"><span>		}(kv.lastConfig.Groups[gid], kv.currentConfig.Num, shardIds)
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>	kv.mu.RUnlock()
+</span></span><span style="display:flex;"><span>	wg.Wait()
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>在被拉取方也需要leader进行处理。需要注意的是，如果被拉取raft集群的leader的config小于请求的config，则说明被请求方当前的config没有更新到最新，所以不能被正常拉取，返回ErrNotReady。否则，返回状态机内容并更新判重表。</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">23
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">24
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">25
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">26
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">27
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>func (kv *ShardKV) GetShardsData(request *ShardOperationRequest, reply *ShardOperationReply) {
+</span></span><span style="display:flex;"><span>	// only pull shards from leader
+</span></span><span style="display:flex;"><span>	if _, isLeader := kv.rf.GetState(); !isLeader {
+</span></span><span style="display:flex;"><span>		reply.Err = ErrWrongLeader
+</span></span><span style="display:flex;"><span>		return
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>	kv.mu.RLock()
+</span></span><span style="display:flex;"><span>	defer kv.mu.RUnlock()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	// leader&#39;s config num is smaller than request&#39;s
+</span></span><span style="display:flex;"><span>	if kv.currentConfig.Num &lt; request.ConfigNum {
+</span></span><span style="display:flex;"><span>		reply.Err = ErrNotReady
+</span></span><span style="display:flex;"><span>		return
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	reply.Shards = make(map[int]map[string]string)
+</span></span><span style="display:flex;"><span>	for _, shardId := range request.ShardIds {
+</span></span><span style="display:flex;"><span>		reply.Shards[shardId] = kv.stateMachines[shardId].deepCopy()
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	reply.LastOperations = make(map[int64]OperationContext)
+</span></span><span style="display:flex;"><span>	for clientID, operation := range kv.lastOperations {
+</span></span><span style="display:flex;"><span>		reply.LastOperations[clientID] = operation.deepCopy()
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	reply.ConfigNum, reply.Err = request.ConfigNum, OK
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="定时进行垃圾回收">定时进行垃圾回收</h3>
+<p>与迁移类似，当前raft组发起请求，远程raft组清除垃圾后返回，然后本地将处理命令放入applyCh中等待统一处理。</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">23
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">24
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">25
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">26
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">27
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">28
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">29
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">30
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">31
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">32
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">33
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">34
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">35
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">36
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">37
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">38
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">39
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">40
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">41
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">42
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">43
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">44
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>func (kv *ShardKV) DeleteShardsData(request *ShardOperationRequest, reply *ShardOperationReply) {
+</span></span><span style="display:flex;"><span>	// only pull shards from leader
+</span></span><span style="display:flex;"><span>	if _, isLeader := kv.rf.GetState(); !isLeader {
+</span></span><span style="display:flex;"><span>		reply.Err = ErrWrongLeader
+</span></span><span style="display:flex;"><span>		return
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	kv.mu.RLock()
+</span></span><span style="display:flex;"><span>	// leader&#39;s config has updated
+</span></span><span style="display:flex;"><span>	if kv.currentConfig.Num &lt; request.ConfigNum {
+</span></span><span style="display:flex;"><span>		reply.Err = OK
+</span></span><span style="display:flex;"><span>		kv.mu.RUnlock()
+</span></span><span style="display:flex;"><span>		return
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>	kv.mu.RUnlock()
+</span></span><span style="display:flex;"><span>	
+</span></span><span style="display:flex;"><span>	var	commandReply CommandReply
+</span></span><span style="display:flex;"><span>	kv.Execute(NewDeleteShardsCommand(request), &amp;commandReply)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	reply.Err = commandReply.Err
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>func (kv *ShardKV) gcAction() {
+</span></span><span style="display:flex;"><span>	kv.mu.RLock()
+</span></span><span style="display:flex;"><span>	gid2shardIds := kv.getShardIdsByStatus(GCing)
+</span></span><span style="display:flex;"><span>	var wg sync.WaitGroup
+</span></span><span style="display:flex;"><span>	for gid, shardIds := range gid2shardIds {
+</span></span><span style="display:flex;"><span>		wg.Add(1)
+</span></span><span style="display:flex;"><span>		go func(servers []string, configNum int, shardIds []int) {
+</span></span><span style="display:flex;"><span>			defer wg.Done()
+</span></span><span style="display:flex;"><span>			gcTaskRequest := ShardOperationRequest{configNum, shardIds}
+</span></span><span style="display:flex;"><span>			for _, server := range servers {
+</span></span><span style="display:flex;"><span>				var gcTaskReply ShardOperationReply
+</span></span><span style="display:flex;"><span>				serverEnd := kv.makeEnd(server)
+</span></span><span style="display:flex;"><span>				if serverEnd.Call(&#34;ShardKV.DeleteShardsData&#34;, &amp;gcTaskRequest, &amp;gcTaskReply) &amp;&amp; gcTaskReply.Err == OK {
+</span></span><span style="display:flex;"><span>					// if leader succeed to gc, current server update config
+</span></span><span style="display:flex;"><span>					kv.Execute(NewDeleteShardsCommand(&amp;gcTaskRequest), &amp;CommandReply{})
+</span></span><span style="display:flex;"><span>				}
+</span></span><span style="display:flex;"><span>			}
+</span></span><span style="display:flex;"><span>		}(kv.lastConfig.Groups[gid], kv.currentConfig.Num, shardIds)
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>	kv.mu.RUnlock()
+</span></span><span style="display:flex;"><span>	wg.Wait()
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="定时进行no-op日志发送">定时进行no-op日志发送</h3>
+<p>这个在本文开头中详细介绍了这个问题，不进行no-op的判断可能会产生活锁，但是不是每次都会出现这种bug，但仍然需要解决。比较理想的做法是在raft层添加no-op日志，但是在6.824中添加后lab2的测试则无法通过，因此在上层添加no-op日志。</p>
+<p>解决方式也很简单，在raft层判断leader的最后一个日志是否是当前term，如果不是，则添加一个no-op日志，同步日志信息。</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>func (kv *ShardKV) checkEntryInCurrentTermAction() {
+</span></span><span style="display:flex;"><span>	if !kv.rf.HasLogInCurrentTerm() {
+</span></span><span style="display:flex;"><span>		kv.Execute(NewEmptyEntryCommand(), &amp;CommandReply{})
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="处理所有请求的协程">处理所有请求的协程</h3>
+<p>额外开启一个applier()协程，统一处理以上的所有请求，这在前面的实现中多次使用这种方式，只是这次请求的种类更多。整体分为command和快照两部分，暂时只讨论command部分。</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">23
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">24
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">25
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">26
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">27
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">28
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">29
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">30
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">31
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">32
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">33
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">34
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">35
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">36
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">37
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">38
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">39
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">40
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">41
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">42
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">43
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">44
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">45
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">46
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">47
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">48
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">49
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">50
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">51
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">52
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">53
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">54
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">55
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">56
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>// a dedicated applier goroutine to apply committed entries to stateMachine, take snapshot and apply snapshot from raft
+</span></span><span style="display:flex;"><span>func (kv *ShardKV) applier() {
+</span></span><span style="display:flex;"><span>	for kv.killed() == false {
+</span></span><span style="display:flex;"><span>		select {
+</span></span><span style="display:flex;"><span>		case msg := &lt;-kv.applyCh:
+</span></span><span style="display:flex;"><span>			if msg.CommandValid {
+</span></span><span style="display:flex;"><span>				kv.mu.Lock()
+</span></span><span style="display:flex;"><span>				if msg.CommandIndex &lt;= kv.lastApplied {
+</span></span><span style="display:flex;"><span>					kv.mu.Unlock()
+</span></span><span style="display:flex;"><span>					continue
+</span></span><span style="display:flex;"><span>				}
+</span></span><span style="display:flex;"><span>				kv.lastApplied = msg.CommandIndex
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>				var reply *CommandReply
+</span></span><span style="display:flex;"><span>				cmd := msg.Command.(Command)
+</span></span><span style="display:flex;"><span>				switch cmd.Op {
+</span></span><span style="display:flex;"><span>				case Operation:
+</span></span><span style="display:flex;"><span>					operation := cmd.Data.(CommandRequest)
+</span></span><span style="display:flex;"><span>					reply = kv.applyOperation(&amp;msg, &amp;operation)
+</span></span><span style="display:flex;"><span>				case Configuration:
+</span></span><span style="display:flex;"><span>					nextConfig := cmd.Data.(shardmaster.Config)
+</span></span><span style="display:flex;"><span>					reply = kv.applyConfiguration(&amp;nextConfig)
+</span></span><span style="display:flex;"><span>				case InsertShards:
+</span></span><span style="display:flex;"><span>					shardsInfo := cmd.Data.(ShardOperationReply)
+</span></span><span style="display:flex;"><span>					reply = kv.applyInsertShards(&amp;shardsInfo)
+</span></span><span style="display:flex;"><span>				case DeleteShards:
+</span></span><span style="display:flex;"><span>					shardsInfo := cmd.Data.(ShardOperationRequest)
+</span></span><span style="display:flex;"><span>					reply = kv.applyDeleteShards(&amp;shardsInfo)
+</span></span><span style="display:flex;"><span>				case EmptyEntry:
+</span></span><span style="display:flex;"><span>					reply = kv.applyEmptyEntry()
+</span></span><span style="display:flex;"><span>				}
+</span></span><span style="display:flex;"><span>				
+</span></span><span style="display:flex;"><span>				// only notify related channel for currentTerm&#39;s log when the node is leader
+</span></span><span style="display:flex;"><span>				if currentTerm, isLeader := kv.rf.GetState(); isLeader &amp;&amp; msg.CommandTerm == currentTerm {
+</span></span><span style="display:flex;"><span>					ch := kv.getNotifyChan(msg.CommandIndex)
+</span></span><span style="display:flex;"><span>					ch &lt;- reply
+</span></span><span style="display:flex;"><span>				}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>				needSnapshot := kv.needSnapshot()
+</span></span><span style="display:flex;"><span>				if needSnapshot {
+</span></span><span style="display:flex;"><span>					kv.takeSnapshot(msg.CommandIndex)
+</span></span><span style="display:flex;"><span>				}
+</span></span><span style="display:flex;"><span>				kv.mu.Unlock()
+</span></span><span style="display:flex;"><span>			} else if msg.SnapshotValid {
+</span></span><span style="display:flex;"><span>				kv.mu.Lock()
+</span></span><span style="display:flex;"><span>				if kv.rf.CondInstallSnapshot(msg.SnapshotTerm, msg.SnapshotIndex, msg.Snapshot) {
+</span></span><span style="display:flex;"><span>					kv.restoreSnapshot(msg.Snapshot)
+</span></span><span style="display:flex;"><span>					kv.lastApplied = msg.SnapshotIndex
+</span></span><span style="display:flex;"><span>				}
+</span></span><span style="display:flex;"><span>				kv.mu.Unlock()
+</span></span><span style="display:flex;"><span>			} else {
+</span></span><span style="display:flex;"><span>				fmt.Println(&#34;run into wrong state in applier&#34;)
+</span></span><span style="display:flex;"><span>			}
+</span></span><span style="display:flex;"><span>		}
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>command中的applyOperation与lab3的基本一致：</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>func (kv *ShardKV) applyOperation(msg *raft.ApplyMsg, operation *CommandRequest) *CommandReply {
+</span></span><span style="display:flex;"><span>	var reply *CommandReply
+</span></span><span style="display:flex;"><span>	shardId := key2shard(operation.Key)
+</span></span><span style="display:flex;"><span>	if kv.canServe(shardId) {
+</span></span><span style="display:flex;"><span>		if operation.Op != OpGet &amp;&amp; kv.isDuplicateRequest(operation.ClientId, operation.CommandId) {
+</span></span><span style="display:flex;"><span>			return kv.lastOperations[operation.ClientId].LastReply
+</span></span><span style="display:flex;"><span>		} else {
+</span></span><span style="display:flex;"><span>			reply = kv.applyLogToStateMachines(operation, shardId)
+</span></span><span style="display:flex;"><span>			if operation.Op != OpGet {
+</span></span><span style="display:flex;"><span>				kv.lastOperations[operation.ClientId] = OperationContext{operation.CommandId,reply}
+</span></span><span style="display:flex;"><span>			}
+</span></span><span style="display:flex;"><span>			return reply
+</span></span><span style="display:flex;"><span>		}
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>	return &amp;CommandReply{ErrWrongGroup, &#34;&#34;}
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>applyConfiguration首先要确保config的Num匹配，然后再分情况讨论：</p>
+<ul>
+<li>如果shard在当前配置下不属于该raft集群，在新配置中属于该集群，则将shard的状态更新为pulling。</li>
+<li>如果shard在当前配置属于该raft集群，新配置中不属于，则shard的状态更新为BePulling。</li>
+</ul>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">23
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">24
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">25
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">26
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">27
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">28
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>func (kv *ShardKV) applyConfiguration(nextConfig *shardmaster.Config) *CommandReply {
+</span></span><span style="display:flex;"><span>	if nextConfig.Num == kv.currentConfig.Num + 1 {
+</span></span><span style="display:flex;"><span>		kv.updateShardStatus(nextConfig)
+</span></span><span style="display:flex;"><span>		kv.lastConfig = kv.currentConfig
+</span></span><span style="display:flex;"><span>		kv.currentConfig = *nextConfig
+</span></span><span style="display:flex;"><span>		return &amp;CommandReply{OK, &#34;&#34;}
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>	return &amp;CommandReply{ErrOutDated, &#34;&#34;}
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>func (kv *ShardKV) updateShardStatus(nextConfig *shardmaster.Config) {
+</span></span><span style="display:flex;"><span>	for i := 0; i &lt; shardmaster.NShards; i ++ {
+</span></span><span style="display:flex;"><span>		// pull data from other shard
+</span></span><span style="display:flex;"><span>		if kv.currentConfig.Shards[i] != kv.gid &amp;&amp; nextConfig.Shards[i] == kv.gid {
+</span></span><span style="display:flex;"><span>			gid := kv.currentConfig.Shards[i]
+</span></span><span style="display:flex;"><span>			if gid != 0 {
+</span></span><span style="display:flex;"><span>				kv.stateMachines[i].Status = Pulling
+</span></span><span style="display:flex;"><span>			}
+</span></span><span style="display:flex;"><span>		}
+</span></span><span style="display:flex;"><span>		// be pulled data to other shard
+</span></span><span style="display:flex;"><span>		if kv.currentConfig.Shards[i] == kv.gid &amp;&amp; nextConfig.Shards[i] != kv.gid {
+</span></span><span style="display:flex;"><span>			gid := nextConfig.Shards[i]
+</span></span><span style="display:flex;"><span>			if gid != 0 {
+</span></span><span style="display:flex;"><span>				kv.stateMachines[i].Status = BePulling
+</span></span><span style="display:flex;"><span>			}
+</span></span><span style="display:flex;"><span>		}
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>applyInsertShards需要确保对应的config信息一致，否则直接返回过期error。</p>
+<p>对于pulling完成的shard，将状态置为GCing，在GC协程中将其他raft组下数据进行垃圾回收。</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>func (kv *ShardKV) applyInsertShards(shardsInfo *ShardOperationReply) *CommandReply {
+</span></span><span style="display:flex;"><span>	if shardsInfo.ConfigNum == kv.currentConfig.Num {
+</span></span><span style="display:flex;"><span>		for shardId, shardData := range shardsInfo.Shards {
+</span></span><span style="display:flex;"><span>			shard := kv.stateMachines[shardId]
+</span></span><span style="display:flex;"><span>			if shard.Status == Pulling {
+</span></span><span style="display:flex;"><span>				for key, value := range shardData {
+</span></span><span style="display:flex;"><span>					shard.KV[key] = value
+</span></span><span style="display:flex;"><span>				}
+</span></span><span style="display:flex;"><span>				shard.Status = GCing
+</span></span><span style="display:flex;"><span>			} else {
+</span></span><span style="display:flex;"><span>				break
+</span></span><span style="display:flex;"><span>			}
+</span></span><span style="display:flex;"><span>		}
+</span></span><span style="display:flex;"><span>		for clientId, operationContext := range shardsInfo.LastOperations {
+</span></span><span style="display:flex;"><span>			if lastOperation, ok := kv.lastOperations[clientId]; !ok || lastOperation.MaxAppliedCommandId &lt; operationContext.MaxAppliedCommandId {
+</span></span><span style="display:flex;"><span>				kv.lastOperations[clientId] = operationContext
+</span></span><span style="display:flex;"><span>			}
+</span></span><span style="display:flex;"><span>		}
+</span></span><span style="display:flex;"><span>		return &amp;CommandReply{OK, &#34;&#34;}
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>	return &amp;CommandReply{ErrOutDated, &#34;&#34;}
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>applyDeleteShards类似，需要判断config，更新状态即可。</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>func (kv *ShardKV) applyDeleteShards(shardsInfo *ShardOperationRequest) *CommandReply {
+</span></span><span style="display:flex;"><span>	if shardsInfo.ConfigNum == kv.currentConfig.Num {
+</span></span><span style="display:flex;"><span>		for _, shardId := range shardsInfo.ShardIds {
+</span></span><span style="display:flex;"><span>			shard := kv.stateMachines[shardId]
+</span></span><span style="display:flex;"><span>			if shard.Status == GCing {
+</span></span><span style="display:flex;"><span>				shard.Status = Serving
+</span></span><span style="display:flex;"><span>			} else if shard.Status == BePulling {
+</span></span><span style="display:flex;"><span>				kv.stateMachines[shardId] = NewShard()
+</span></span><span style="display:flex;"><span>			} else {
+</span></span><span style="display:flex;"><span>				// fmt.Println(&#34;duplicated shards deletion&#34;)
+</span></span><span style="display:flex;"><span>				break
+</span></span><span style="display:flex;"><span>			}
+</span></span><span style="display:flex;"><span>		}
+</span></span><span style="display:flex;"><span>		return &amp;CommandReply{OK, &#34;&#34;}
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>	return &amp;CommandReply{OK, &#34;&#34;}
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="分片kv的快照需要添加什么">分片KV的快照需要添加什么？</h3>
+<p>除了正常需要保存的stateMachine和去重表（lastOperations）外，还需要记录当前配置和先前的配置，在前面的迁移、垃圾回收中也可以看出，主要判断就是依赖config来执行。</p>
+<h2 id="参考文章">参考文章</h2>
+<p>1、<a href="https://mp.weixin.qq.com/s/jzx05Q781ytMXrZ2wrm2Vg">Raft 的 Figure 8 讲了什么问题？为什么需要 no-op 日志？</a></p>
+<p>2、<a href="https://www.jianshu.com/p/f5c8ab9cd577">MIT 6.824 LAB 4B(分布式shard database)</a></p>
+<p>3、https://github.com/OneSizeFitsQuorum/MIT6.824-2021/blob/master/docs/lab4.md</p>
       </article>
     </section>
 
