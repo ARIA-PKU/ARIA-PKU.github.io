@@ -5,7 +5,7 @@ lastmod: 2022-05-16T20:53:26+08:00
 # author: Author Name
 # avatar: /img/author.jpg
 # authorlink: https://author.site
-cover: https://oss.surfaroundtheworld.top/blog-pictures/reverse_world.jpg
+cover: http://oss.surfaroundtheworld.top/blog-pictures/reverse_world.jpg
 # images:
 #   - /img/cover.jpg
 categories:

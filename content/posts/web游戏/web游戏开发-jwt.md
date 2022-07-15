@@ -2,14 +2,14 @@
 title: Web游戏开发 Jwt
 date: 2022-05-29T16:49:35+08:00
 lastmod: 2022-05-29T16:49:35+08:00
-cover: https://oss.surfaroundtheworld.top/blog-pictures/reverse_world.jpg
+cover: http://oss.surfaroundtheworld.top/blog-pictures/reverse_world.jpg
 categories:
   - web游戏开发
 tags:
   - JWT
   - REST
 # nolastmod: true
-draft: true
+draft: false
 ---
 
 Jwt的介绍以及在django中如何实现Jwt的部署

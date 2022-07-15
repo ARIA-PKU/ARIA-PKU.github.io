@@ -2,10 +2,8 @@
 title: web游戏开发 nginx的部署
 date: 2022-05-10T14:59:42+08:00
 lastmod: 2022-05-10T14:59:42+08:00
-# author: Author Name
-# avatar: /img/author.jpg
-# authorlink: https://author.site
-cover: https://oss.surfaroundtheworld.top/blog-pictures/reverse_world.jpg
+
+cover: http://oss.surfaroundtheworld.top/blog-pictures/reverse_world.jpg
 # images:
 #   - /img/cover.jpg
 categories:

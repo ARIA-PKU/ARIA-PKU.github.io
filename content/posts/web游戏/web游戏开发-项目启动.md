@@ -1,11 +1,9 @@
 ---
-title: Web游戏开发 项目启动
+title: Web游戏开发 准备工作
 date: 2022-05-01T21:11:54+08:00
 lastmod: 2022-05-01T21:11:54+08:00
-# author: Author Name
-# avatar: /img/author.jpg
-# authorlink: https://author.site
-cover: https://oss.surfaroundtheworld.top/blog-pictures/reverse_world.jpg
+
+cover: http://oss.surfaroundtheworld.top/blog-pictures/reverse_world.jpg
 # images:
 #   - /img/cover.jpg
 categories:
