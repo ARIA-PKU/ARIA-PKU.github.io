@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-    <title>web游戏开发 基础配置 | Aria&#39;s Blog</title>
+    <title>Web游戏开发 Jwt | Aria&#39;s Blog</title>
 
     
 <link href="/header/icon.jpg" rel="shortcut icon" type="image/x-icon" />
@@ -13,22 +13,22 @@
 
 
 <meta name="author" content="Aria" />
-<meta name="description" content="web游戏开发日志
+<meta name="description" content="Jwt的介绍以及在django中如何实现Jwt的部署
 " />
 
 
 
 <meta name="generator" content="Hugo 0.98.0" />
 
-<link rel="canonical" href="https://blog.surfaroundtheworld.top/posts/web%E6%B8%B8%E6%88%8F/web%E6%B8%B8%E6%88%8F%E5%BC%80%E5%8F%91-%E5%9F%BA%E7%A1%80%E9%85%8D%E7%BD%AE/" />
+<link rel="canonical" href="https://blog.surfaroundtheworld.top/posts/web%E6%B8%B8%E6%88%8F/web%E6%B8%B8%E6%88%8F%E5%BC%80%E5%8F%91-jwt/" />
 
 
-<meta property="og:title" content="web游戏开发 基础配置" />
-<meta property="og:description" content="web游戏开发日志" />
+<meta property="og:title" content="Web游戏开发 Jwt" />
+<meta property="og:description" content="Jwt的介绍以及在django中如何实现Jwt的部署" />
 <meta property="og:type" content="article" />
-<meta property="og:url" content="https://blog.surfaroundtheworld.top/posts/web%E6%B8%B8%E6%88%8F/web%E6%B8%B8%E6%88%8F%E5%BC%80%E5%8F%91-%E5%9F%BA%E7%A1%80%E9%85%8D%E7%BD%AE/" /><meta property="og:image" content="http://oss.surfaroundtheworld.top/blog-pictures/6-16/edge_of_planet.jpg"/><meta property="article:section" content="posts" />
-<meta property="article:published_time" content="2022-05-09T22:35:40+08:00" />
-<meta property="article:modified_time" content="2022-05-09T22:35:40+08:00" />
+<meta property="og:url" content="https://blog.surfaroundtheworld.top/posts/web%E6%B8%B8%E6%88%8F/web%E6%B8%B8%E6%88%8F%E5%BC%80%E5%8F%91-jwt/" /><meta property="og:image" content="http://oss.surfaroundtheworld.top/blog-pictures/6-16/edge_of_planet.jpg"/><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2022-05-29T16:49:35+08:00" />
+<meta property="article:modified_time" content="2022-05-29T16:49:35+08:00" />
 
 
 
@@ -36,8 +36,8 @@
 <meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:image" content="http://oss.surfaroundtheworld.top/blog-pictures/6-16/edge_of_planet.jpg"/>
 
-<meta name="twitter:title" content="web游戏开发 基础配置"/>
-<meta name="twitter:description" content="web游戏开发日志"/>
+<meta name="twitter:title" content="Web游戏开发 Jwt"/>
+<meta name="twitter:description" content="Jwt的介绍以及在django中如何实现Jwt的部署"/>
 
 
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.css" integrity="sha256-UXesixbeLkB/UYxVTzuj/gg3+LMzgwAmg3zD+C4ZASQ=" crossorigin="anonymous">
@@ -139,24 +139,20 @@
     <div class="ui segment toc">
       <nav id="TableOfContents">
   <ul>
-    <li><a href="#1-项目结构整理">1、 项目结构整理</a></li>
-    <li><a href="#2全局配置的修改">2、全局配置的修改</a>
-      <ul>
-        <li><a href="#1-时区调整改为国内时区">1） 时区调整，改为国内时区</a></li>
-        <li><a href="#2将创建的game加入到settings中">2）将创建的<code>game</code>加入到settings中</a></li>
-        <li><a href="#3静态文件存储位置">3）静态文件存储位置</a></li>
-        <li><a href="#4数据库配置">4）数据库配置</a></li>
-      </ul>
-    </li>
-    <li><a href="#3js文件的打包">3、js文件的打包</a></li>
+    <li><a href="#session实现方式">session实现方式</a></li>
+    <li><a href="#jwt的实现方式">Jwt的实现方式</a></li>
+    <li><a href="#两种方式的比较">两种方式的比较</a></li>
   </ul>
 
   <ul>
-    <li><a href="#1html文件">1、html文件</a></li>
-    <li><a href="#2-js文件与css文件编写">2、 js文件与css文件编写</a></li>
-    <li><a href="#3view视图函数编写">3、view视图函数编写</a></li>
-    <li><a href="#4urls路由编写">4、urls路由编写</a></li>
-    <li><a href="#5测试">5、测试</a></li>
+    <li><a href="#配置安装">配置安装</a></li>
+    <li><a href="#添加路由">添加路由</a></li>
+    <li><a href="#rest框架">REST框架</a>
+      <ul>
+        <li><a href="#前端部分">前端部分</a></li>
+        <li><a href="#websocket端的验证">WebSocket端的验证</a></li>
+      </ul>
+    </li>
   </ul>
 </nav>
     </div>
@@ -168,7 +164,7 @@
   <div class="sixteen wide mobile sixteen wide tablet ten wide computer column markdown-body dream-single" id="dream-save-post-as-img">
     <section class="ui segment">
       <header>
-        <h1 class="ui large header">web游戏开发 基础配置<span class="sub header">
+        <h1 class="ui large header">Web游戏开发 Jwt<span class="sub header">
             <span class="left">
               @
               
@@ -176,15 +172,15 @@
               
 
               | 
-                  <span data-format="luxon">2022-05-09T22:35:40&#43;08:00</span>
+                  <span data-format="luxon">2022-05-29T16:49:35&#43;08:00</span>
                 
 
-              | 6 分钟阅读
+              | 8 分钟阅读
 
               
               | 更新于
                 
-                  <span data-format="luxon">2022-05-09T22:35:40&#43;08:00</span>
+                  <span data-format="luxon">2022-05-29T16:49:35&#43;08:00</span>
                 
               
             </span>
@@ -194,10 +190,10 @@
   <a href="#" class="save-as-image" title="保存为图片" onclick="savePostAsImg()">
     <i class="save icon"></i>
   </a>
-  <a href="https://twitter.com/intent/tweet?text=web%e6%b8%b8%e6%88%8f%e5%bc%80%e5%8f%91%20%e5%9f%ba%e7%a1%80%e9%85%8d%e7%bd%ae&url=https%3a%2f%2fblog.surfaroundtheworld.top%2fposts%2fweb%25E6%25B8%25B8%25E6%2588%258F%2fweb%25E6%25B8%25B8%25E6%2588%258F%25E5%25BC%2580%25E5%258F%2591-%25E5%259F%25BA%25E7%25A1%2580%25E9%2585%258D%25E7%25BD%25AE%2f" title="Twitter">
+  <a href="https://twitter.com/intent/tweet?text=Web%e6%b8%b8%e6%88%8f%e5%bc%80%e5%8f%91%20Jwt&url=https%3a%2f%2fblog.surfaroundtheworld.top%2fposts%2fweb%25E6%25B8%25B8%25E6%2588%258F%2fweb%25E6%25B8%25B8%25E6%2588%258F%25E5%25BC%2580%25E5%258F%2591-jwt%2f" title="Twitter">
     <i class="twitter icon"></i>
   </a>
-  <a href="https://facebook.com/sharer/sharer.php?u=https%3a%2f%2fblog.surfaroundtheworld.top%2fposts%2fweb%25E6%25B8%25B8%25E6%2588%258F%2fweb%25E6%25B8%25B8%25E6%2588%258F%25E5%25BC%2580%25E5%258F%2591-%25E5%259F%25BA%25E7%25A1%2580%25E9%2585%258D%25E7%25BD%25AE%2f" title="Facebook">
+  <a href="https://facebook.com/sharer/sharer.php?u=https%3a%2f%2fblog.surfaroundtheworld.top%2fposts%2fweb%25E6%25B8%25B8%25E6%2588%258F%2fweb%25E6%25B8%25B8%25E6%2588%258F%25E5%25BC%2580%25E5%258F%2591-jwt%2f" title="Facebook">
     <i class="facebook icon"></i>
   </a>
 </span>
@@ -209,13 +205,187 @@
 
       <article class="main">
         
-        <img class="cover" src="https://oss.surfaroundtheworld.top/blog-pictures/reverse_world.jpg" />
+        <img class="cover" src="http://oss.surfaroundtheworld.top/blog-pictures/reverse_world.jpg" />
         
 
-        <p>web游戏开发日志</p>
-<h1 id="二项目配置">二、项目配置</h1>
-<h2 id="1-项目结构整理">1、 项目结构整理</h2>
-<p>为了防止<code>urls.py</code>、<code>views.py</code>和<code>models.py</code>过于冗长，将其拆分成模块，并添加<code>static</code>文件夹存放静态文件，python的特性，需要在文件夹下添加<code>__init__.py</code>才会被解释器认定为是<code>module</code>，添加后项目结构如下：</p>
+        <p>Jwt的介绍以及在django中如何实现Jwt的部署</p>
+<p>JWT全称Json Web Token。是跨域身份认证的一种方式。JWT的声明一般是用来身份提供者与服务提供者之间传递被认证的用户身份信息。便于从服务器获取到资源。它也可以用来记录用户信息。与token不同的是，它不用查询数据库，只要在服务端使用密钥完成校验就行。</p>
+<h1 id="跨域身份验证问题的解决">跨域身份验证问题的解决</h1>
+<p>跨域身份验证问题一般有两种常用方式，一是通过session验证，二是通过JWT验证。</p>
+<h2 id="session实现方式">session实现方式</h2>
+<ol>
+<li>浏览器发起请求登陆，向服务器发送用户名和密码</li>
+<li>服务端验证身份，生成身份验证信息（用户角色、登录时间等），存储在服务端 的 session 中</li>
+<li>服务器向用户返回 session_id，session_id 信息都会写入到用户的 Cookie中，这里一般考虑到安全问题，会设置成http-only防止被恶意的js调用。</li>
+<li>用户的每个后续请求都将通过在 Cookie 中取出 session_id 传给服务器</li>
+<li>服务器收到 session_id 并对比之前保存的数据，确认用户的身份</li>
+<li>服务器返回用户请求的内容</li>
+</ol>
+<h2 id="jwt的实现方式">Jwt的实现方式</h2>
+<p>以下是在网上找到的流程图：</p>
+<p><img src="......%5Cstatic%5Cpics%5Cjwt1.png" alt="在这里插入图片描述"></p>
+<ol>
+<li>浏览器发起请求登陆</li>
+<li>服务端验证身份，根据算法，将用户标识符打包生成 JWT, 并且返回给浏览器，这里一般存放到localStorage中</li>
+<li>浏览器发起请求获取用户资料，把刚刚拿到的 JWT 一起发送给服务器</li>
+<li>服务器发现数据中有 JWT，进行验证</li>
+<li>服务器返回用户请求的内容</li>
+</ol>
+<h2 id="两种方式的比较">两种方式的比较</h2>
+<ol>
+<li>如果前端使用ajax调用，由于cookie被设置为http-only所以无法获得session_id进行验证</li>
+<li>session 存储在服务端占用服务器资源，而 JWT 存储在客户端</li>
+<li>session 存储在 Cookie 中，存在伪造跨站请求伪造攻击的风险，而 JWT 则通过参数传递</li>
+<li>session 只存在一台服务器上，那么下次请求就必须请求这台服务器，不利于分布式应用</li>
+<li>存储在客户端的 JWT 比存储在服务端的 session 更具有扩展性</li>
+</ol>
+<h1 id="jwt的构成">JWT的构成</h1>
+<p>jwt是由三部分组成，分别是header，payload和signature这三部分。</p>
+<p><strong>Header</strong>
+jwt的头部承载着两部分信息。一是声明类型，这里是jwt，二是声明加密的算法，通常就使用HMAC和SHA256，例如这样的一个完整的JSON。</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>     &#39;typ&#39;: &#39;jwt&#39;,
+</span></span><span style="display:flex;"><span>     &#39;alg&#39;: &#39;HS256&#39;
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>对它的头部进行base64加密。就构成了jwt的第一部分:</p>
+<p><code>ewogICAgICd0eXAnOiAnand0JywKICAgICAnYWxnJzogJ0hTMjU2Jwp9</code></p>
+<p><strong>Payload</strong></p>
+<p>这一部分就是存放有效信息的地方。这些有效信息包含三个部分。</p>
+<p>标准注册的声明，公共的声明和私有的声明。标准注册的声明并不强制使用。</p>
+<p>标准注册的声明有</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">6
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">7
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>iss: jwt签发者
+</span></span><span style="display:flex;"><span>sub: jwt所面向的用户
+</span></span><span style="display:flex;"><span>aud: 接收jwt的一方
+</span></span><span style="display:flex;"><span>exp: jwt的过期时间，这个过期时间必须要大于签发时间
+</span></span><span style="display:flex;"><span>nbf: 定义在什么时间之前，该jwt都是不可用的.
+</span></span><span style="display:flex;"><span>iat: jwt的签发时间
+</span></span><span style="display:flex;"><span>jti: jwt的唯一身份标识，主要用来作为一次性token,从而回避重放攻击。
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>公共的声明是可以添加任何信息的，一般添加用户的相关信息或者其他业务需要的必要信息。这一部分客户端是可见的，所以<strong>不建议存放敏感信息</strong>。</p>
+<p>私有声明是提供者和消费者所共同定义的声明，不建议存放敏感信息。用base64加密等于明文。</p>
+<p>举例一个payload:</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>  &#34;sub&#34;: &#34;1234567890&#34;,
+</span></span><span style="display:flex;"><span>  &#34;name&#34;: &#34;XiLitter&#34;,
+</span></span><span style="display:flex;"><span>  &#34;admin&#34;: true
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>同样对payload这一部分进行base64加密:</p>
+<p><code>ewogICJzdWIiOiAiMTIzNDU2Nzg5MCIsCiAgIm5hbWUiOiAiWGlMaXR0ZXIiLAogICJhZG1pbiI6IHRydWUKfQ==</code></p>
+<p>还是那句话，payload这一部分只进行base64加密，里面的信息对于任何人都是可见的。所以尽量别把敏感信息放在这个部分。</p>
+<p><strong>signature</strong></p>
+<p>这一部分是对前两部分的签名，防止数据被纂改。</p>
+<p>首先是需要这个密钥的，这个密钥只有服务器知道，不会泄露给用户。然后就使用header头里的签名算法生成签名。相关公式：</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>HMACSHA256(
+</span></span><span style="display:flex;"><span>  base64UrlEncode(header) + &#34;.&#34; +
+</span></span><span style="display:flex;"><span>  base64UrlEncode(payload),
+</span></span><span style="display:flex;"><span>  secret)
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>默认采用的签名算法是HMAC SHA256.产生签名后，这三部分就用点(.)将这三部分连接起来，就组成了完整的jwt。这里的secret是服务器端的密钥，只有服务器端知道（如果泄露则会毫无安全性)。</p>
+<p>实际的jwt(在百度图片上找到的炫酷图片）:</p>
+<p><img src="......%5Cstatic%5Cpics%5Cjwt2.jpg" alt="在这里插入图片描述"></p>
+<h1 id="jwt的安全问题">JWT的安全问题</h1>
+<p><strong>敏感信息泄露</strong></p>
+<p>上面也说了，jwt的payload是任何人可见的，所以如果这一部分添加有用户的敏感性息，那就会造成敏感信息泄露，（比如账号密码）很好理解。</p>
+<p><strong>将加密算法修改为none</strong></p>
+<p>其实jwt是支持将算法修改为none的，这样的话，jwt中的签名就会被清空，所以就没有什么安全性可言了。任何token都是可以的，最初由这样的设定是为了方便调试。所以一定要在真实环境中关闭该功能，不然的话，攻击者就可以伪造任意的token来进行任意用户登录网站。</p>
+<p><strong>密钥混合攻击</strong></p>
+<p>那就要用到JWT两种最常见的算法。HMAC和RSA。HMAC是对称加密算法，使用同一密钥对token进行签名和认证。而RSA是非对称加密算法，它是需要两个密钥，用私钥对token进行加密生成jwt，再用公钥进行认证。基础知识了解，再说说攻击思路：我们可以伪造解密的算法，由RS256改为HS256，那么被用于HS256解密的密钥就变成了RS256的公钥。为什么要这么做？HS256加密解密都用一个密钥，所以安全起见，服务端是不会让你知道HS356的密钥的，而RS256是由服务端用私钥加密，再用公钥解密，所以私钥用户是得不到的，而公钥无所谓得到，因为没有私钥加密，就伪造不了token。一旦我们更改解密算法，我们是可以获取到RS256的公钥，又因为改算法为HS256，它会将RS256的公钥作为密钥，那么不言而喻，我们可以伪造任意的token了。这种攻击的预防也很容易，<strong>禁止同时使用这两种算法就行</strong>。</p>
+<h1 id="django中的jwt实现">Django中的JWT实现</h1>
+<p>django中的simple-jwt的实现是有两个token的，分别是access token和refresh token。在验证权限的时候，会验证access token，如果过期，会通过refresh token申请新的access token，如果refresh token也过期，则需要重新登录。这里的access token和refresh token的时长可以在django的settings文件中配置，一般access token的有效期会较短，refresh token有效期会较长。</p>
+<p>这样实现的原因在于，access token会通过get请求频繁地暴露出来，有效时间过长则安全性较低，需要短时间内刷新；refresh token请求access token的过程使用的是post请求，较为安全。</p>
+<h2 id="配置安装">配置安装</h2>
+<p>因为django中jwt被集成到了restframework中，所以需要一同部署</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>pip install djangorestframework
+</span></span><span style="display:flex;"><span>pip install pyjwt  # 解码使用
+</span></span><span style="display:flex;"><span>pip install djangorestframework-simplejwt  # 最终版，另一个djangorestframework-jwt不维护了
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>在每次安装django相关的插件，都需要将其添加到<code>settings.py</code>文件中<code>INSTALLED_APPS</code>中：</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">6
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>INSTALLED_APPS = [
+</span></span><span style="display:flex;"><span>    ...
+</span></span><span style="display:flex;"><span>    &#39;rest_framework&#39;,
+</span></span><span style="display:flex;"><span>    &#39;rest_framework_simplejwt&#39;,
+</span></span><span style="display:flex;"><span>    ...
+</span></span><span style="display:flex;"><span>]
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>将默认的验证方式改为jwt：</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>REST_FRAMEWORK = {
+</span></span><span style="display:flex;"><span>    &#39;DEFAULT_AUTHENTICATION_CLASSES&#39;: (
+</span></span><span style="display:flex;"><span>        &#39;rest_framework_simplejwt.authentication.JWTAuthentication&#39;,
+</span></span><span style="display:flex;"><span>    )
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>增加jwt的配置文件(在simple-jwt官网有参数详细信息：https://django-rest-framework-simplejwt.readthedocs.io/en/latest/）：</p>
 <div class="highlight"><div style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
 <table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
 <pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
@@ -243,66 +413,54 @@
 </span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">23
 </span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">24
 </span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">25
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">26
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">27
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">28
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">29
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">30
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">31
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">32
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">33
 </span></code></pre></td>
 <td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>`-- webapp
-</span></span><span style="display:flex;"><span>    |-- game
-</span></span><span style="display:flex;"><span>    |   |-- __init__.py
-</span></span><span style="display:flex;"><span>    |   |-- admin.py
-</span></span><span style="display:flex;"><span>    |   |-- apps.py
-</span></span><span style="display:flex;"><span>    |   |-- migrations
-</span></span><span style="display:flex;"><span>    |   |   `-- __init__.py
-</span></span><span style="display:flex;"><span>    |   |-- models
-</span></span><span style="display:flex;"><span>    |   |   `-- __init__.py
-</span></span><span style="display:flex;"><span>    |   |-- static
-</span></span><span style="display:flex;"><span>    |   |-- tests.py
-</span></span><span style="display:flex;"><span>    |   |-- urls
-</span></span><span style="display:flex;"><span>    |   |   `-- __init__.py
-</span></span><span style="display:flex;"><span>    |   `-- views
-</span></span><span style="display:flex;"><span>    |       `-- __init__.py
-</span></span><span style="display:flex;"><span>    |-- manage.py
-</span></span><span style="display:flex;"><span>    `-- webapp
-</span></span><span style="display:flex;"><span>        |-- __init__.py
-</span></span><span style="display:flex;"><span>        |-- __pycache__
-</span></span><span style="display:flex;"><span>        |   |-- __init__.cpython-38.pyc
-</span></span><span style="display:flex;"><span>        |   `-- settings.cpython-38.pyc
-</span></span><span style="display:flex;"><span>        |-- asgi.py
-</span></span><span style="display:flex;"><span>        |-- settings.py
-</span></span><span style="display:flex;"><span>        |-- urls.py
-</span></span><span style="display:flex;"><span>        `-- wsgi.py
-</span></span></code></pre></td></tr></table>
-</div>
-</div><h2 id="2全局配置的修改">2、全局配置的修改</h2>
-<h3 id="1-时区调整改为国内时区">1） 时区调整，改为国内时区</h3>
-<div class="highlight"><div style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
-<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
-</span></code></pre></td>
-<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>TIME_ZONE = &#39;Asia/Shanghai&#39;
-</span></span></code></pre></td></tr></table>
-</div>
-</div><h3 id="2将创建的game加入到settings中">2）将创建的<code>game</code>加入到settings中</h3>
-<p>在 <code>apps.py</code>的配置中添加<code>game</code></p>
-<div class="highlight"><div style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
-<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">6
-</span></code></pre></td>
-<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>from django.apps import AppConfig
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>from datetime import timedelta
 </span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>SIMPLE_JWT = {
+</span></span><span style="display:flex;"><span>    &#39;ACCESS_TOKEN_LIFETIME&#39;: timedelta(minutes=5),
+</span></span><span style="display:flex;"><span>    &#39;REFRESH_TOKEN_LIFETIME&#39;: timedelta(days=14),
+</span></span><span style="display:flex;"><span>    &#39;ROTATE_REFRESH_TOKENS&#39;: False,
+</span></span><span style="display:flex;"><span>    &#39;BLACKLIST_AFTER_ROTATION&#39;: False,  # 黑名单，可以实现显式退出jwt
+</span></span><span style="display:flex;"><span>    &#39;UPDATE_LAST_LOGIN&#39;: False,
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>class GameConfig(AppConfig):
-</span></span><span style="display:flex;"><span>    default_auto_field = &#39;django.db.models.BigAutoField&#39;
-</span></span><span style="display:flex;"><span>    name = &#39;game&#39;  # 加入game
+</span></span><span style="display:flex;"><span>    &#39;ALGORITHM&#39;: &#39;HS256&#39;,
+</span></span><span style="display:flex;"><span>    &#39;SIGNING_KEY&#39;: &#39;fasdlkfjalsd&#39;, // 这个就是上文介绍的服务器端的secret,自定义随机值并定期更换
+</span></span><span style="display:flex;"><span>    &#39;VERIFYING_KEY&#39;: None,
+</span></span><span style="display:flex;"><span>    &#39;AUDIENCE&#39;: None,
+</span></span><span style="display:flex;"><span>    &#39;ISSUER&#39;: None,
+</span></span><span style="display:flex;"><span>    &#39;JWK_URL&#39;: None,
+</span></span><span style="display:flex;"><span>    &#39;LEEWAY&#39;: 0,
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    &#39;AUTH_HEADER_TYPES&#39;: (&#39;Bearer&#39;,),
+</span></span><span style="display:flex;"><span>    &#39;AUTH_HEADER_NAME&#39;: &#39;HTTP_AUTHORIZATION&#39;,
+</span></span><span style="display:flex;"><span>    &#39;USER_ID_FIELD&#39;: &#39;id&#39;,
+</span></span><span style="display:flex;"><span>    &#39;USER_ID_CLAIM&#39;: &#39;user_id&#39;,
+</span></span><span style="display:flex;"><span>    &#39;USER_AUTHENTICATION_RULE&#39;: &#39;rest_framework_simplejwt.authentication.default_user_authentication_rule&#39;,
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    &#39;AUTH_TOKEN_CLASSES&#39;: (&#39;rest_framework_simplejwt.tokens.AccessToken&#39;,),
+</span></span><span style="display:flex;"><span>    &#39;TOKEN_TYPE_CLAIM&#39;: &#39;token_type&#39;,
+</span></span><span style="display:flex;"><span>    &#39;TOKEN_USER_CLASS&#39;: &#39;rest_framework_simplejwt.models.TokenUser&#39;,
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    &#39;JTI_CLAIM&#39;: &#39;jti&#39;,
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    &#39;SLIDING_TOKEN_REFRESH_EXP_CLAIM&#39;: &#39;refresh_exp&#39;,
+</span></span><span style="display:flex;"><span>    &#39;SLIDING_TOKEN_LIFETIME&#39;: timedelta(minutes=5),
+</span></span><span style="display:flex;"><span>    &#39;SLIDING_TOKEN_REFRESH_LIFETIME&#39;: timedelta(days=1),
+</span></span><span style="display:flex;"><span>}
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>在<code>settings.py</code>中修改相关配置</p>
+</div><p>**注意：**安装完app，要<code>python3 manage.py collectstatic</code>将安装的app同步过来。</p>
+<h2 id="添加路由">添加路由</h2>
+<p>将获取acess和refresh的token的路由添加进来：</p>
 <div class="highlight"><div style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
 <table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
 <pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
@@ -316,92 +474,28 @@
 </span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
 </span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
 </span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
 </span></code></pre></td>
 <td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span># Application definition
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>from rest_framework_simplejwt.views import (
+</span></span><span style="display:flex;"><span>    TokenObtainPairView,
+</span></span><span style="display:flex;"><span>    TokenRefreshView,
+</span></span><span style="display:flex;"><span>)
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>INSTALLED_APPS = [
-</span></span><span style="display:flex;"><span>    &#39;game.apps.GameConfig&#39;,  # 加入game对应的路由
-</span></span><span style="display:flex;"><span>    &#39;django.contrib.admin&#39;,
-</span></span><span style="display:flex;"><span>    &#39;django.contrib.auth&#39;,
-</span></span><span style="display:flex;"><span>    &#39;django.contrib.contenttypes&#39;,
-</span></span><span style="display:flex;"><span>    &#39;django.contrib.sessions&#39;,
-</span></span><span style="display:flex;"><span>    &#39;django.contrib.messages&#39;,
-</span></span><span style="display:flex;"><span>    &#39;django.contrib.staticfiles&#39;,
+</span></span><span style="display:flex;"><span>urlpatterns = [
+</span></span><span style="display:flex;"><span>    ...
+</span></span><span style="display:flex;"><span>    # 类的方法需要使用as_view()进行转换
+</span></span><span style="display:flex;"><span>    path(&#39;token/&#39;, TokenObtainPairView.as_view(), name=&#39;token_obtain_pair&#39;),
+</span></span><span style="display:flex;"><span>    path(&#39;token/refresh/&#39;, TokenRefreshView.as_view(), name=&#39;token_refresh&#39;),
+</span></span><span style="display:flex;"><span>    ...
 </span></span><span style="display:flex;"><span>]
 </span></span></code></pre></td></tr></table>
 </div>
-</div><h3 id="3静态文件存储位置">3）静态文件存储位置</h3>
-<div class="highlight"><div style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
-<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5
-</span></code></pre></td>
-<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span># Static files (CSS, JavaScript, Images)
-</span></span><span style="display:flex;"><span># https://docs.djangoproject.com/en/3.2/howto/static-files/
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>STATIC_ROOT = os.path.join(BASE_DIR, &#39;static&#39;) 
-</span></span><span style="display:flex;"><span>STATIC_URL = &#39;/static/&#39;  
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>其中<code>BASE_DIR</code>通过配置文件可知为最上层文件1<code>webapp</code>位置，在静态文件中可以存储<code>js</code>，<code>css</code>和图片等静态文件。分别创建<code>js</code>，<code>css</code>和<code>images</code>文件夹存储相应文件。并且整个游戏有菜单界面，游戏界面和设置界面三个部分，所以在每个对应的下面新建相应文件夹。</p>
-<h3 id="4数据库配置">4）数据库配置</h3>
-<div class="highlight"><div style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
-<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">6
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">7
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">8
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">9
-</span></code></pre></td>
-<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span># Database
-</span></span><span style="display:flex;"><span># https://docs.djangoproject.com/en/3.2/ref/settings/#databases
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>DATABASES = {
-</span></span><span style="display:flex;"><span>    &#39;default&#39;: {
-</span></span><span style="display:flex;"><span>        &#39;ENGINE&#39;: &#39;django.db.backends.sqlite3&#39;,
-</span></span><span style="display:flex;"><span>        &#39;NAME&#39;: BASE_DIR / &#39;db.sqlite3&#39;,
-</span></span><span style="display:flex;"><span>    }
-</span></span><span style="display:flex;"><span>}
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>当前采用django默认的sqlite3数据库，因为已经能够满足当前需求，后期可以考虑迁移到mysql数据库上。</p>
-<h2 id="3js文件的打包">3、js文件的打包</h2>
-<p>一个页面加载多个<code>js</code>文件的时候，加载速度会变慢。如果js文件过多会延长用户的等待时间，又消耗大量cpu，放在页面前面会影响页面渲染，造成用户体验差，因此需要将多个<code>js</code>文件合成一个，尽量减少客户端与服务端的交互。</p>
-<p>为了便于调试，先手动实现一个<code>js</code>文件压缩的脚本命令，以后会改用已有的<code>js</code>压缩工具压缩，shell命令如下：</p>
-<div class="highlight"><div style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
-<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">6
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">7
-</span></code></pre></td>
-<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#ff79c6">#! /bin/bash
-</span></span></span><span style="display:flex;"><span><span style="color:#ff79c6"></span>
-</span></span><span style="display:flex;"><span><span style="color:#8be9fd;font-style:italic">JS_PATH</span><span style="color:#ff79c6">=</span>/home/aria/webapp/game/static/js/
-</span></span><span style="display:flex;"><span><span style="color:#8be9fd;font-style:italic">JS_PATH_DIST</span><span style="color:#ff79c6">=</span><span style="color:#f1fa8c">${</span><span style="color:#8be9fd;font-style:italic">JS_PATH</span><span style="color:#f1fa8c">}</span>dist/
-</span></span><span style="display:flex;"><span><span style="color:#8be9fd;font-style:italic">JS_PATH_SRC</span><span style="color:#ff79c6">=</span><span style="color:#f1fa8c">${</span><span style="color:#8be9fd;font-style:italic">JS_PATH</span><span style="color:#f1fa8c">}</span>src/
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>find <span style="color:#8be9fd;font-style:italic">$JS_PATH_SRC</span> -type f -name <span style="color:#f1fa8c">&#39;*.js&#39;</span> | sort | xargs cat &gt; <span style="color:#f1fa8c">${</span><span style="color:#8be9fd;font-style:italic">JS_PATH_DIST</span><span style="color:#f1fa8c">}</span>game.js
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>并且将脚本文件统一存放到<code>webapp/scripts</code>目录下，并通过<code>chmod +x compress_game_js.sh</code>给其添加执行权限。</p>
-<h1 id="三实现基础的菜单界面">三、实现基础的菜单界面</h1>
-<h2 id="1html文件">1、html文件</h2>
-<p>在<code>templates/multiends/web.html</code>中：</p>
+</div><p>然后就能通过路由访问到token的页面，这里是restframework包中实现好的页面。</p>
+<p>在jwt官网：https://jwt.io/就能解码内容，进行验证查看结果。</p>
+<h2 id="rest框架">REST框架</h2>
+<p>###后端部分</p>
+<p>官方给出的例子：</p>
 <div class="highlight"><div style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
 <table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
 <pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
@@ -421,30 +515,84 @@
 </span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
 </span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
 </span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
 </span></code></pre></td>
 <td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>{% load static %}
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>from rest_framework.views import APIView
+</span></span><span style="display:flex;"><span>from rest_framework.response import Response
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>&lt;head&gt;
-</span></span><span style="display:flex;"><span>    &lt;link rel=&#34;stylesheet&#34; href=&#34;https://cdn.acwing.com/static/jquery-ui-dist/jquery-ui.min.css&#34;&gt;
-</span></span><span style="display:flex;"><span>    &lt;script src=&#34;https://cdn.acwing.com/static/jquery/js/jquery-3.3.1.min.js&#34;&gt;&lt;/script&gt;
-</span></span><span style="display:flex;"><span>    &lt;link rel=&#34;stylesheet&#34; href=&#34;{% static &#39;css/game.css&#39; %}&#34;&gt;
-</span></span><span style="display:flex;"><span>    &lt;script src=&#34;{% static &#39;js/dist/game.js&#39; %}&#34;&gt;&lt;/script&gt;
-</span></span><span style="display:flex;"><span>&lt;/head&gt;
+</span></span><span style="display:flex;"><span>class SnippetDetail(APIView):
+</span></span><span style="display:flex;"><span>    def get(self, request):  # 查找
+</span></span><span style="display:flex;"><span>        ...
+</span></span><span style="display:flex;"><span>        return Response(...)
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>&lt;body style=&#34;margin: 0&#34;&gt;
-</span></span><span style="display:flex;"><span>    &lt;div id=&#34;web_game_01&#34;&gt;&lt;/div&gt;
-</span></span><span style="display:flex;"><span>    &lt;script&gt;
-</span></span><span style="display:flex;"><span>        $(document).ready(function(){
-</span></span><span style="display:flex;"><span>            let web_game = new WebGame(&#34;web_game_01&#34;);  # 在WebGame中渲染界面
-</span></span><span style="display:flex;"><span>        });
-</span></span><span style="display:flex;"><span>    &lt;/script&gt;
-</span></span><span style="display:flex;"><span>&lt;/body&gt;
+</span></span><span style="display:flex;"><span>    def post(self, request):  # 创建
+</span></span><span style="display:flex;"><span>        ...
+</span></span><span style="display:flex;"><span>        return Response(...)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    def put(self, request, pk):  # 修改
+</span></span><span style="display:flex;"><span>        ...
+</span></span><span style="display:flex;"><span>        return Response(...)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    def delete(self, request, pk):  # 删除
+</span></span><span style="display:flex;"><span>        ...
+</span></span><span style="display:flex;"><span>        return Response(...)
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>这里用了 Django 语法糖 <code>{% load static %}</code> 、 <code>{% static 'css/game.css' %}</code> 、 <code>{% static 'js/dist/game.js' %}</code> 加载静态文件
-未来的界面都是在 <code>js</code> 中 <code>WebGame</code> 渲染的，通过jquery实现前后端分离，这样就在前端页面渲染，不会给后端服务器压力。</p>
-<p>但是这里采用模块方式导入更规范，否则<code>js</code>文件会作为全局变量，需要再在<code>webgame</code>中将类<code>export</code>出来即可使用。</p>
+</div><p>根据格式修改自己的代码：</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>from rest_framework.views import APIView
+</span></span><span style="display:flex;"><span>from rest_framework.response import Response
+</span></span><span style="display:flex;"><span>from rest_framework.permissions import IsAuthenticated
+</span></span><span style="display:flex;"><span>from game.models.player.player import Player
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>class InfoView(APIView):
+</span></span><span style="display:flex;"><span>    permission_classes = ([IsAuthenticated])  # 验证权限  
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    def get(self, request):
+</span></span><span style="display:flex;"><span>        user = request.user
+</span></span><span style="display:flex;"><span>        player = Player.objects.get(user=user)
+</span></span><span style="display:flex;"><span>        return Response({
+</span></span><span style="display:flex;"><span>            &#39;result&#39;: &#34;success&#34;,
+</span></span><span style="display:flex;"><span>            &#39;username&#39;: user.username,
+</span></span><span style="display:flex;"><span>            &#39;photo&#39;: player.photo,
+</span></span><span style="display:flex;"><span>        })
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p><strong>手动获取jwt</strong></p>
+<pre><code>from rest_framework_simplejwt.tokens import RefreshToken
+
+def get_tokens_for_user(user):
+    refresh = RefreshToken.for_user(user)
+
+return {
+    'refresh': str(refresh),
+    'access': str(refresh.access_token),
+}
+</code></pre>
+<h3 id="前端部分">前端部分</h3>
+<p>前端的一般会存放到localStoage中，按照前面介绍的逻辑进行验证，登录和刷新。</p>
+<p>这里先实现只存放到内存中，设置周期函数，定期刷新access token。</p>
 <div class="highlight"><div style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
 <table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
 <pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
@@ -464,62 +612,42 @@
 </span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
 </span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
 </span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">23
 </span></code></pre></td>
 <td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>{% load static %}
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>&lt;head&gt;
-</span></span><span style="display:flex;"><span>    &lt;link rel=&#34;stylesheet&#34; href=&#34;https://cdn.acwing.com/static/jquery-ui-dist/jquery-ui.min.css&#34;&gt;
-</span></span><span style="display:flex;"><span>    &lt;script src=&#34;https://cdn.acwing.com/static/jquery/js/jquery-3.3.1.min.js&#34;&gt;&lt;/script&gt;
-</span></span><span style="display:flex;"><span>    &lt;link rel=&#34;stylesheet&#34; href=&#34;{% static &#39;css/game.css&#39; %}&#34;&gt;
-</span></span><span style="display:flex;"><span>&lt;/head&gt;
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>&lt;body style=&#34;margin: 0&#34;&gt;
-</span></span><span style="display:flex;"><span>    &lt;div id=&#34;web_game_01&#34;&gt;&lt;/div&gt;
-</span></span><span style="display:flex;"><span>    &lt;script type=&#34;module&#34;&gt;
-</span></span><span style="display:flex;"><span>        import { WebGame } from &#34;{% static &#39;js/dist/game.js&#39; %}&#34;;
-</span></span><span style="display:flex;"><span>        $(document).ready(function () {
-</span></span><span style="display:flex;"><span>            let web_game = new WebGame(&#34;web_game_01&#34;);
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span> getinfo() {
+</span></span><span style="display:flex;"><span>        $.ajax({
+</span></span><span style="display:flex;"><span>            url: &#34;https://bloodborne.shop/settings/getinfo/&#34;,
+</span></span><span style="display:flex;"><span>            type: &#34;get&#34;,
+</span></span><span style="display:flex;"><span>            data: {
+</span></span><span style="display:flex;"><span>                platform: this.platform,
+</span></span><span style="display:flex;"><span>            },
+</span></span><span style="display:flex;"><span>            headers: {  # 配合后端的permission_classes验证需要加这个，字段也是在settings中设定的
+</span></span><span style="display:flex;"><span>                &#34;Authorization&#34;: &#34;Bearer &#34; + this.root.access,
+</span></span><span style="display:flex;"><span>            },
+</span></span><span style="display:flex;"><span>            success: resp =&gt; {
+</span></span><span style="display:flex;"><span>                console.log(resp);
+</span></span><span style="display:flex;"><span>                if (resp.result === &#34;success&#34;) {
+</span></span><span style="display:flex;"><span>                    this.username = resp.username;
+</span></span><span style="display:flex;"><span>                    this.photo = resp.photo;
+</span></span><span style="display:flex;"><span>                    this.hide();
+</span></span><span style="display:flex;"><span>                    this.root.menu.show();
+</span></span><span style="display:flex;"><span>                } else {
+</span></span><span style="display:flex;"><span>                    this.login();
+</span></span><span style="display:flex;"><span>                }
+</span></span><span style="display:flex;"><span>            }
 </span></span><span style="display:flex;"><span>        });
-</span></span><span style="display:flex;"><span>    &lt;/script&gt;
-</span></span><span style="display:flex;"><span>&lt;/body&gt;
+</span></span><span style="display:flex;"><span>    }
 </span></span></code></pre></td></tr></table>
 </div>
-</div><h2 id="2-js文件与css文件编写">2、 js文件与css文件编写</h2>
-<p>在<code>static/js/src</code>中新建<code>zbase.js</code>文件（便于shell按照字典序打包，会放到最后打包）：</p>
-<div class="highlight"><div style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
-<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
-</span></code></pre></td>
-<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>class WebGame {
-</span></span><span style="display:flex;"><span>    constructor(id) {
-</span></span><span style="display:flex;"><span>        this.id = id;
-</span></span><span style="display:flex;"><span>        this.$web_game = $(&#39;#&#39; + id);
-</span></span><span style="display:flex;"><span>        this.menu = new WebGameMenu(this);  # 菜单界面
-</span></span><span style="display:flex;"><span>        this.playground = new WebGamePlayground(this);  # 游戏界面
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>        this.start();
-</span></span><span style="display:flex;"><span>    }
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>    start() {
-</span></span><span style="display:flex;"><span>    }
-</span></span><span style="display:flex;"><span>}
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>这里的WebGame对应了html文件中的内容，然后开始初步搭建我们的菜单界面和游戏界面，以下是菜单界面编写:</p>
+</div><h3 id="websocket端的验证">WebSocket端的验证</h3>
+<p>将jwt集成到django_channels中，</p>
+<p>首先，创建文件<code>channelsmiddleware.py</code></p>
 <div class="highlight"><div style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
 <table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
 <pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
@@ -576,142 +704,71 @@
 </span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">52
 </span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">53
 </span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">54
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">55
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">56
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">57
 </span></code></pre></td>
 <td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>class WebGameMenu {
-</span></span><span style="display:flex;"><span>    constructor(root) {
-</span></span><span style="display:flex;"><span>        this.root = root;
-</span></span><span style="display:flex;"><span>        this.$menu = $(`
-</span></span><span style="display:flex;"><span>&lt;div class=&#34;ac-game-menu&#34;&gt;
-</span></span><span style="display:flex;"><span>    &lt;div class=&#34;ac-game-menu-field&#34;&gt;
-</span></span><span style="display:flex;"><span>        &lt;div class=&#34;ac-game-menu-field-item ac-game-menu-field-item-single-mode&#34;&gt;
-</span></span><span style="display:flex;"><span>            单人模式
-</span></span><span style="display:flex;"><span>        &lt;/div&gt;
-</span></span><span style="display:flex;"><span>        &lt;br&gt;
-</span></span><span style="display:flex;"><span>        &lt;div class=&#34;ac-game-menu-field-item ac-game-menu-field-item-multi-mode&#34;&gt;
-</span></span><span style="display:flex;"><span>            多人模式
-</span></span><span style="display:flex;"><span>        &lt;/div&gt;
-</span></span><span style="display:flex;"><span>        &lt;br&gt;
-</span></span><span style="display:flex;"><span>        &lt;div class=&#34;ac-game-menu-field-item ac-game-menu-field-item-settings&#34;&gt;
-</span></span><span style="display:flex;"><span>            设置
-</span></span><span style="display:flex;"><span>        &lt;/div&gt;
-</span></span><span style="display:flex;"><span>    &lt;/div&gt;
-</span></span><span style="display:flex;"><span>&lt;/div&gt;
-</span></span><span style="display:flex;"><span>`);
-</span></span><span style="display:flex;"><span>        this.root.$web_game.append(this.$menu);
-</span></span><span style="display:flex;"><span>        this.$single_mode = this.$menu.find(&#39;.ac-game-menu-field-item-single-mode&#39;);
-</span></span><span style="display:flex;"><span>        this.$multi_mode = this.$menu.find(&#39;.ac-game-menu-field-item-multi-mode&#39;);
-</span></span><span style="display:flex;"><span>        this.$settings = this.$menu.find(&#39;.ac-game-menu-field-item-settings&#39;);
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>&#34;&#34;&#34;General web socket middlewares
+</span></span><span style="display:flex;"><span>&#34;&#34;&#34;
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>        this.start();
-</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>from channels.db import database_sync_to_async
+</span></span><span style="display:flex;"><span>from django.contrib.auth import get_user_model
+</span></span><span style="display:flex;"><span>from django.contrib.auth.models import AnonymousUser
+</span></span><span style="display:flex;"><span>from rest_framework_simplejwt.exceptions import InvalidToken, TokenError
+</span></span><span style="display:flex;"><span>from rest_framework_simplejwt.tokens import UntypedToken
+</span></span><span style="display:flex;"><span>from rest_framework_simplejwt.authentication import JWTTokenUserAuthentication
+</span></span><span style="display:flex;"><span>from channels.middleware import BaseMiddleware
+</span></span><span style="display:flex;"><span>from channels.auth import AuthMiddlewareStack
+</span></span><span style="display:flex;"><span>from django.db import close_old_connections
+</span></span><span style="display:flex;"><span>from urllib.parse import parse_qs
+</span></span><span style="display:flex;"><span>from jwt import decode as jwt_decode
+</span></span><span style="display:flex;"><span>from django.conf import settings
+</span></span><span style="display:flex;"><span>@database_sync_to_async
+</span></span><span style="display:flex;"><span>def get_user(validated_token):
+</span></span><span style="display:flex;"><span>    try:
+</span></span><span style="display:flex;"><span>        user = get_user_model().objects.get(id=validated_token[&#34;user_id&#34;])
+</span></span><span style="display:flex;"><span>        # return get_user_model().objects.get(id=toke_id)
+</span></span><span style="display:flex;"><span>        return user
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>    start() {
-</span></span><span style="display:flex;"><span>        this.add_listening_events();
-</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    except:
+</span></span><span style="display:flex;"><span>        return AnonymousUser()
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>    add_listening_events() {
-</span></span><span style="display:flex;"><span>        let outer = this;
-</span></span><span style="display:flex;"><span>        this.$single_mode.click(function(){
-</span></span><span style="display:flex;"><span>            outer.hide();
-</span></span><span style="display:flex;"><span>            outer.root.playground.show();
-</span></span><span style="display:flex;"><span>        });
-</span></span><span style="display:flex;"><span>        this.$multi_mode.click(function(){
-</span></span><span style="display:flex;"><span>            console.log(&#34;click multi mode&#34;);
-</span></span><span style="display:flex;"><span>        });
-</span></span><span style="display:flex;"><span>        this.$settings.click(function(){
-</span></span><span style="display:flex;"><span>            console.log(&#34;click settings&#34;);
-</span></span><span style="display:flex;"><span>        });
-</span></span><span style="display:flex;"><span>    }
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>    show() {  // 显示menu界面
-</span></span><span style="display:flex;"><span>        this.$menu.show();
-</span></span><span style="display:flex;"><span>    }
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>    hide() {  // 关闭menu界面
-</span></span><span style="display:flex;"><span>        this.$menu.hide();
-</span></span><span style="display:flex;"><span>    }
-</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>class JwtAuthMiddleware(BaseMiddleware):
+</span></span><span style="display:flex;"><span>    def __init__(self, inner):
+</span></span><span style="display:flex;"><span>        self.inner = inner
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    async def __call__(self, scope, receive, send):
+</span></span><span style="display:flex;"><span>       # Close old database connections to prevent usage of timed out connections
+</span></span><span style="display:flex;"><span>        close_old_connections()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        # Try to authenticate the user
+</span></span><span style="display:flex;"><span>        try:
+</span></span><span style="display:flex;"><span>            # Get the token
+</span></span><span style="display:flex;"><span>            token = parse_qs(scope[&#34;query_string&#34;].decode(&#34;utf8&#34;))[&#34;token&#34;][0]
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>            # This will automatically validate the token and raise an error if token is invalid
+</span></span><span style="display:flex;"><span>            UntypedToken(token)
+</span></span><span style="display:flex;"><span>        except:
+</span></span><span style="display:flex;"><span>            # Token is invalid
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>            scope[&#34;user&#34;] = AnonymousUser()
+</span></span><span style="display:flex;"><span>        else:
+</span></span><span style="display:flex;"><span>            #  Then token is valid, decode it
+</span></span><span style="display:flex;"><span>            decoded_data = jwt_decode(token, settings.SIMPLE_JWT[&#34;SIGNING_KEY&#34;], algorithms=[&#34;HS256&#34;])
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>            # Get the user using ID
+</span></span><span style="display:flex;"><span>            scope[&#34;user&#34;] = await get_user(validated_token=decoded_data)
+</span></span><span style="display:flex;"><span>        return await super().__call__(scope, receive, send)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>def JwtAuthMiddlewareStack(inner):
+</span></span><span style="display:flex;"><span>    return JwtAuthMiddleware(AuthMiddlewareStack(inner))
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p><code>js</code>语言虽然不太熟，但是基本<code>api</code>学会就能上手使用，为了便于区分，用<code>$</code>符号代表当前文件下的变量。<code>constructor</code>就是默认的构造函数；<code>show()</code>与<code>hide()</code>是对应的页面<code>api</code>；每个<code>div</code>可以拥有多个变量名，便于后序渲染；<code>find</code>可以通过<code>div</code>名找到对应标签；可以利用<code>console.log()</code>函数在浏览器页面<code>F12</code>进行调试。</p>
-<p>另外，<code>div</code>命名为了防止冲突，可以让名字长一些，可以起多个名字，并且通过同一个<code>div</code>名实现批量管理。</p>
-<p>接下来，为<code>js</code>文件添加<code>css</code>样式,在对应的css文件目录下，<code>vim game.css</code>：</p>
-<div class="highlight"><div style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
-<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">23
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">24
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">25
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">26
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">27
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">28
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">29
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">30
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">31
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">32
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">33
-</span></code></pre></td>
-<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>.ac-game-menu {
-</span></span><span style="display:flex;"><span>    width: 100%;
-</span></span><span style="display:flex;"><span>    height: 100%;
-</span></span><span style="display:flex;"><span>    background-image: url(&#34;/static/image/menu/background.gif&#34;);
-</span></span><span style="display:flex;"><span>    background-size: 100% 100%;
-</span></span><span style="display:flex;"><span>    user-select: none;
-</span></span><span style="display:flex;"><span>}
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>.ac-game-menu-field {
-</span></span><span style="display:flex;"><span>    width: 20vw;
-</span></span><span style="display:flex;"><span>    position: relative;
-</span></span><span style="display:flex;"><span>    top: 40vh;
-</span></span><span style="display:flex;"><span>    left: 19vw;
-</span></span><span style="display:flex;"><span>}
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>.ac-game-menu-field-item {
-</span></span><span style="display:flex;"><span>    color: white;
-</span></span><span style="display:flex;"><span>    height: 7vh;
-</span></span><span style="display:flex;"><span>    width: 18vw;
-</span></span><span style="display:flex;"><span>    font-size: 6vh;
-</span></span><span style="display:flex;"><span>    font-style: italic;
-</span></span><span style="display:flex;"><span>    padding: 2vh;
-</span></span><span style="display:flex;"><span>    text-align: center;
-</span></span><span style="display:flex;"><span>    background-color: rgba(39,21,28, 0.6);
-</span></span><span style="display:flex;"><span>    border-radius: 10px;  # 圆角特效
-</span></span><span style="display:flex;"><span>    letter-spacing: 0.5vw;
-</span></span><span style="display:flex;"><span>    cursor: pointer;  # 鼠标变成小手形状，这里可以找其他补丁DIY一下
-</span></span><span style="display:flex;"><span>}
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>.ac-game-menu-field-item:hover {  # 实现鼠标悬浮时，div变为之前的1.2倍大，并且在100ms内渐变
-</span></span><span style="display:flex;"><span>    transform: scale(1.2);  
-</span></span><span style="display:flex;"><span>    transition: 100ms;
-</span></span><span style="display:flex;"><span>}
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p><code>css</code>文件的格式更为简单，但是各种参数非常多，比如<code>vh</code>和<code>vw</code>就是相对于窗口的大小，会随窗口改变，而且各种参数也需要不断调整看效果，所以前端和算法的共同点之一就是调参了吧。</p>
-<h2 id="3view视图函数编写">3、view视图函数编写</h2>
-<p>在<code>views</code>文件夹下，<code>vim index.py</code>，这里使用<code>django</code>下的<code>render</code>函数，查阅资料发现这里的位置是相对于<code>templates</code>文件夹的（但是初始生成的文件夹里没有这个文件夹，需要自己新建，这里倒是有点奇怪）:</p>
+</div><p>然后，修改<code>asgi.py</code>文件，将验证方式改为上面的中间件：</p>
 <div class="highlight"><div style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
 <table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
 <pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
@@ -719,70 +776,27 @@
 </span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
 </span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
 </span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">6
 </span></code></pre></td>
 <td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>from django.shortcuts import render
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>from game.channelsmiddleware import JwtAuthMiddlewareStack
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>def index(request):
-</span></span><span style="display:flex;"><span>    return render(request, &#34;multiends/web.html&#34;)  # 注意这里默认render函数的位置是相对于templates文件夹的
+</span></span><span style="display:flex;"><span>application = ProtocolTypeRouter({
+</span></span><span style="display:flex;"><span>    &#34;http&#34;: get_asgi_application(),
+</span></span><span style="display:flex;"><span>    &#34;websocket&#34;: JwtAuthMiddlewareStack(URLRouter(websocket_urlpatterns))
+</span></span><span style="display:flex;"><span>})
 </span></span></code></pre></td></tr></table>
 </div>
-</div><h2 id="4urls路由编写">4、urls路由编写</h2>
-<p><code>django</code>的<code>url</code>系统只需要在根目录下配置好相应路径，然后再在对应的路径下扩展路由即可，可以实现路由结构的层次化，便于后面的功能拓展：</p>
+</div><p>最后，要在新建socket连接的时候，在连接中加上token字段：</p>
 <div class="highlight"><div style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
 <table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
 </span></code></pre></td>
 <td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-mysql" data-lang="mysql"><span style="display:flex;"><span><span style="color:#f1fa8c">&#34;&#34;&#34;webapp URL Configuration
-</span></span></span><span style="display:flex;"><span><span style="color:#f1fa8c">
-</span></span></span><span style="display:flex;"><span><span style="color:#f1fa8c">The `urlpatterns` list routes URLs to views. For more information please see:
-</span></span></span><span style="display:flex;"><span><span style="color:#f1fa8c">    https://docs.djangoproject.com/en/3.2/topics/http/urls/
-</span></span></span><span style="display:flex;"><span><span style="color:#f1fa8c">Examples:
-</span></span></span><span style="display:flex;"><span><span style="color:#f1fa8c">Function views
-</span></span></span><span style="display:flex;"><span><span style="color:#f1fa8c">    1. Add an import:  from my_app import views
-</span></span></span><span style="display:flex;"><span><span style="color:#f1fa8c">    2. Add a URL to urlpatterns:  path(&#39;&#39;, views.home, name=&#39;home&#39;)
-</span></span></span><span style="display:flex;"><span><span style="color:#f1fa8c">Class-based views
-</span></span></span><span style="display:flex;"><span><span style="color:#f1fa8c">    1. Add an import:  from other_app.views import Home
-</span></span></span><span style="display:flex;"><span><span style="color:#f1fa8c">    2. Add a URL to urlpatterns:  path(&#39;&#39;, Home.as_view(), name=&#39;home&#39;)
-</span></span></span><span style="display:flex;"><span><span style="color:#f1fa8c">Including another URLconf
-</span></span></span><span style="display:flex;"><span><span style="color:#f1fa8c">    1. Import the include() function: from django.urls import include, path
-</span></span></span><span style="display:flex;"><span><span style="color:#f1fa8c">    2. Add a URL to urlpatterns:  path(&#39;blog/&#39;, include(&#39;blog.urls&#39;))
-</span></span></span><span style="display:flex;"><span><span style="color:#f1fa8c">&#34;&#34;&#34;</span>
-</span></span><span style="display:flex;"><span><span style="color:#ff79c6">from</span> django.contrib import admin
-</span></span><span style="display:flex;"><span><span style="color:#ff79c6">from</span> django.urls import path, include
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>urlpatterns <span style="color:#ff79c6">=</span> [
-</span></span><span style="display:flex;"><span>    <span style="color:#50fa7b">path</span>(<span style="color:#f1fa8c">&#39;&#39;</span>, <span style="color:#50fa7b">include</span>(<span style="color:#f1fa8c">&#39;game.urls.index&#39;</span>)),  <span style="color:#6272a4">#  这里直接将路径路由到game/urls/index.py文件中
-</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span>    <span style="color:#50fa7b">path</span>(<span style="color:#f1fa8c">&#39;admin/&#39;</span>, admin.site.urls),
-</span></span><span style="display:flex;"><span>]
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>this.ws = new WebSocket(&#34;wss://bloodborne.shop/wss/multiplayer/?token=&#34; + playground.root.access);
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>再在对应的<code>urls</code>文件夹下对应所需的内容即可，这里不做赘述。</p>
-<h2 id="5测试">5、测试</h2>
-<p>以上，将我们的js文件通过自己写的压缩函数打包运行，就可以看到我们项目的雏形了(虽然只有菜单页面)，如果有问题，可以以在<code>F12</code>中调试错误。</p>
+</div>
       </article>
     </section>
 

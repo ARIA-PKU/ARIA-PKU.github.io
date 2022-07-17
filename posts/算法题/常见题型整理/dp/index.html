@@ -13,7 +13,7 @@
 
 
 <meta name="author" content="Aria" />
-<meta name="description" content="总结一下遇到的动态规划题型，都是做过几遍的问题，再重新整理一遍。
+<meta name="description" content="总结一下遇到的动态规划题型。
 " />
 
 
@@ -24,7 +24,7 @@
 
 
 <meta property="og:title" content="动态规划" />
-<meta property="og:description" content="总结一下遇到的动态规划题型，都是做过几遍的问题，再重新整理一遍。" />
+<meta property="og:description" content="总结一下遇到的动态规划题型。" />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://blog.surfaroundtheworld.top/posts/%E7%AE%97%E6%B3%95%E9%A2%98/%E5%B8%B8%E8%A7%81%E9%A2%98%E5%9E%8B%E6%95%B4%E7%90%86/dp/" /><meta property="og:image" content="http://oss.surfaroundtheworld.top/blog-pictures/6-16/edge_of_planet.jpg"/><meta property="article:section" content="posts" />
 <meta property="article:published_time" content="2022-06-08T22:55:24+08:00" />
@@ -37,7 +37,7 @@
 <meta name="twitter:image" content="http://oss.surfaroundtheworld.top/blog-pictures/6-16/edge_of_planet.jpg"/>
 
 <meta name="twitter:title" content="动态规划"/>
-<meta name="twitter:description" content="总结一下遇到的动态规划题型，都是做过几遍的问题，再重新整理一遍。"/>
+<meta name="twitter:description" content="总结一下遇到的动态规划题型。"/>
 
 
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.css" integrity="sha256-UXesixbeLkB/UYxVTzuj/gg3+LMzgwAmg3zD+C4ZASQ=" crossorigin="anonymous">
@@ -164,6 +164,10 @@
   <ul>
     <li><a href="#526-优美的排列httpsleetcodecnproblemsbeautiful-arrangement"><a href="https://leetcode.cn/problems/beautiful-arrangement/">526. 优美的排列</a></a></li>
   </ul>
+
+  <ul>
+    <li><a href="#741-摘樱桃httpsleetcodecnproblemscherry-pickup"><a href="https://leetcode.cn/problems/cherry-pickup/">741. 摘樱桃</a></a></li>
+  </ul>
 </nav>
     </div>
     
@@ -185,7 +189,7 @@
                   <span data-format="luxon">2022-06-08T22:55:24&#43;08:00</span>
                 
 
-              | 13 分钟阅读
+              | 14 分钟阅读
 
               
               | 更新于
@@ -215,10 +219,10 @@
 
       <article class="main">
         
-        <img class="cover" src="https://oss.surfaroundtheworld.top/blog-pictures/stary_night.jpg" />
+        <img class="cover" src="http://oss.surfaroundtheworld.top/blog-pictures/stary_night.jpg" />
         
 
-        <p>总结一下遇到的动态规划题型，都是做过几遍的问题，再重新整理一遍。</p>
+        <p>总结一下遇到的动态规划题型。</p>
 <p>根据y总的总结，所有DP问题都可以分为<strong>状态表示</strong>和<strong>状态计算</strong>两个部分，其中状态表示可以细分为<strong>集合划分</strong>和<strong>属性确定</strong>，属性一般分为最大、最小值等，集合划分与状态计算则依问题不同而不同，但是大多数问题都有解决的共同方法，接下来的实际问题中会总结分析相应方法。</p>
 <h1 id="一背包问题基础版">一、背包问题（基础版）</h1>
 <h2 id="01背包">01背包</h2>
@@ -1274,6 +1278,85 @@
 </span></span><span style="display:flex;"><span>};
 </span></span></code></pre></td></tr></table>
 </div>
+</div><h1 id="六数字三角形模拟">六、数字三角形模拟</h1>
+<h2 id="741-摘樱桃httpsleetcodecnproblemscherry-pickup"><a href="https://leetcode.cn/problems/cherry-pickup/">741. 摘樱桃</a></h2>
+<p><strong>题意：</strong></p>
+<p>一个N x N的网格(grid) 代表了一块樱桃地，每个格子由以下三种数字的一种来表示：</p>
+<ul>
+<li>0 表示这个格子是空的，所以你可以穿过它。</li>
+<li>1 表示这个格子里装着一个樱桃，你可以摘到樱桃然后穿过它。</li>
+<li>-1 表示这个格子里有荆棘，挡着你的路。</li>
+</ul>
+<p>你的任务是在遵守下列规则的情况下，尽可能的摘到最多樱桃：</p>
+<ul>
+<li>从位置 (0, 0) 出发，最后到达 (N-1, N-1) ，只能向下或向右走，并且只能穿越有效的格子（即只可以穿过值为0或者1的格子）；</li>
+<li>当到达 (N-1, N-1) 后，你要继续走，直到返回到 (0, 0) ，只能向上或向左走，并且只能穿越有效的格子；</li>
+<li>当你经过一个格子且这个格子包含一个樱桃时，你将摘到樱桃并且这个格子会变成空的（值变为0）；</li>
+<li>如果在 (0, 0) 和 (N-1, N-1) 之间不存在一条可经过的路径，则没有任何一个樱桃能被摘到。</li>
+</ul>
+<p><strong>思路：</strong></p>
+<p>经典题型改编，三维DP思路，通用解法可以用费用流（暂时不会）。</p>
+<p>问题可以转化为从起点到终点走两次，可以考虑两次同时走，同一个副对角线上的点走的步数相同（横纵坐标之和为定值），将其定义为状态转移的第三维。前两维分别表示两个点在当前所在的行号。假设其中一点的行号为i，则点对应坐标为（i， k  - i）。同时需要注意，如果两个点是同一个位置，即i = j，则只会加一次。对于值为-1的点，跳过即可。</p>
+<p>根据上面，定义状态为<code>f[N][N][N*2]</code>，考虑状态转移的问题，对于其中的点（i，k - i），只可能从左边和上边转移而来，同理，另一个点也有两种转移方式，因此共有四种转移方式。对于<code>f[i][j][k]</code>，会从<code>f[i ± 1][j ± 1][k - 1]</code>转移而来，取结果的最大值即可。</p>
+<p>对于i与j的范围，<code>1 &lt;= i &lt;= n</code>且<code>1  &lt;= k - i  &lt;= n</code>，根据后者可以得到<code>k - n &lt;= i &lt;= k - 1</code>，所以i和j的范围是<code>max(1, k - n)</code>到<code>min(n, k - 1)</code>。</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">23
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">24
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">25
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">26
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>const int N = 55;
+</span></span><span style="display:flex;"><span>int f[N][N][N * 2];
+</span></span><span style="display:flex;"><span>class Solution {
+</span></span><span style="display:flex;"><span>public:
+</span></span><span style="display:flex;"><span>    int cherryPickup(vector&lt;vector&lt;int&gt;&gt;&amp; grid) {
+</span></span><span style="display:flex;"><span>        int n = grid.size();
+</span></span><span style="display:flex;"><span>        memset(f, -0x3f, sizeof f);
+</span></span><span style="display:flex;"><span>        f[1][1][2] = grid[0][0];
+</span></span><span style="display:flex;"><span>        for (int k = 3; k &lt;= 2 * n; k ++) {
+</span></span><span style="display:flex;"><span>            for (int i = max(1, k - n); i &lt;= min(k - 1, n); i ++) {
+</span></span><span style="display:flex;"><span>                for (int j = max(1, k - n); j &lt;= min(k - 1, n); j ++) {
+</span></span><span style="display:flex;"><span>                	// grid从0开始，需要减一
+</span></span><span style="display:flex;"><span>                    if (grid[i - 1][k - i - 1] == -1 || grid[j - 1][k - j - 1] == -1) continue;
+</span></span><span style="display:flex;"><span>                    int t = grid[i - 1][k - i - 1];
+</span></span><span style="display:flex;"><span>                    if (i != j) t += grid[j - 1][k - j - 1];
+</span></span><span style="display:flex;"><span>                    for (int a = i - 1; a &lt;= i; a ++) {
+</span></span><span style="display:flex;"><span>                        for (int b = j - 1; b &lt;= j; b ++) {
+</span></span><span style="display:flex;"><span>                            f[i][j][k] = max(f[i][j][k], f[a][b][k - 1] + t);
+</span></span><span style="display:flex;"><span>                        }
+</span></span><span style="display:flex;"><span>                    }
+</span></span><span style="display:flex;"><span>                }
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        return max(0, f[n][n][n * 2]);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>};
+</span></span></code></pre></td></tr></table>
+</div>
 </div>
       </article>
     </section>
@@ -1340,6 +1423,10 @@
     
     
     
+    
+      
+    
+      
     
       
     
@@ -1618,6 +1705,12 @@
           
           
           
+            <a class="ui label" href="/tags/jwt/" title="JWT">
+              JWT
+            </a>
+          
+          
+          
             <a class="ui label" href="/tags/leetcode/" title="leetcode">
               leetcode
             </a>
@@ -1686,6 +1779,12 @@
           
             <a class="ui label" href="/tags/redis/" title="redis">
               redis
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/rest/" title="REST">
+              REST
             </a>
           
           

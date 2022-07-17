@@ -140,6 +140,7 @@
       <nav id="TableOfContents">
   <ul>
     <li><a href="#lab介绍">lab介绍</a></li>
+    <li><a href="#项目地址">项目地址</a></li>
     <li><a href="#论文中figure-8讨论的是什么问题会带来什么问题">论文中Figure 8讨论的是什么问题？会带来什么问题？</a></li>
     <li><a href="#如何实现高可用的集群配置管理">如何实现高可用的集群配置管理？</a></li>
     <li><a href="#实现高可用的分片容错kv存储服务">实现高可用的分片容错KV存储服务</a>
@@ -216,6 +217,8 @@
 <p>lab4在lab2的基础上更进一步，需要利用shard（分片）实现一个multi-raft的系统。每个副本组拥有一些shard，并且每个副本组包含很多server，构成一个raft系统对外提供服务，所有的副本组对外是并行工作的，因此这能大大提高系统的并发量。</p>
 <p>lab4分为两个部分，第一个部分是实现一个shardmaster，提供一个高可用的集群配置管理服务，负责分片的迁移与配置的查询；第二个部分是实现高可用的分片容错KV存储服务，同时在challenge中要求副本组能够实现对shard的垃圾回收与配置更改期间对客户端请求的响应。</p>
 <p>在总结实现之前，需要先整理一下论文中的重要知识点。</p>
+<h2 id="项目地址">项目地址</h2>
+<p>lab的代码地址：https://github.com/ARIA-PKU/MIT6.824</p>
 <h2 id="论文中figure-8讨论的是什么问题会带来什么问题">论文中Figure 8讨论的是什么问题？会带来什么问题？</h2>
 <p>这个问题在lab2中遇到过，但是没有详细整理，这里重新梳理一下这个问题。在实际生产过程中存在，以及在lab4的实现过程中又遇到了这个问题的衍生问题。</p>
 <p>Figure 8 用来说明为什么 Leader <strong>不能提交之前任期的日志，只能通过提交自己任期的日志，从而间接提交之前任期的日志。</strong></p>
@@ -1686,6 +1689,10 @@
     
       
     
+      
+    
+      
+    
     
 
     
@@ -1833,6 +1840,12 @@
           
           
           
+            <a class="ui label" href="/tags/jwt/" title="JWT">
+              JWT
+            </a>
+          
+          
+          
             <a class="ui label" href="/tags/leetcode/" title="leetcode">
               leetcode
             </a>
@@ -1901,6 +1914,12 @@
           
             <a class="ui label" href="/tags/redis/" title="redis">
               redis
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/rest/" title="REST">
+              REST
             </a>
           
           

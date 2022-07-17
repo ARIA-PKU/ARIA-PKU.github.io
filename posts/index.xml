@@ -194,7 +194,7 @@
       <pubDate>Wed, 08 Jun 2022 22:55:24 +0800</pubDate>
       
       <guid>https://blog.surfaroundtheworld.top/posts/%E7%AE%97%E6%B3%95%E9%A2%98/%E5%B8%B8%E8%A7%81%E9%A2%98%E5%9E%8B%E6%95%B4%E7%90%86/dp/</guid>
-      <description>&lt;p&gt;总结一下遇到的动态规划题型，都是做过几遍的问题，再重新整理一遍。&lt;/p&gt;</description>
+      <description>&lt;p&gt;总结一下遇到的动态规划题型。&lt;/p&gt;</description>
     </item>
     
     <item>
@@ -240,6 +240,15 @@
       
       <guid>https://blog.surfaroundtheworld.top/posts/%E5%89%8D%E7%AB%AF%E7%9F%A5%E8%AF%86/html/</guid>
       <description>&lt;p&gt;系统总结一下常用的html语法，用来建立初步地体系。在写项目时候，缺乏基本的概念还是容易走一些弯路。&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>Web游戏开发 Jwt</title>
+      <link>https://blog.surfaroundtheworld.top/posts/web%E6%B8%B8%E6%88%8F/web%E6%B8%B8%E6%88%8F%E5%BC%80%E5%8F%91-jwt/</link>
+      <pubDate>Sun, 29 May 2022 16:49:35 +0800</pubDate>
+      
+      <guid>https://blog.surfaroundtheworld.top/posts/web%E6%B8%B8%E6%88%8F/web%E6%B8%B8%E6%88%8F%E5%BC%80%E5%8F%91-jwt/</guid>
+      <description>&lt;p&gt;Jwt的介绍以及在django中如何实现Jwt的部署&lt;/p&gt;</description>
     </item>
     
     <item>
@@ -397,6 +406,15 @@
     </item>
     
     <item>
+      <title>web游戏开发 jquery</title>
+      <link>https://blog.surfaroundtheworld.top/posts/web%E6%B8%B8%E6%88%8F/web%E6%B8%B8%E6%88%8F%E5%BC%80%E5%8F%91-jquery/</link>
+      <pubDate>Tue, 10 May 2022 14:59:42 +0800</pubDate>
+      
+      <guid>https://blog.surfaroundtheworld.top/posts/web%E6%B8%B8%E6%88%8F/web%E6%B8%B8%E6%88%8F%E5%BC%80%E5%8F%91-jquery/</guid>
+      <description>&lt;p&gt;web游戏开发日志-jquery的使用&lt;/p&gt;</description>
+    </item>
+    
+    <item>
       <title>web游戏开发 nginx的部署</title>
       <link>https://blog.surfaroundtheworld.top/posts/web%E6%B8%B8%E6%88%8F/web%E6%B8%B8%E6%88%8F%E5%BC%80%E5%8F%91-nginx/</link>
       <pubDate>Tue, 10 May 2022 14:59:42 +0800</pubDate>
@@ -442,7 +460,7 @@
     </item>
     
     <item>
-      <title>Web游戏开发 项目启动</title>
+      <title>Web游戏开发 准备工作</title>
       <link>https://blog.surfaroundtheworld.top/posts/web%E6%B8%B8%E6%88%8F/web%E6%B8%B8%E6%88%8F%E5%BC%80%E5%8F%91-%E9%A1%B9%E7%9B%AE%E5%90%AF%E5%8A%A8/</link>
       <pubDate>Sun, 01 May 2022 21:11:54 +0800</pubDate>
       

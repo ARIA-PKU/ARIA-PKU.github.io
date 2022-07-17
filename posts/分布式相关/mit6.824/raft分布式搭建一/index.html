@@ -139,7 +139,8 @@
     <div class="ui segment toc">
       <nav id="TableOfContents">
   <ul>
-    <li><a href="#背景介绍">背景介绍</a></li>
+    <li><a href="#lab介绍">lab介绍</a></li>
+    <li><a href="#项目地址">项目地址</a></li>
     <li><a href="#如何搭建一个raft系统">如何搭建一个raft系统</a>
       <ul>
         <li><a href="#leader-election是怎么实现的">Leader Election是怎么实现的？</a></li>
@@ -203,9 +204,11 @@
         
 
         <p>基于MIT6.824搭建的分布式系统，记录一下lab2实现过程中遇到的细节，以及一些对遇到的问题的思考。</p>
-<h2 id="背景介绍">背景介绍</h2>
+<h2 id="lab介绍">lab介绍</h2>
 <p>整个项目是MIT6.824中<a href="http://nil.csail.mit.edu/6.824/2020/labs/lab-raft.html">lab2</a>，<a href="http://nil.csail.mit.edu/6.824/2020/labs/lab-kvraft.html">lab3</a>与<a href="http://nil.csail.mit.edu/6.824/2020/labs/lab-shard.html">lab4</a>包括challenge的通过go语言实现的完整版本。实现了raft选举，在raft之上的KV服务以及shard服务等，以及实现了快照，崩溃恢复等功能以达到高可用的目的。</p>
 <p>课程中关于代码的编写也给了一些建议，关于整体结构设计的<a href="http://nil.csail.mit.edu/6.824/2020/labs/raft-structure.txt">structure</a>，关于go中锁使用的<a href="http://nil.csail.mit.edu/6.824/2020/labs/raft-locking.txt">lock</a>，以及其他建议的<a href="https://thesquareplanet.com/blog/students-guide-to-raft/">guide</a>。以上都可以帮助在代码实现中少走弯路。但是整体系统在各个地方的细节都很多，不能忽略论文中的每一处细节。</p>
+<h2 id="项目地址">项目地址</h2>
+<p>lab的代码地址：https://github.com/ARIA-PKU/MIT6.824</p>
 <h2 id="如何搭建一个raft系统">如何搭建一个raft系统</h2>
 <p>在lab2中，项目要求要实现raft的选举，leader与followers的信息传递与同步以及raft服务器崩溃重启后的服务恢复三大功能。在对raft论文通读之后，需要对教授的课程做好笔记，教授在课堂中讨论的问题基本都是设计系统时的关键要点。在实现过程中还需要结合论文，考虑各个实现细节。</p>
 <h3 id="leader-election是怎么实现的">Leader Election是怎么实现的？</h3>
@@ -1318,6 +1321,10 @@
     
       
     
+      
+    
+      
+    
     
 
     
@@ -1465,6 +1472,12 @@
           
           
           
+            <a class="ui label" href="/tags/jwt/" title="JWT">
+              JWT
+            </a>
+          
+          
+          
             <a class="ui label" href="/tags/leetcode/" title="leetcode">
               leetcode
             </a>
@@ -1533,6 +1546,12 @@
           
             <a class="ui label" href="/tags/redis/" title="redis">
               redis
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/rest/" title="REST">
+              REST
             </a>
           
           

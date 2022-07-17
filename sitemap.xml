@@ -191,6 +191,18 @@
     <loc>https://blog.surfaroundtheworld.top/posts/%E5%89%8D%E7%AB%AF%E7%9F%A5%E8%AF%86/html/</loc>
     <lastmod>2022-05-30T21:13:43+08:00</lastmod>
   </url><url>
+    <loc>https://blog.surfaroundtheworld.top/tags/jwt/</loc>
+    <lastmod>2022-05-29T16:49:35+08:00</lastmod>
+  </url><url>
+    <loc>https://blog.surfaroundtheworld.top/tags/rest/</loc>
+    <lastmod>2022-05-29T16:49:35+08:00</lastmod>
+  </url><url>
+    <loc>https://blog.surfaroundtheworld.top/categories/web%E6%B8%B8%E6%88%8F%E5%BC%80%E5%8F%91/</loc>
+    <lastmod>2022-05-29T16:49:35+08:00</lastmod>
+  </url><url>
+    <loc>https://blog.surfaroundtheworld.top/posts/web%E6%B8%B8%E6%88%8F/web%E6%B8%B8%E6%88%8F%E5%BC%80%E5%8F%91-jwt/</loc>
+    <lastmod>2022-05-29T16:49:35+08:00</lastmod>
+  </url><url>
     <loc>https://blog.surfaroundtheworld.top/posts/%E7%AE%97%E6%B3%95%E9%A2%98/%E5%91%A8%E8%B5%9B%E6%9D%82%E9%A2%98/acw_%E5%91%A8%E8%B5%9B%E9%A2%98%E6%95%B4%E7%90%86/</loc>
     <lastmod>2022-05-29T15:35:29+08:00</lastmod>
   </url><url>
@@ -253,9 +265,6 @@
   </url><url>
     <loc>https://blog.surfaroundtheworld.top/tags/%E6%A0%88/</loc>
     <lastmod>2022-05-20T23:25:50+08:00</lastmod>
-  </url><url>
-    <loc>https://blog.surfaroundtheworld.top/categories/web%E6%B8%B8%E6%88%8F%E5%BC%80%E5%8F%91/</loc>
-    <lastmod>2022-05-20T16:53:05+08:00</lastmod>
   </url><url>
     <loc>https://blog.surfaroundtheworld.top/posts/web%E6%B8%B8%E6%88%8F/web%E6%B8%B8%E6%88%8F%E5%BC%80%E5%8F%91-%E5%9F%BA%E4%BA%8Ethrift%E7%9A%84%E6%B8%B8%E6%88%8F%E5%8C%B9%E9%85%8D%E7%B3%BB%E7%BB%9F/</loc>
     <lastmod>2022-05-20T16:53:05+08:00</lastmod>
@@ -335,17 +344,20 @@
     <loc>https://blog.surfaroundtheworld.top/tags/django/</loc>
     <lastmod>2022-05-10T14:59:42+08:00</lastmod>
   </url><url>
+    <loc>https://blog.surfaroundtheworld.top/tags/jquery/</loc>
+    <lastmod>2022-05-10T14:59:42+08:00</lastmod>
+  </url><url>
     <loc>https://blog.surfaroundtheworld.top/tags/nginx/</loc>
     <lastmod>2022-05-10T14:59:42+08:00</lastmod>
   </url><url>
     <loc>https://blog.surfaroundtheworld.top/tags/uwsgi/</loc>
     <lastmod>2022-05-10T14:59:42+08:00</lastmod>
   </url><url>
-    <loc>https://blog.surfaroundtheworld.top/posts/web%E6%B8%B8%E6%88%8F/web%E6%B8%B8%E6%88%8F%E5%BC%80%E5%8F%91-nginx/</loc>
+    <loc>https://blog.surfaroundtheworld.top/posts/web%E6%B8%B8%E6%88%8F/web%E6%B8%B8%E6%88%8F%E5%BC%80%E5%8F%91-jquery/</loc>
     <lastmod>2022-05-10T14:59:42+08:00</lastmod>
   </url><url>
-    <loc>https://blog.surfaroundtheworld.top/tags/jquery/</loc>
-    <lastmod>2022-05-09T22:35:40+08:00</lastmod>
+    <loc>https://blog.surfaroundtheworld.top/posts/web%E6%B8%B8%E6%88%8F/web%E6%B8%B8%E6%88%8F%E5%BC%80%E5%8F%91-nginx/</loc>
+    <lastmod>2022-05-10T14:59:42+08:00</lastmod>
   </url><url>
     <loc>https://blog.surfaroundtheworld.top/posts/web%E6%B8%B8%E6%88%8F/web%E6%B8%B8%E6%88%8F%E5%BC%80%E5%8F%91-%E5%9F%BA%E7%A1%80%E9%85%8D%E7%BD%AE/</loc>
     <lastmod>2022-05-09T22:35:40+08:00</lastmod>

@@ -155,6 +155,11 @@
   <ul>
     <li><a href="#方格探索">方格探索</a></li>
   </ul>
+
+  <ul>
+    <li><a href="#减法操作">减法操作</a></li>
+    <li><a href="#环形连通分量">环形连通分量</a></li>
+  </ul>
 </nav>
     </div>
     
@@ -176,7 +181,7 @@
                   <span data-format="luxon">2022-05-29T15:35:29&#43;08:00</span>
                 
 
-              | 9 分钟阅读
+              | 11 分钟阅读
 
               
               | 更新于
@@ -1031,6 +1036,163 @@
 </span></span><span style="display:flex;"><span>}
 </span></span></code></pre></td></tr></table>
 </div>
+</div><h1 id="59周周赛">59周周赛</h1>
+<h2 id="减法操作">减法操作</h2>
+<p>**题目：**<a href="https://www.acwing.com/problem/content/4495/">https://www.acwing.com/problem/content/4495/</a></p>
+<p><strong>题意：</strong></p>
+<p>给定一个整数 n，执行如下算法：</p>
+<ol>
+<li>如果 n=0，则结束算法。</li>
+<li>找到 n 的最小质因子 d。</li>
+<li>令 n 减去 d 并跳转步骤 1。</li>
+</ol>
+<p>请你计算，在算法执行的过程中，一共进行了多少次减法操作。</p>
+<p><strong>思路：</strong></p>
+<p>偶数的最小质因子就是2，每次减2；</p>
+<p>奇数的最小质因子一定是奇数，减去之后也变成了偶数；</p>
+<p>因此，只要求奇数的最小质因子即可。</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">23
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">24
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">25
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">26
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>#include &lt;iostream&gt;
+</span></span><span style="display:flex;"><span>#include &lt;cstring&gt;
+</span></span><span style="display:flex;"><span>using namespace std;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>typedef long long LL;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>LL get_primes(LL x) {
+</span></span><span style="display:flex;"><span>    for (LL i = 2; i &lt;= x / i; i ++)
+</span></span><span style="display:flex;"><span>        if (x % i == 0) return i;
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>    return x;
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>int main() {
+</span></span><span style="display:flex;"><span>    LL x;
+</span></span><span style="display:flex;"><span>    cin &gt;&gt; x;
+</span></span><span style="display:flex;"><span>    LL res = 0;
+</span></span><span style="display:flex;"><span>    if (x % 2) {
+</span></span><span style="display:flex;"><span>        LL t = get_primes(x);
+</span></span><span style="display:flex;"><span>        x -= t;
+</span></span><span style="display:flex;"><span>        res ++;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    res += x / 2;
+</span></span><span style="display:flex;"><span>    cout &lt;&lt; res &lt;&lt; endl;
+</span></span><span style="display:flex;"><span>    return 0;
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="环形连通分量">环形连通分量</h2>
+<p>题目：https://www.acwing.com/problem/content/4496/</p>
+<p>题意：</p>
+<p>给定一个 n 个点 m 条边组成的无重边无自环的无向图。</p>
+<p>请你计算，其包含的所有<a href="https://baike.baidu.com/item/%E8%BF%9E%E9%80%9A%E5%88%86%E9%87%8F/290350?fr=aladdin">连通分量</a>中，有多少个是环形的。</p>
+<p>思路：</p>
+<p>题目中给的环形的定义是简单环。</p>
+<p>判断连通分量的常用解法是并查集。通过并查集判断集合后，判断各个点的度，如果一个集合中存在度不为2的点，则标记该集合无法构成环，最后遍历所有点，找到能构成环的集合个数。</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">23
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">24
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">25
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">26
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">27
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">28
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">29
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">30
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">31
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">32
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">33
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">34
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">35
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>#include &lt;iostream&gt;
+</span></span><span style="display:flex;"><span>using namespace std;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>const int N = 2e5 + 10;
+</span></span><span style="display:flex;"><span>int d[N], p[N];
+</span></span><span style="display:flex;"><span>bool st[N];
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>int find(int x) {
+</span></span><span style="display:flex;"><span>    if (x != p[x]) p[x] = find(p[x]);
+</span></span><span style="display:flex;"><span>    return p[x];
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>int main() {
+</span></span><span style="display:flex;"><span>    int n, m;
+</span></span><span style="display:flex;"><span>    scanf(&#34;%d%d&#34;, &amp;n, &amp;m);
+</span></span><span style="display:flex;"><span>    for (int i = 1; i &lt;= n; i ++) p[i] = i;
+</span></span><span style="display:flex;"><span>    while (m --) {
+</span></span><span style="display:flex;"><span>        int a, b;
+</span></span><span style="display:flex;"><span>        scanf(&#34;%d%d&#34;, &amp;a, &amp;b);
+</span></span><span style="display:flex;"><span>        p[find(a)] = find(b);
+</span></span><span style="display:flex;"><span>        d[a] ++, d[b] ++;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    for (int i = 1; i &lt;= n; i ++)
+</span></span><span style="display:flex;"><span>        if (d[i] != 2) 
+</span></span><span style="display:flex;"><span>            st[find(i)] = true;
+</span></span><span style="display:flex;"><span>     
+</span></span><span style="display:flex;"><span>    int res = 0;     
+</span></span><span style="display:flex;"><span>    for (int i = 1; i &lt;= n; i ++)
+</span></span><span style="display:flex;"><span>        if (p[i] == i &amp;&amp; !st[i])
+</span></span><span style="display:flex;"><span>            res ++;
+</span></span><span style="display:flex;"><span>            
+</span></span><span style="display:flex;"><span>    printf(&#34;%d\n&#34;, res);
+</span></span><span style="display:flex;"><span>    return 0;
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></td></tr></table>
+</div>
 </div>
       </article>
     </section>
@@ -1097,6 +1259,10 @@
     
     
     
+    
+      
+    
+      
     
       
     
@@ -1375,6 +1541,12 @@
           
           
           
+            <a class="ui label" href="/tags/jwt/" title="JWT">
+              JWT
+            </a>
+          
+          
+          
             <a class="ui label" href="/tags/leetcode/" title="leetcode">
               leetcode
             </a>
@@ -1443,6 +1615,12 @@
           
             <a class="ui label" href="/tags/redis/" title="redis">
               redis
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/rest/" title="REST">
+              REST
             </a>
           
           
