@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-    <title>Http协议 | Aria&#39;s Blog</title>
+    <title>Http协议从1.0到3.0 | Aria&#39;s Blog</title>
 
     
 <link href="/header/icon.jpg" rel="shortcut icon" type="image/x-icon" />
@@ -23,7 +23,7 @@
 <link rel="canonical" href="https://blog.surfaroundtheworld.top/posts/%E7%BD%91%E7%BB%9C%E7%9B%B8%E5%85%B3/http%E7%9F%A5%E8%AF%86%E6%95%B4%E7%90%86/" />
 
 
-<meta property="og:title" content="Http协议" />
+<meta property="og:title" content="Http协议从1.0到3.0" />
 <meta property="og:description" content="对http1.0，http1.1，http2.0，http3.0的整理总结" />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://blog.surfaroundtheworld.top/posts/%E7%BD%91%E7%BB%9C%E7%9B%B8%E5%85%B3/http%E7%9F%A5%E8%AF%86%E6%95%B4%E7%90%86/" /><meta property="og:image" content="http://oss.surfaroundtheworld.top/blog-pictures/6-16/edge_of_planet.jpg"/><meta property="article:section" content="posts" />
@@ -36,7 +36,7 @@
 <meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:image" content="http://oss.surfaroundtheworld.top/blog-pictures/6-16/edge_of_planet.jpg"/>
 
-<meta name="twitter:title" content="Http协议"/>
+<meta name="twitter:title" content="Http协议从1.0到3.0"/>
 <meta name="twitter:description" content="对http1.0，http1.1，http2.0，http3.0的整理总结"/>
 
 
@@ -139,10 +139,14 @@
     <div class="ui segment toc">
       <nav id="TableOfContents">
   <ul>
-    <li><a href="#1http10">1、HTTP1.0</a></li>
-    <li><a href="#2http11">2、HTTP1.1</a></li>
-    <li><a href="#3http20">3、HTTP2.0</a></li>
-    <li><a href="#4http30">4、HTTP3.0</a></li>
+    <li><a href="#http">Http</a>
+      <ul>
+        <li><a href="#1http10">1、HTTP1.0</a></li>
+        <li><a href="#2http11">2、HTTP1.1</a></li>
+        <li><a href="#3http20">3、HTTP2.0</a></li>
+        <li><a href="#4http30">4、HTTP3.0</a></li>
+      </ul>
+    </li>
     <li><a href="#5参考文章">5、参考文章</a></li>
   </ul>
 </nav>
@@ -155,7 +159,7 @@
   <div class="sixteen wide mobile sixteen wide tablet ten wide computer column markdown-body dream-single" id="dream-save-post-as-img">
     <section class="ui segment">
       <header>
-        <h1 class="ui large header">Http协议<span class="sub header">
+        <h1 class="ui large header">Http协议从1.0到3.0<span class="sub header">
             <span class="left">
               @
               
@@ -181,7 +185,7 @@
   <a href="#" class="save-as-image" title="保存为图片" onclick="savePostAsImg()">
     <i class="save icon"></i>
   </a>
-  <a href="https://twitter.com/intent/tweet?text=Http%e5%8d%8f%e8%ae%ae&url=https%3a%2f%2fblog.surfaroundtheworld.top%2fposts%2f%25E7%25BD%2591%25E7%25BB%259C%25E7%259B%25B8%25E5%2585%25B3%2fhttp%25E7%259F%25A5%25E8%25AF%2586%25E6%2595%25B4%25E7%2590%2586%2f" title="Twitter">
+  <a href="https://twitter.com/intent/tweet?text=Http%e5%8d%8f%e8%ae%ae%e4%bb%8e1.0%e5%88%b03.0&url=https%3a%2f%2fblog.surfaroundtheworld.top%2fposts%2f%25E7%25BD%2591%25E7%25BB%259C%25E7%259B%25B8%25E5%2585%25B3%2fhttp%25E7%259F%25A5%25E8%25AF%2586%25E6%2595%25B4%25E7%2590%2586%2f" title="Twitter">
     <i class="twitter icon"></i>
   </a>
   <a href="https://facebook.com/sharer/sharer.php?u=https%3a%2f%2fblog.surfaroundtheworld.top%2fposts%2f%25E7%25BD%2591%25E7%25BB%259C%25E7%259B%25B8%25E5%2585%25B3%2fhttp%25E7%259F%25A5%25E8%25AF%2586%25E6%2595%25B4%25E7%2590%2586%2f" title="Facebook">
@@ -200,11 +204,11 @@
         
 
         <p>对http1.0，http1.1，http2.0，http3.0的整理总结</p>
-<h1 id="http">Http</h1>
+<h2 id="http">Http</h2>
 <p>http是一种无状态、无连接的应用层协议，主要靠session和cookie进行状态记录，在3.0之前都是基于TCP协议的</p>
-<h2 id="1http10">1、HTTP1.0</h2>
+<h3 id="1http10">1、HTTP1.0</h3>
 <p>早期版本，默认是短连接，每次都需要重新建立TCP连接，无法复用之前建立的连接。</p>
-<h2 id="2http11">2、HTTP1.1</h2>
+<h3 id="2http11">2、HTTP1.1</h3>
 <p>继承了HTTP1.0的简单，也解决了性能上的一些问题。</p>
 <p>1）<strong>长连接</strong></p>
 <p>试想一下：请求一张图片，新开一个连接，请求一个CSS文件，新开一个连接，请求一个JS文件，新开一个连接。HTTP协议是基于TCP的，TCP每次都要经过<strong>三次握手，四次挥手，慢启动</strong>&hellip;这都需要去消耗我们非常多的资源的！</p>
@@ -216,20 +220,20 @@
 <li>注意：这个pipelining仅仅是<strong>限于理论场景下</strong>，大部分桌面浏览器仍然会<strong>选择默认关闭</strong>HTTP pipelining！</li>
 <li>所以现在使用HTTP1.1协议的应用，都是有<strong>可能会开多个TCP连接</strong>的！</li>
 </ul>
-<h2 id="3http20">3、HTTP2.0</h2>
+<h3 id="3http20">3、HTTP2.0</h3>
 <p>对1.x协议语意的完全兼容，2.0协议是在1.x基础上的升级而不是重写，1.x协议的方法，状态及api在2.0协议里是一样的。</p>
 <p>性能的大幅提升，2.0协议重点是对终端用户的感知延迟、网络及服务器资源的使用等性能的优化。</p>
 <p>1） <strong>二进制分帧（Binary Format）- http2.0的基石</strong></p>
 <p>http2.0之所以能够突破http1.X标准的性能限制，改进传输性能，实现低延迟和高吞吐量，就是因为其新增了二进制分帧层。</p>
 <p>在二进制分帧层上，http2.0会将所有传输信息分割为更小的消息和帧，并对它们采用二进制格式的编码将其封装，新增的二进制分帧层同时也能够保证http的各种动词，方法，首部都不受影响，兼容上一代http标准。其中，http1.X中的首部信息header封装到Headers帧中，而request body将被封装到Data帧中。</p>
-<p><img src="https://mmbiz.qpic.cn/mmbiz_png/qMicvibdvl7p3saqATlDB6k03rzfHDibnsKhgWzwkhce01AmXwchJJhrYOBWs4NXspYY9L3wziaLxjoHYxNGoAL70g/640?wx_fmt=png&amp;wxfrom=5&amp;wx_lazy=1&amp;wx_co=1" alt="图片"></p>
+<p><img src="https://aria9766.oss-cn-beijing.aliyuncs.com/blog-pictures/http/http2.0_structure.jpg" alt="图片"></p>
 <p>2） <strong>多路复用 (Multiplexing) / 连接共享</strong></p>
 <p>在http1.1中，浏览器客户端在同一时间，针对同一域名下的请求有一定数量的限制，超过限制数目的请求会被阻塞。这也是为何一些站点会有多个静态资源 CDN 域名的原因之一。</p>
 <p>而http2.0中的多路复用优化了这一性能。多路复用允许同时通过单一的http/2 连接发起多重的请求-响应消息。有了新的分帧机制后，http/2 不再依赖多个TCP连接去实现多流并行了。每个数据流都拆分成很多互不依赖的帧，而这些帧可以交错（乱序发送），还可以分优先级，最后再在另一端把它们重新组合起来。</p>
 <p>http 2.0 连接都是持久化的，而且客户端与服务器之间也只需要一个连接（每个域名一个连接）即可。http2连接可以承载数十或数百个流的复用，多路复用意味着来自很多流的数据包能够混合在一起通过同样连接传输。当到达终点时，再根据不同帧首部的流标识符重新连接将不同的数据流进行组装。</p>
-<p><img src="https://mmbiz.qpic.cn/mmbiz_png/qMicvibdvl7p3saqATlDB6k03rzfHDibnsKUD0icQCcP5QOx2iaWUhDdZE974qRK6rmy98GPlk7DzdxDk1utGAEOvqQ/640?wx_fmt=png&amp;wxfrom=5&amp;wx_lazy=1&amp;wx_co=1" alt="图片"></p>
+<p><img src="https://aria9766.oss-cn-beijing.aliyuncs.com/blog-pictures/http/http2.0.png" alt="图片"></p>
 <p>上图展示了一个连接上的多个传输数据流：客户端向服务端传输数据帧stream5，同时服务端向客户端乱序发送stream1和stream3。这次连接上有三个响应请求乱序并行交换。</p>
-<p><img src="https://mmbiz.qpic.cn/mmbiz_png/qMicvibdvl7p3saqATlDB6k03rzfHDibnsKQgfiaAic60DmWkDib8LUhiaLmfibc8ICW0xVwyXmoxWqrwGwfFDox8xbUGA/640?wx_fmt=png&amp;wxfrom=5&amp;wx_lazy=1&amp;wx_co=1" alt="图片"></p>
+<p><img src="https://aria9766.oss-cn-beijing.aliyuncs.com/blog-pictures/http/http2.0_transfer.jpg" alt="图片"></p>
 <p>上图就是http1.X和http2.0在传输数据时的区别。</p>
 <p>3） <strong>头部压缩（Header Compression）</strong></p>
 <p>http1.x的头带有大量信息，而且每次都要重复发送。http/2使用encoder来减少需要传输的header大小，通讯双方各自缓存一份头部字段表，既避免了重复header的传输，又减小了需要传输的大小。</p>
@@ -268,7 +272,7 @@
 <p>服务器可以对一个客户端请求发送多个响应，服务器向客户端推送资源无需客户端明确地请求。并且，服务端推送能把客户端所需要的资源伴随着index.html一起发送到客户端，省去了客户端重复请求的步骤。</p>
 <p>正因为没有发起请求，建立连接等操作，所以静态资源通过服务端推送的方式可以极大地提升速度。Server Push 让 http1.x 时代使用内嵌资源的优化手段变得没有意义；如果一个请求是由你的主页发起的，服务器很可能会响应主页内容、logo 以及样式表，因为它知道客户端会用到这些东西，这相当于在一个 HTML 文档内集合了所有的资源。</p>
 <p>不过与之相比，服务器推送还有一个很大的优势：可以缓存！也让在遵循同源的情况下，不同页面之间可以共享缓存资源成为可能。</p>
-<p><img src="https://mmbiz.qpic.cn/mmbiz_png/qMicvibdvl7p3saqATlDB6k03rzfHDibnsKtnRc9hVCeoibb3wBlPyuNKqOPqsWS2ibwxh0tu3SsNiayJO1RiayxJ5Efw/640?wx_fmt=png&amp;wxfrom=5&amp;wx_lazy=1&amp;wx_co=1" alt="图片"></p>
+<p><img src="https://aria9766.oss-cn-beijing.aliyuncs.com/blog-pictures/http/http2.0_connection.png" alt="图片"></p>
 <p>注意两点：</p>
 <p>1、推送遵循同源策略；</p>
 <p>2、这种服务端的推送是基于客户端的请求响应来确定的。</p>
@@ -277,7 +281,7 @@
 <li><strong>性能瓶颈</strong></li>
 </ol>
 <p>启用http2.0后会给性能带来很大的提升，但同时也会带来新的性能瓶颈。因为现在所有的压力集中在底层一个TCP连接之上，TCP很可能就是下一个性能瓶颈，比如TCP分组的队首阻塞问题，单个TCP packet丢失导致整个连接阻塞，无法逃避，此时所有消息都会受到影响。未来，服务器端针对http 2.0下的TCP配置优化至关重要。</p>
-<h2 id="4http30">4、HTTP3.0</h2>
+<h3 id="4http30">4、HTTP3.0</h3>
 <p>Google搞了一个基于UDP协议的QUIC协议，并且使用在了HTTP/3上， HTTP/3之前的名称为HTTP-over-QUIC。</p>
 <p>早期Quic协议，存在IETF和Google两个版本，直到它被证实命名为HTTP3.0</p>
 <blockquote>
@@ -311,9 +315,9 @@
 <li>当然这种技术只能使用在丢失一个包的情况下，如果出现丢失多个包，就不能使用纠错机制了，只能使用重传的方式了。</li>
 </ul>
 <h2 id="5参考文章">5、参考文章</h2>
-<p>1、深入理解http2.0协议，看这篇就够了！https://mp.weixin.qq.com/s/a83_NE-ww36FZsy320MQFQ</p>
+<p>1、<a href="https://mp.weixin.qq.com/s/a83_NE-ww36FZsy320MQFQ">深入理解http2.0协议，看这篇就够了！</a></p>
 <p>2、https://www.zhihu.com/question/306768582/answer/595200654</p>
-<p>3、快速掌握HTTP 1.0 1.1 2.0 3.0 的特点及其区别 <a href="https://zhuanlan.zhihu.com/p/266578819">https://zhuanlan.zhihu.com/p/266578819</a></p>
+<p>3、<a href="https://zhuanlan.zhihu.com/p/266578819">快速掌握HTTP 1.0 1.1 2.0 3.0 的特点及其区别</a></p>
       </article>
     </section>
 
