@@ -6,15 +6,15 @@
     <description>Recent content in 二分图 on Aria&#39;s Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-Hans</language>
-    <copyright>&lt;a rel=&#34;license&#34; href=&#34;http://creativecommons.org/licenses/by-nc-sa/4.0/&#34;&gt;&lt;img alt=&#34;知识共享许可协议&#34; style=&#34;border-width:0&#34; src=&#34;https://i.creativecommons.org/l/by-nc-sa/4.0/88x31.png&#34; /&gt;&lt;/a&gt;&lt;br /&gt;本作品采用&lt;a rel=&#34;license&#34; href=&#34;http://creativecommons.org/licenses/by-nc-sa/4.0/&#34;&gt;知识共享署名-非商业性使用-相同方式共享 4.0 国际许可协议&lt;/a&gt;进行许可。&lt;br /&gt;&lt;br /&gt;背景使用了 &lt;a href=&#34;https://www.pexels.com/zh-cn/&#34; target=&#34;_blank&#34;&gt;Pexels&lt;/a&gt; 上 &lt;a href=&#34;https://www.pexels.com/zh-cn/@minan1398&#34; target=&#34;_blank&#34;&gt;Min An&lt;/a&gt; 拍摄的&lt;a href=&#34;https://www.pexels.com/zh-cn/photo/1454794/&#34; target=&#34;_blank&#34;&gt;图片&lt;/a&gt;。</copyright>
-    <lastBuildDate>Sat, 30 Apr 2022 22:16:19 +0800</lastBuildDate><atom:link href="https://blog.surfaroundtheworld.top/tags/%E4%BA%8C%E5%88%86%E5%9B%BE/index.xml" rel="self" type="application/rss+xml" />
+    <copyright>&lt;a rel=&#34;license&#34; href=&#34;http://creativecommons.org/licenses/by-nc-sa/4.0/&#34;&gt;&lt;img alt=&#34;知识共享许可协议&#34; style=&#34;border-width:0&#34; src=&#34;https://i.creativecommons.org/l/by-nc-sa/4.0/88x31.png&#34; /&gt;&lt;/a&gt;&lt;br /&gt;本作品采用&lt;a rel=&#34;license&#34; href=&#34;http://creativecommons.org/licenses/by-nc-sa/4.0/&#34;&gt;知识共享署名-非商业性使用-相同方式共享 4.0 国际许可协议&lt;/a&gt;进行许可。&lt;br /&gt;</copyright>
+    <lastBuildDate>Thu, 26 May 2022 14:16:35 +0800</lastBuildDate><atom:link href="https://blog.surfaroundtheworld.top/tags/%E4%BA%8C%E5%88%86%E5%9B%BE/index.xml" rel="self" type="application/rss+xml" />
     <item>
-      <title>算法题——点的赋值</title>
-      <link>https://blog.surfaroundtheworld.top/posts/acwing_4415%E7%82%B9%E7%9A%84%E8%B5%8B%E5%80%BC/</link>
-      <pubDate>Sat, 30 Apr 2022 22:16:19 +0800</pubDate>
+      <title>基础算法 二分图</title>
+      <link>https://blog.surfaroundtheworld.top/posts/%E7%AE%97%E6%B3%95%E9%A2%98/%E7%AE%97%E6%B3%95%E5%9F%BA%E7%A1%80%E8%AF%BE/%E5%9F%BA%E7%A1%80%E7%AE%97%E6%B3%95-%E4%BA%8C%E5%88%86%E5%9B%BE/</link>
+      <pubDate>Thu, 26 May 2022 14:16:35 +0800</pubDate>
       
-      <guid>https://blog.surfaroundtheworld.top/posts/acwing_4415%E7%82%B9%E7%9A%84%E8%B5%8B%E5%80%BC/</guid>
-      <description>&lt;p&gt;周赛算法题总结，封面来自pivix的防人画师。&lt;/p&gt;</description>
+      <guid>https://blog.surfaroundtheworld.top/posts/%E7%AE%97%E6%B3%95%E9%A2%98/%E7%AE%97%E6%B3%95%E5%9F%BA%E7%A1%80%E8%AF%BE/%E5%9F%BA%E7%A1%80%E7%AE%97%E6%B3%95-%E4%BA%8C%E5%88%86%E5%9B%BE/</guid>
+      <description>&lt;p&gt;总结关于二分图常见的两类问题，染色法判断二分图和二分图最大匹配（匈牙利算法）问题。&lt;/p&gt;</description>
     </item>
     
   </channel>

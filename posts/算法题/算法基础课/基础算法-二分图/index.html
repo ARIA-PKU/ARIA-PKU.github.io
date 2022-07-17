@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-    <title>Web游戏开发 准备工作 | Aria&#39;s Blog</title>
+    <title>基础算法 二分图 | Aria&#39;s Blog</title>
 
     
 <link href="/header/icon.jpg" rel="shortcut icon" type="image/x-icon" />
@@ -13,22 +13,22 @@
 
 
 <meta name="author" content="Aria" />
-<meta name="description" content="web游戏开发日志
+<meta name="description" content="总结关于二分图常见的两类问题，染色法判断二分图和二分图最大匹配（匈牙利算法）问题。
 " />
 
 
 
 <meta name="generator" content="Hugo 0.98.0" />
 
-<link rel="canonical" href="https://blog.surfaroundtheworld.top/posts/web%E6%B8%B8%E6%88%8F/web%E6%B8%B8%E6%88%8F%E5%BC%80%E5%8F%91-%E9%A1%B9%E7%9B%AE%E5%90%AF%E5%8A%A8/" />
+<link rel="canonical" href="https://blog.surfaroundtheworld.top/posts/%E7%AE%97%E6%B3%95%E9%A2%98/%E7%AE%97%E6%B3%95%E5%9F%BA%E7%A1%80%E8%AF%BE/%E5%9F%BA%E7%A1%80%E7%AE%97%E6%B3%95-%E4%BA%8C%E5%88%86%E5%9B%BE/" />
 
 
-<meta property="og:title" content="Web游戏开发 准备工作" />
-<meta property="og:description" content="web游戏开发日志" />
+<meta property="og:title" content="基础算法 二分图" />
+<meta property="og:description" content="总结关于二分图常见的两类问题，染色法判断二分图和二分图最大匹配（匈牙利算法）问题。" />
 <meta property="og:type" content="article" />
-<meta property="og:url" content="https://blog.surfaroundtheworld.top/posts/web%E6%B8%B8%E6%88%8F/web%E6%B8%B8%E6%88%8F%E5%BC%80%E5%8F%91-%E9%A1%B9%E7%9B%AE%E5%90%AF%E5%8A%A8/" /><meta property="og:image" content="http://oss.surfaroundtheworld.top/blog-pictures/6-16/edge_of_planet.jpg"/><meta property="article:section" content="posts" />
-<meta property="article:published_time" content="2022-05-01T21:11:54+08:00" />
-<meta property="article:modified_time" content="2022-05-01T21:11:54+08:00" />
+<meta property="og:url" content="https://blog.surfaroundtheworld.top/posts/%E7%AE%97%E6%B3%95%E9%A2%98/%E7%AE%97%E6%B3%95%E5%9F%BA%E7%A1%80%E8%AF%BE/%E5%9F%BA%E7%A1%80%E7%AE%97%E6%B3%95-%E4%BA%8C%E5%88%86%E5%9B%BE/" /><meta property="og:image" content="http://oss.surfaroundtheworld.top/blog-pictures/6-16/edge_of_planet.jpg"/><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2022-05-26T14:16:35+08:00" />
+<meta property="article:modified_time" content="2022-05-26T14:16:35+08:00" />
 
 
 
@@ -36,8 +36,8 @@
 <meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:image" content="http://oss.surfaroundtheworld.top/blog-pictures/6-16/edge_of_planet.jpg"/>
 
-<meta name="twitter:title" content="Web游戏开发 准备工作"/>
-<meta name="twitter:description" content="web游戏开发日志"/>
+<meta name="twitter:title" content="基础算法 二分图"/>
+<meta name="twitter:description" content="总结关于二分图常见的两类问题，染色法判断二分图和二分图最大匹配（匈牙利算法）问题。"/>
 
 
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.css" integrity="sha256-UXesixbeLkB/UYxVTzuj/gg3+LMzgwAmg3zD+C4ZASQ=" crossorigin="anonymous">
@@ -139,10 +139,8 @@
     <div class="ui segment toc">
       <nav id="TableOfContents">
   <ul>
-    <li><a href="#1技术栈选择">1、技术栈选择</a></li>
-    <li><a href="#2docker的配置">2、docker的配置</a></li>
-    <li><a href="#3git的配置">3、git的配置</a></li>
-    <li><a href="#4项目的创建">4、项目的创建</a></li>
+    <li><a href="#染色法判断二分图">染色法判断二分图</a></li>
+    <li><a href="#二分图的最大匹配问题">二分图的最大匹配问题</a></li>
   </ul>
 </nav>
     </div>
@@ -154,7 +152,7 @@
   <div class="sixteen wide mobile sixteen wide tablet ten wide computer column markdown-body dream-single" id="dream-save-post-as-img">
     <section class="ui segment">
       <header>
-        <h1 class="ui large header">Web游戏开发 准备工作<span class="sub header">
+        <h1 class="ui large header">基础算法 二分图<span class="sub header">
             <span class="left">
               @
               
@@ -162,15 +160,15 @@
               
 
               | 
-                  <span data-format="luxon">2022-05-01T21:11:54&#43;08:00</span>
+                  <span data-format="luxon">2022-05-26T14:16:35&#43;08:00</span>
                 
 
-              | 3 分钟阅读
+              | 4 分钟阅读
 
               
               | 更新于
                 
-                  <span data-format="luxon">2022-05-01T21:11:54&#43;08:00</span>
+                  <span data-format="luxon">2022-05-26T14:16:35&#43;08:00</span>
                 
               
             </span>
@@ -180,10 +178,10 @@
   <a href="#" class="save-as-image" title="保存为图片" onclick="savePostAsImg()">
     <i class="save icon"></i>
   </a>
-  <a href="https://twitter.com/intent/tweet?text=Web%e6%b8%b8%e6%88%8f%e5%bc%80%e5%8f%91%20%e5%87%86%e5%a4%87%e5%b7%a5%e4%bd%9c&url=https%3a%2f%2fblog.surfaroundtheworld.top%2fposts%2fweb%25E6%25B8%25B8%25E6%2588%258F%2fweb%25E6%25B8%25B8%25E6%2588%258F%25E5%25BC%2580%25E5%258F%2591-%25E9%25A1%25B9%25E7%259B%25AE%25E5%2590%25AF%25E5%258A%25A8%2f" title="Twitter">
+  <a href="https://twitter.com/intent/tweet?text=%e5%9f%ba%e7%a1%80%e7%ae%97%e6%b3%95%20%e4%ba%8c%e5%88%86%e5%9b%be&url=https%3a%2f%2fblog.surfaroundtheworld.top%2fposts%2f%25E7%25AE%2597%25E6%25B3%2595%25E9%25A2%2598%2f%25E7%25AE%2597%25E6%25B3%2595%25E5%259F%25BA%25E7%25A1%2580%25E8%25AF%25BE%2f%25E5%259F%25BA%25E7%25A1%2580%25E7%25AE%2597%25E6%25B3%2595-%25E4%25BA%258C%25E5%2588%2586%25E5%259B%25BE%2f" title="Twitter">
     <i class="twitter icon"></i>
   </a>
-  <a href="https://facebook.com/sharer/sharer.php?u=https%3a%2f%2fblog.surfaroundtheworld.top%2fposts%2fweb%25E6%25B8%25B8%25E6%2588%258F%2fweb%25E6%25B8%25B8%25E6%2588%258F%25E5%25BC%2580%25E5%258F%2591-%25E9%25A1%25B9%25E7%259B%25AE%25E5%2590%25AF%25E5%258A%25A8%2f" title="Facebook">
+  <a href="https://facebook.com/sharer/sharer.php?u=https%3a%2f%2fblog.surfaroundtheworld.top%2fposts%2f%25E7%25AE%2597%25E6%25B3%2595%25E9%25A2%2598%2f%25E7%25AE%2597%25E6%25B3%2595%25E5%259F%25BA%25E7%25A1%2580%25E8%25AF%25BE%2f%25E5%259F%25BA%25E7%25A1%2580%25E7%25AE%2597%25E6%25B3%2595-%25E4%25BA%258C%25E5%2588%2586%25E5%259B%25BE%2f" title="Facebook">
     <i class="facebook icon"></i>
   </a>
 </span>
@@ -195,56 +193,25 @@
 
       <article class="main">
         
-        <img class="cover" src="http://oss.surfaroundtheworld.top/blog-pictures/reverse_world.jpg" />
+        <img class="cover" src="http://oss.surfaroundtheworld.top/blog-pictures/clock.jpg" />
         
 
-        <p>web游戏开发日志</p>
-<h1 id="一项目准备">一、项目准备</h1>
-<h2 id="1技术栈选择">1、技术栈选择</h2>
-<p>实习期间，一直使用flask框架开发项目，这里选择django框架，熟悉python的另一个框架。项目总结自y总的django课程，项目后端选用django框架，前端使用jquery语言。服务器选用的是阿里云1核4G的学生机。</p>
-<h2 id="2docker的配置">2、docker的配置</h2>
-<p>1）为了方便之后在不同的服务器中迁移自己的项目，所以项目整体选择在docker中搭建运行。在自己的服务器上下载好搭建了Django的镜像。</p>
-<p>2）<code>docker load -i</code>将镜像从本地文件中加载进来</p>
-<p>3）<code>docker run -p 8000:8000 -p 20000:22 --name django -itd django:1.0</code>创建并运行容器，其中<code>8000:8000</code>端口是开放<code>Http</code>,<code>20000:22</code>端口是开放<code>ssh</code>。（需要在服务器放行20000和8000端口）</p>
-<h2 id="3git的配置">3、git的配置</h2>
-<p>1）<code>ssh-keygen</code>生成密钥，并将其复制到github上，实现ssh的免密登录</p>
-<p>2）<code>git init</code>  进到项目目录中将其配置成git仓库</p>
-<p>3） 打开git，在git上创建一个仓库（项目）按照下面的提示在github里面配置一下git</p>
-<p><code>git config --global user.name xxx</code></p>
-<p><code>git config --global user.email xxx@xxx.com</code></p>
-<p><code>git add .</code></p>
-<p><code>git commit -m &quot;xxx&quot;</code></p>
-<p><code>git remote add origin </code></p>
-<p><code>git@xxx/XXX.git </code>  建立连接</p>
-<p><code>git push --set-upstream origin master</code></p>
-<p>4）在目录下创建<code>.gitignore</code>文件，规范上传文件的内容，比如<code>__pycache__</code>文件夹中的<code>.pyc</code>文件等，其中的<code>.pyc</code>文件是为了加速python运行而存在的，在项目中也可以用于单例模式实现。</p>
-<h2 id="4项目的创建">4、项目的创建</h2>
-<p>1） <code>django-admin startproject webapp</code>，会在目录下创建一个名为<code>webapp</code>的文件夹，通过<code>tree .</code>命令查看结构如下：</p>
-<div class="highlight"><div style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
-<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">6
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">7
-</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">8
-</span></code></pre></td>
-<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>`-- webapp
-</span></span><span style="display:flex;"><span>    |-- manage.py
-</span></span><span style="display:flex;"><span>    `-- webapp
-</span></span><span style="display:flex;"><span>        |-- __init__.py
-</span></span><span style="display:flex;"><span>        |-- asgi.py
-</span></span><span style="display:flex;"><span>        |-- settings.py
-</span></span><span style="display:flex;"><span>        |-- urls.py
-</span></span><span style="display:flex;"><span>        `-- wsgi.py
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>以上就是django的整体框架，将在以后的项目中应用各个模块。</p>
-<p>2）<code>setting.py</code>即时整个项目默认的配置文件，在其中的<code>ALLOWED_HOSTS = []</code>中填入自己服务器的公网IP，和申请的域名地址，通过<code>python3 manage.py runserver 0.0.0.0:8000</code>命令，即可在自己服务器公网IP的8000端口看到最初的项目。</p>
-<p>3）进入到<code>webapp</code>文件夹下，<code>python3 manage.py startapp game</code>生成自己的名为game的app，其树形结构如下：</p>
+        <p>总结关于二分图常见的两类问题，染色法判断二分图和二分图最大匹配（匈牙利算法）问题。</p>
+<p>二分图又称作二部图，是图论中的一种特殊模型。</p>
+<p><strong>官方定义：</strong></p>
+<p>设$G=(V,E)$是一个无向图，如果顶点V可分割为两个互不相交的子集(A,B)，并且图中的每条边$（i，j）$所关联的两个顶点$i$和$j$分别属于这两个不同的顶点集$(A,B)$，则称图G为一个二分图。简而言之，就是顶点集V可分割为两个互不相交的子集，并且图中每条边依附的两个顶点都分属于这两个互不相交的子集，两个子集内的顶点不相邻。
+二分图的一个等价定义是：不含有**「含奇数条边的环」**的图</p>
+<h2 id="染色法判断二分图">染色法判断二分图</h2>
+<p>给定一个 n 个点 m 条边的无向图，图中可能存在重边和自环。</p>
+<p>请你判断这个图是否是二分图。</p>
+<p><strong>输入格式</strong></p>
+<p>第一行包含两个整数 n 和 m。</p>
+<p>接下来 m 行，每行包含两个整数 u 和 v，表示点 u 和点 v 之间存在一条边。</p>
+<p><strong>输出格式</strong></p>
+<p>如果给定图是二分图，则输出 <code>Yes</code>，否则输出 <code>No</code>。</p>
+<p><strong>算法思路</strong></p>
+<p>染色法，所有未处理的颜色为0，遍历到颜色为0的点则给它染色为c，然后递归遍历其所有相邻的点并将其染色为3-c，如果在递归的过程中，节点已经被染色且染色矛盾或者无法成功递归染色，则染色失败，无法二分，否则染色成功，可以二分。<strong>时间复杂度</strong>为$O(n + m)$。</p>
+<p>下面给出dfs的思路：</p>
 <div class="highlight"><div style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
 <table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
 <pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
@@ -267,32 +234,209 @@
 </span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
 </span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
 </span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">23
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">24
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">25
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">26
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">27
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">28
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">29
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">30
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">31
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">32
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">33
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">34
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">35
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">36
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">37
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">38
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">39
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">40
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">41
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">42
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">43
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">44
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">45
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">46
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">47
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">48
 </span></code></pre></td>
 <td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>`-- webapp
-</span></span><span style="display:flex;"><span>    |-- game
-</span></span><span style="display:flex;"><span>    |   |-- __init__.py
-</span></span><span style="display:flex;"><span>    |   |-- admin.py  # 管理员界面管理
-</span></span><span style="display:flex;"><span>    |   |-- apps.py  
-</span></span><span style="display:flex;"><span>    |   |-- migrations  # 数据库操作 
-</span></span><span style="display:flex;"><span>    |   |   `-- __init__.py
-</span></span><span style="display:flex;"><span>    |   |-- models.py  # 定义网站的数据类
-</span></span><span style="display:flex;"><span>    |   |-- tests.py  # 编写单元测试函数
-</span></span><span style="display:flex;"><span>    |   `-- views.py  # 编写视图函数
-</span></span><span style="display:flex;"><span>    |-- manage.py
-</span></span><span style="display:flex;"><span>    `-- webapp
-</span></span><span style="display:flex;"><span>        |-- __init__.py
-</span></span><span style="display:flex;"><span>        |-- __pycache__
-</span></span><span style="display:flex;"><span>        |   |-- __init__.cpython-38.pyc
-</span></span><span style="display:flex;"><span>        |   `-- settings.cpython-38.pyc
-</span></span><span style="display:flex;"><span>        |-- asgi.py
-</span></span><span style="display:flex;"><span>        |-- settings.py
-</span></span><span style="display:flex;"><span>        |-- urls.py  # 用于实现路由配置
-</span></span><span style="display:flex;"><span>        `-- wsgi.py
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>#include &lt;iostream&gt;
+</span></span><span style="display:flex;"><span>#include &lt;cstring&gt;
+</span></span><span style="display:flex;"><span>using namespace std;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>const int N = 1e5 + 10, M = 2 * N; //由于是无向图，所以实际存的边数为2N
+</span></span><span style="display:flex;"><span>int h[N], e[M], ne[M], idx, c[N];
+</span></span><span style="display:flex;"><span>int n, m;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>void add(int a, int b) {
+</span></span><span style="display:flex;"><span>    e[idx] = b, ne[idx] = h[a], h[a] = idx ++;
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>bool dfs(int x, int color) {
+</span></span><span style="display:flex;"><span>    c[x] = color;
+</span></span><span style="display:flex;"><span>    for (int i = h[x]; ~i; i = ne[i]) {
+</span></span><span style="display:flex;"><span>        int j = e[i];
+</span></span><span style="display:flex;"><span>        if (!c[j]) {
+</span></span><span style="display:flex;"><span>            if (!dfs(j, 3 - color)) return false; // 需要再递归遍历其相邻点
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        else {
+</span></span><span style="display:flex;"><span>            if (c[j] != 3 - color) return false;  // 已经染色，且颜色与当前相同则为false
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    } 
+</span></span><span style="display:flex;"><span>    return true;
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>int main() {
+</span></span><span style="display:flex;"><span>    scanf(&#34;%d%d&#34;, &amp;n, &amp;m);
+</span></span><span style="display:flex;"><span>    memset(h, -1, sizeof h);
+</span></span><span style="display:flex;"><span>    while (m --) {
+</span></span><span style="display:flex;"><span>        int a, b;
+</span></span><span style="display:flex;"><span>        scanf(&#34;%d%d&#34;, &amp;a, &amp;b);
+</span></span><span style="display:flex;"><span>        add(a, b), add(b, a);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    for (int i = 1; i &lt;= n; i ++) {
+</span></span><span style="display:flex;"><span>        bool flag = false;
+</span></span><span style="display:flex;"><span>        if (!c[i]) {
+</span></span><span style="display:flex;"><span>            if (!dfs(i, 1)) flag = true;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        if (flag) {
+</span></span><span style="display:flex;"><span>            puts(&#34;No&#34;);
+</span></span><span style="display:flex;"><span>            return 0;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    puts(&#34;Yes&#34;);
+</span></span><span style="display:flex;"><span>    return 0;
+</span></span><span style="display:flex;"><span>}
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>4）<code>python3 manage.py createsuperuser</code>创建超级管理员，并在<code>/admin</code>界面登录即可。</p>
-<p>5） 在第二层的<code>webapp</code>文件夹下的<code>urls.py</code>为全局路由，可以通过配置实现各个函数的路由，为了便于扩展，在<code>game</code>文件夹下新建<code>url</code>文件夹存储之后的配置信息。</p>
+</div><h2 id="二分图的最大匹配问题">二分图的最大匹配问题</h2>
+<p>给定一个二分图，其中左半部包含 n1 个点（编号 1∼n1），右半部包含 n2 个点（编号 1∼n2），二分图共包含 m 条边。</p>
+<p>数据保证任意一条边的两个端点都不可能在同一部分中。</p>
+<p>请你求出二分图的最大匹配数。</p>
+<blockquote>
+<p>二分图的匹配：给定一个二分图 G，在 G 的一个子图 M 中，M 的边集 {E}中的任意两条边都不依附于同一个顶点，则称 M 是一个匹配。</p>
+<p>二分图的最大匹配：所有匹配中包含边数最多的一组匹配被称为二分图的最大匹配，其边数即为最大匹配数。</p>
+</blockquote>
+<p><strong>输入格式</strong></p>
+<p>第一行包含三个整数 n1、 n2 和 m。</p>
+<p>接下来 m 行，每行包含两个整数 u 和 v，表示左半部点集中的点 u 和右半部点集中的点 v 之间存在一条边。</p>
+<p><strong>输出格式</strong></p>
+<p>输出一个整数，表示二分图的最大匹配数</p>
+<p><strong>算法思路</strong></p>
+<p>需要遍历n个点，每个点最坏情况下遍历m条边，最坏<strong>时间复杂度</strong>为$O(n * m)$，一般远小于这个时间复杂度。</p>
+<p>整体算法的思想是，选取二分图一边的点，依次遍历。如果与当前点相连的点未被匹配，则直接匹配+1即可，如果与当前点相连的点P已经在之前与其他点Q匹配，则递归考虑Q是否可以和其他点匹配，如果可以递归匹配，则匹配+1，否则该点无法匹配。</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">23
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">24
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">25
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">26
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">27
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">28
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">29
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">30
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">31
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">32
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">33
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">34
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">35
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">36
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">37
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">38
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">39
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">40
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">41
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">42
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">43
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">44
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">45
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">46
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">47
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">48
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">49
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">50
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>#include &lt;cstring&gt;
+</span></span><span style="display:flex;"><span>#include &lt;iostream&gt;
+</span></span><span style="display:flex;"><span>using namespace std;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>const int N = 510, M = 1e5 + 10;
+</span></span><span style="display:flex;"><span>int h[N], e[M], ne[M], idx;
+</span></span><span style="display:flex;"><span>int match[N];
+</span></span><span style="display:flex;"><span>bool st[N];
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>void add(int a, int b) {
+</span></span><span style="display:flex;"><span>    e[idx] = b, ne[idx] = h[a], h[a] = idx ++;
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>bool find(int x) {
+</span></span><span style="display:flex;"><span>    for (int i = h[x]; ~i; i = ne[i]) {
+</span></span><span style="display:flex;"><span>        int j = e[i];
+</span></span><span style="display:flex;"><span>        if (st[j]) continue;  // 在本次查找中已经用过该点，避免无限循环
+</span></span><span style="display:flex;"><span>        st[j] = true;
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        // 如果当前j点未被匹配，或者与其匹配的点可以重新匹配到其他点，则返回true
+</span></span><span style="display:flex;"><span>        // 这里重新匹配其他点是一个递归的过程，同时也要用到st，防止无限循环
+</span></span><span style="display:flex;"><span>        // st为false而match到其他点的原因是在之前轮次的匹配中的匹配结果
+</span></span><span style="display:flex;"><span>        if (match[j] == 0 || find(match[j])) {
+</span></span><span style="display:flex;"><span>            match[j] = x;
+</span></span><span style="display:flex;"><span>            return true;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    return false;
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>int main() {
+</span></span><span style="display:flex;"><span>    int n1, n2, m;
+</span></span><span style="display:flex;"><span>    scanf(&#34;%d%d%d&#34;, &amp;n1, &amp;n2, &amp;m);
+</span></span><span style="display:flex;"><span>    memset(h, -1, sizeof h);
+</span></span><span style="display:flex;"><span>    while (m --) {
+</span></span><span style="display:flex;"><span>        int a, b;
+</span></span><span style="display:flex;"><span>        scanf(&#34;%d%d&#34;, &amp;a, &amp;b);
+</span></span><span style="display:flex;"><span>        add(a, b);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    int res = 0;
+</span></span><span style="display:flex;"><span>    // 这里是每一轮确定一个点的匹配
+</span></span><span style="display:flex;"><span>    for (int i = 1; i &lt;= n1; i ++) { 
+</span></span><span style="display:flex;"><span>        // 当前轮次所有点都未考虑，置为false
+</span></span><span style="display:flex;"><span>        memset(st, false, sizeof st);
+</span></span><span style="display:flex;"><span>        // 当前点可以实现匹配，则总数+1
+</span></span><span style="display:flex;"><span>        if (find(i)) res ++;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    printf(&#34;%d\n&#34;, res);
+</span></span><span style="display:flex;"><span>    return 0;
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></td></tr></table>
+</div>
+</div>
       </article>
     </section>
 
