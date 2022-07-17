@@ -223,7 +223,7 @@
 </ol>
 <h2 id="jwt的实现方式">Jwt的实现方式</h2>
 <p>以下是在网上找到的流程图：</p>
-<p><img src="......%5Cstatic%5Cpics%5Cjwt1.png" alt="在这里插入图片描述"></p>
+<p><img src="https://aria9766.oss-cn-beijing.aliyuncs.com/blog-pictures/django/jwt1.png" alt="在这里插入图片描述"></p>
 <ol>
 <li>浏览器发起请求登陆</li>
 <li>服务端验证身份，根据算法，将用户标识符打包生成 JWT, 并且返回给浏览器，这里一般存放到localStorage中</li>
@@ -324,7 +324,7 @@ jwt的头部承载着两部分信息。一是声明类型，这里是jwt，二�
 </div>
 </div><p>默认采用的签名算法是HMAC SHA256.产生签名后，这三部分就用点(.)将这三部分连接起来，就组成了完整的jwt。这里的secret是服务器端的密钥，只有服务器端知道（如果泄露则会毫无安全性)。</p>
 <p>实际的jwt(在百度图片上找到的炫酷图片）:</p>
-<p><img src="......%5Cstatic%5Cpics%5Cjwt2.jpg" alt="在这里插入图片描述"></p>
+<p><img src="https://aria9766.oss-cn-beijing.aliyuncs.com/blog-pictures/django/jwt.jpg" alt="在这里插入图片描述"></p>
 <h1 id="jwt的安全问题">JWT的安全问题</h1>
 <p><strong>敏感信息泄露</strong></p>
 <p>上面也说了，jwt的payload是任何人可见的，所以如果这一部分添加有用户的敏感性息，那就会造成敏感信息泄露，（比如账号密码）很好理解。</p>
