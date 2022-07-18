@@ -7,7 +7,7 @@ cover: http://oss.surfaroundtheworld.top/blog-pictures/butterfly.jpg
 # images:
 #   - /img/cover.jpg
 categories:
-  - 周赛算法题
+  - 算法题整理
 tags:
   - 算法题
 # nolastmod: true
@@ -495,6 +495,161 @@ int main() {
         if (q == 1) puts("YES");
         else puts("NO");
     }
+    return 0;
+}
+```
+
+# 59周周赛
+
+## 减法操作
+
+**题目：**https://www.acwing.com/problem/content/4495/
+
+**题意：**
+
+给定一个整数 n，执行如下算法：
+
+1. 如果 n=0，则结束算法。
+2. 找到 n 的最小质因子 d。
+3. 令 n 减去 d 并跳转步骤 1。
+
+请你计算，在算法执行的过程中，一共进行了多少次减法操作。
+
+**思路：**
+
+偶数的最小质因子就是2，每次减2；
+
+奇数的最小质因子一定是奇数，减去之后也变成了偶数；
+
+因此，只要求奇数的最小质因子即可。
+
+```
+#include <iostream>
+#include <cstring>
+using namespace std;
+
+typedef long long LL;
+
+LL get_primes(LL x) {
+    for (LL i = 2; i <= x / i; i ++)
+        if (x % i == 0) return i;
+        
+    return x;
+}
+
+int main() {
+    LL x;
+    cin >> x;
+    LL res = 0;
+    if (x % 2) {
+        LL t = get_primes(x);
+        x -= t;
+        res ++;
+    }
+    res += x / 2;
+    cout << res << endl;
+    return 0;
+}
+```
+
+## 环形连通分量
+
+题目：https://www.acwing.com/problem/content/4496/
+
+题意：
+
+给定一个 n 个点 m 条边组成的无重边无自环的无向图。
+
+请你计算，其包含的所有[连通分量](https://baike.baidu.com/item/连通分量/290350?fr=aladdin)中，有多少个是环形的。
+
+思路：
+
+题目中给的环形的定义是简单环。
+
+判断连通分量的常用解法是并查集。通过并查集判断集合后，判断各个点的度，如果一个集合中存在度不为2的点，则标记该集合无法构成环，最后遍历所有点，找到能构成环的集合个数。
+
+```
+#include <iostream>
+using namespace std;
+
+const int N = 2e5 + 10;
+int d[N], p[N];
+bool st[N];
+
+int find(int x) {
+    if (x != p[x]) p[x] = find(p[x]);
+    return p[x];
+}
+
+int main() {
+    int n, m;
+    scanf("%d%d", &n, &m);
+    for (int i = 1; i <= n; i ++) p[i] = i;
+    while (m --) {
+        int a, b;
+        scanf("%d%d", &a, &b);
+        p[find(a)] = find(b);
+        d[a] ++, d[b] ++;
+    }
+    
+    for (int i = 1; i <= n; i ++)
+        if (d[i] != 2) 
+            st[find(i)] = true;
+     
+    int res = 0;     
+    for (int i = 1; i <= n; i ++)
+        if (p[i] == i && !st[i])
+            res ++;
+            
+    printf("%d\n", res);
+    return 0;
+}
+```
+
+# 60周周赛
+
+## 吃水果
+
+**题目**：https://www.acwing.com/problem/content/4499/
+
+**题意：**
+
+n 个小朋友站成一排，等着吃水果。
+
+一共有 m 种水果，每种水果的数量都足够多。
+
+现在，要给每个小朋友都发一个水果，要求：在所有小朋友都拿到水果后，恰好有 k 个小朋友拿到的水果和其**左边相邻**小朋友拿到的水果**不同**（最左边的小朋友当然**不算数**，即最左边的小朋友不包含在 k 个小朋友内）。
+
+请你计算，一共有多少种不同的分发水果的方案。
+
+**思路：**
+
+DP解法，数据范围2000，说明一般最优解法为二维。
+
+定义`f[i][j]`，定义为前i个人，与左边水果不同的人有j个不同的方案数。考虑状态转移，按照第i个人与左边人（i - 1）所拿水果是否相同分类。与i - 1相同，则对应方案数为`f[i - 1][j]`；不同则对应方案数为`f[i - 1][j - 1]`，同时第i个有m - 1中选择。因此，可以得到：`f[i][j] = (m - 1)f[i - 1][j - 1] + f[i - 1][j]`。
+
+注意，初始化`f[1][0]`对应一个人，有m种方案；同时，j = 0时候，当前i不会与右边不同。以及乘法过程的越界情况需要使用long long。
+
+```
+#include <iostream>
+using namespace std;
+
+typedef long long LL;
+
+const int N = 2010, MOD = 998244353;
+LL f[N][N];
+
+int main() {
+    int n, m, k;
+    cin >> n >> m >> k;
+    f[1][0] = m;
+    for (int i = 2; i <= n; i ++) {
+        for (int j = 0; j < i && j <= k; j ++) {
+            f[i][j] = f[i - 1][j];
+            if (j) f[i][j] = (f[i][j] + f[i - 1][j - 1] * (m - 1LL)) % MOD;  
+        }
+    }
+    cout << f[n][k] << endl;
     return 0;
 }
 ```

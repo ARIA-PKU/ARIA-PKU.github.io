@@ -89,7 +89,7 @@ Websocket的数据传输是frame形式传输的，比如会将一条消息分为
 
  Socket 其实并不是一个协议。它工作在 OSI 模型会话层（第5层），是为了方便大家直接使用更底层协议（一般是 TCP 或 UDP ）而存在的一个抽象层。Socket是对TCP/IP协议的封装，Socket本身并不是协议，而是一个调用接口(API)。
 
-![](..\..\static\pics\socket.jpg)
+![](https://aria9766.oss-cn-beijing.aliyuncs.com/blog-pictures/django/socket.jpg)
 
 Socket通常也称作”套接字”，用于描述IP地址和端口，是一个通信链的句柄。网络上的两个程序通过一个双向的通讯连接实现数据的交换，这个双向链路的一端称为一个Socket，一个Socket由一个IP地址和一个端口号唯一确定。应用程序通常通过”套接字”向网络发出请求或者应答网络请求。
 

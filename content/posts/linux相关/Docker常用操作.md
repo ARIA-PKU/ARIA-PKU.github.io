@@ -3,7 +3,7 @@ title: Docker常用操作
 date: 2022-04-30T20:32:39+08:00
 lastmod: 2022-04-30T20:32:39+08:00
 
-cover: https://oss.surfaroundtheworld.top/blog-pictures/docker.jpg
+cover: http://oss.surfaroundtheworld.top/blog-pictures/docker.jpg
 # images:
 #   - /img/cover.jpg
 categories:

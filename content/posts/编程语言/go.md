@@ -2,7 +2,7 @@
 title: Go语言
 date: 2022-06-15T23:21:48+08:00
 lastmod: 2022-06-15T23:21:48+08:00
-cover: https://oss.surfaroundtheworld.top/blog-pictures/6_15/go.jpg
+cover: http://oss.surfaroundtheworld.top/blog-pictures/6_15/go.jpg
 categories:
   - 编程语言
 tags:

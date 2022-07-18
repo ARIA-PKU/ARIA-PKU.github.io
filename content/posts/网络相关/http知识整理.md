@@ -1,5 +1,5 @@
 ---
-title: Http协议
+title: Http协议从1.0到3.0
 date: 2022-05-16T22:00:56+08:00
 lastmod: 2022-05-16T22:00:56+08:00
 
@@ -18,15 +18,15 @@ draft: false
 
 <!--more-->
 
-# Http
+## Http
 
 http是一种无状态、无连接的应用层协议，主要靠session和cookie进行状态记录，在3.0之前都是基于TCP协议的
 
-## 1、HTTP1.0
+### 1、HTTP1.0
 
 早期版本，默认是短连接，每次都需要重新建立TCP连接，无法复用之前建立的连接。
 
-## 2、HTTP1.1
+### 2、HTTP1.1
 
 继承了HTTP1.0的简单，也解决了性能上的一些问题。
 
@@ -45,7 +45,7 @@ HTTP 1.1管线化(pipelining)理论，客户端可以同时发出多个HTTP请�
 - 注意：这个pipelining仅仅是**限于理论场景下**，大部分桌面浏览器仍然会**选择默认关闭**HTTP pipelining！
 - 所以现在使用HTTP1.1协议的应用，都是有**可能会开多个TCP连接**的！
 
-## 3、HTTP2.0
+### 3、HTTP2.0
 
 对1.x协议语意的完全兼容，2.0协议是在1.x基础上的升级而不是重写，1.x协议的方法，状态及api在2.0协议里是一样的。
 
@@ -59,7 +59,7 @@ http2.0之所以能够突破http1.X标准的性能限制，改进传输性能，
 
 
 
-![图片](https://mmbiz.qpic.cn/mmbiz_png/qMicvibdvl7p3saqATlDB6k03rzfHDibnsKhgWzwkhce01AmXwchJJhrYOBWs4NXspYY9L3wziaLxjoHYxNGoAL70g/640?wx_fmt=png&wxfrom=5&wx_lazy=1&wx_co=1)
+![图片](https://aria9766.oss-cn-beijing.aliyuncs.com/blog-pictures/http/http2.0_structure.jpg)
 
 2） **多路复用 (Multiplexing) / 连接共享**
 
@@ -71,7 +71,7 @@ http 2.0 连接都是持久化的，而且客户端与服务器之间也只需�
 
 
 
-![图片](https://mmbiz.qpic.cn/mmbiz_png/qMicvibdvl7p3saqATlDB6k03rzfHDibnsKUD0icQCcP5QOx2iaWUhDdZE974qRK6rmy98GPlk7DzdxDk1utGAEOvqQ/640?wx_fmt=png&wxfrom=5&wx_lazy=1&wx_co=1)
+![图片](https://aria9766.oss-cn-beijing.aliyuncs.com/blog-pictures/http/http2.0.png)
 
 
 
@@ -79,7 +79,7 @@ http 2.0 连接都是持久化的，而且客户端与服务器之间也只需�
 
 
 
-![图片](https://mmbiz.qpic.cn/mmbiz_png/qMicvibdvl7p3saqATlDB6k03rzfHDibnsKQgfiaAic60DmWkDib8LUhiaLmfibc8ICW0xVwyXmoxWqrwGwfFDox8xbUGA/640?wx_fmt=png&wxfrom=5&wx_lazy=1&wx_co=1)
+![图片](https://aria9766.oss-cn-beijing.aliyuncs.com/blog-pictures/http/http2.0_transfer.jpg)
 
 
 
@@ -128,7 +128,7 @@ http/2使用的是专门为首部压缩而设计的HPACK算法。压缩的原理
 
 
 
-![图片](https://mmbiz.qpic.cn/mmbiz_png/qMicvibdvl7p3saqATlDB6k03rzfHDibnsKtnRc9hVCeoibb3wBlPyuNKqOPqsWS2ibwxh0tu3SsNiayJO1RiayxJ5Efw/640?wx_fmt=png&wxfrom=5&wx_lazy=1&wx_co=1)
+![图片](https://aria9766.oss-cn-beijing.aliyuncs.com/blog-pictures/http/http2.0_connection.png)
 
 
 
@@ -144,7 +144,7 @@ http/2使用的是专门为首部压缩而设计的HPACK算法。压缩的原理
 
 启用http2.0后会给性能带来很大的提升，但同时也会带来新的性能瓶颈。因为现在所有的压力集中在底层一个TCP连接之上，TCP很可能就是下一个性能瓶颈，比如TCP分组的队首阻塞问题，单个TCP packet丢失导致整个连接阻塞，无法逃避，此时所有消息都会受到影响。未来，服务器端针对http 2.0下的TCP配置优化至关重要。
 
-## 4、HTTP3.0
+### 4、HTTP3.0
 
 Google搞了一个基于UDP协议的QUIC协议，并且使用在了HTTP/3上， HTTP/3之前的名称为HTTP-over-QUIC。
 
@@ -195,8 +195,8 @@ QUIC协议有一个非常独特的特性，称为向前纠错（Foward Error Con
 
 ## 5、参考文章
 
-1、深入理解http2.0协议，看这篇就够了！https://mp.weixin.qq.com/s/a83_NE-ww36FZsy320MQFQ
+1、[深入理解http2.0协议，看这篇就够了！](https://mp.weixin.qq.com/s/a83_NE-ww36FZsy320MQFQ)
 
 2、https://www.zhihu.com/question/306768582/answer/595200654
 
-3、快速掌握HTTP 1.0 1.1 2.0 3.0 的特点及其区别 https://zhuanlan.zhihu.com/p/266578819
+3、[快速掌握HTTP 1.0 1.1 2.0 3.0 的特点及其区别](https://zhuanlan.zhihu.com/p/266578819)

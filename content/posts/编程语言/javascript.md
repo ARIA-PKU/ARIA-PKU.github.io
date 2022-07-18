@@ -3,7 +3,7 @@ title: Javascript
 date: 2022-06-15T23:22:22+08:00
 lastmod: 2022-06-15T23:22:22+08:00
 
-cover: https://oss.surfaroundtheworld.top/blog-pictures/6_22/js.jpg
+cover: http://oss.surfaroundtheworld.top/blog-pictures/6_22/js.jpg
 # images:
 #   - /img/cover.jpg
 categories:

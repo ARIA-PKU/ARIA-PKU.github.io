@@ -35,7 +35,7 @@ JWT全称Json Web Token。是跨域身份认证的一种方式。JWT的声明一
 
 以下是在网上找到的流程图：
 
-![在这里插入图片描述](..\..\..\static\pics\jwt1.png)
+![在这里插入图片描述](https://aria9766.oss-cn-beijing.aliyuncs.com/blog-pictures/django/jwt1.png)
 
 1. 浏览器发起请求登陆
 2. 服务端验证身份，根据算法，将用户标识符打包生成 JWT, 并且返回给浏览器，这里一般存放到localStorage中
@@ -128,7 +128,7 @@ HMACSHA256(
 
 实际的jwt(在百度图片上找到的炫酷图片）:
 
-![在这里插入图片描述](..\..\..\static\pics\jwt2.jpg)
+![在这里插入图片描述](https://aria9766.oss-cn-beijing.aliyuncs.com/blog-pictures/django/jwt.jpg)
 
 
 

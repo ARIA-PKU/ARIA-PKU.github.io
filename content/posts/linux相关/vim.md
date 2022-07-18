@@ -2,10 +2,8 @@
 title: vim常用操作
 date: 2022-05-01T19:04:18+08:00
 lastmod: 2022-05-01T19:04:18+08:00
-# author: Author Name
-# avatar: /img/author.jpg
-# authorlink: https://author.site
-cover: https://oss.surfaroundtheworld.top/blog-pictures/cup_purple.jpg
+
+cover: http://oss.surfaroundtheworld.top/blog-pictures/cup_purple.jpg
 # images:
 #   - /img/cover.jpg
 categories:
@@ -17,7 +15,7 @@ tags:
 draft: false
 ---
 
-整理了vim的命令常用的操作。封面来自pivix的[チャイ](https://www.pixiv.net/users/1096811)画师，内容整理自y总课程。
+整理了vim的命令常用的操作。
 
 <!--more-->
 

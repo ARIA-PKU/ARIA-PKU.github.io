@@ -17,9 +17,13 @@ draft: false
 
 <!--more-->
 
-## 背景介绍
+## lab介绍
 
 在（一）中的lab2中，实现了raft系统的选举，日志同步与持久化。lab3则是在lab2的基础上，实现基于raft的高可用的KV存储服务，支持相应的操作并实现日志压缩的功能。
+
+## 项目地址
+
+lab的代码地址：https://github.com/ARIA-PKU/MIT6.824
 
 ## 线性化语义
 

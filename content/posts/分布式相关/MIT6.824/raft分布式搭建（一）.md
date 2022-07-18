@@ -17,11 +17,15 @@ draft: false
 
 <!--more-->
 
-## 背景介绍
+## lab介绍
 
 整个项目是MIT6.824中[lab2](http://nil.csail.mit.edu/6.824/2020/labs/lab-raft.html)，[lab3](http://nil.csail.mit.edu/6.824/2020/labs/lab-kvraft.html)与[lab4](http://nil.csail.mit.edu/6.824/2020/labs/lab-shard.html)包括challenge的通过go语言实现的完整版本。实现了raft选举，在raft之上的KV服务以及shard服务等，以及实现了快照，崩溃恢复等功能以达到高可用的目的。
 
 课程中关于代码的编写也给了一些建议，关于整体结构设计的[structure](http://nil.csail.mit.edu/6.824/2020/labs/raft-structure.txt)，关于go中锁使用的[lock](http://nil.csail.mit.edu/6.824/2020/labs/raft-locking.txt)，以及其他建议的[guide](https://thesquareplanet.com/blog/students-guide-to-raft/)。以上都可以帮助在代码实现中少走弯路。但是整体系统在各个地方的细节都很多，不能忽略论文中的每一处细节。
+
+## 项目地址
+
+lab的代码地址：https://github.com/ARIA-PKU/MIT6.824
 
 ## 如何搭建一个raft系统
 

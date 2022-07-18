@@ -18,15 +18,15 @@ draft: false
 
 <!--more-->
 
-#  一、MySQL 的 delete、truncate、drop 有什么区别?
+##  一、MySQL 的 delete、truncate、drop 有什么区别?
 
-## 从执行速度上来说
+**从执行速度上来说**
 
 drop > truncate >> DELETE
 
-## 从原理上讲
+**从原理上来说**
 
-## **1、DELETE**
+### **1、DELETE**
 
 ```text
 DELETE from TABLE_NAME where xxx
@@ -46,7 +46,7 @@ DELETE from TABLE_NAME where xxx
 
 7、delete 操作是一行一行执行删除的，并且同时将该行的的删除操作日志记录在redo和undo表空间中以便进行回滚（rollback）和重做操作，生成的大量日志也会占用磁盘空间。
 
-## **2、truncate**
+### **2、truncate**
 
 ```text
 Truncate table TABLE_NAME
@@ -67,9 +67,9 @@ Truncate table TABLE_NAME
 
 也就是说，InnoDB的表本身是无法持久保存auto_increment。delete表之后auto_increment仍然保存在内存，但是重启后就丢失了，只能从1开始。实质上重启后的auto_increment会从 SELECT 1+MAX(ai_col) FROM t 开始。
 
-4、 小心使用 truncate，尤其没有备份的时候，如果误删除线上的表，记得及时联系中国民航，订票电话：400-806-9553
+4、 小心使用 truncate，尤其没有备份的时候
 
-## **3、drop**
+### **3、drop**
 
 ```text
 Drop table Tablename
@@ -85,7 +85,7 @@ Drop table Tablename
 
 可以这么理解，一本书，delete是把目录撕了，truncate是把书的内容撕下来烧了，drop是把书烧了
 
-# 二、sql的执行顺序
+## 二、sql的执行顺序
 
 SELECT语句中子句的执行顺序与SELECT语句中子句的输入顺序是不一样的，所以并不是从SELECT子句开始执行的，而是按照下面的顺序执行： 
 
@@ -120,6 +120,43 @@ order by max总成绩
 
 　　 (7). 执行 ORDER BY 子句, 把最后的结果按 "Max 成绩" 进行排序. 
 
+## 三、记录锁、间隙锁与next-key lock
+
+在RR的隔离级别下，存在幻读的情况。其解决方式是MVCC + Next-Key Lock，对于MVCC的读分为两种分别是快照读和当前读。其中，当前读就是简单的select，查询的都是快照版本，因此不会存在幻读的问题；因此，讨论的幻读都是发生在当前读的场景下。
+
+当前读指的是 lock in share mode、for update、insert以及delete这些需要加锁的操作，在当前读的场景下通过Next-Key Lock解决幻读问题。
+
+对mysql来说，实现了两种行级锁，共享锁（读锁）与排他锁（写锁）。行锁的实现算法有三种，分别是Record Lock（记录锁）、Gap Lock（间隙锁）以及Next-Key Lock。
+
+- Record Lock，实际上指的是对索引记录的锁定。
+
+  比如执行语句`select * from user where age=10 for update`，将会锁住`user`表所有`age=10`的行记录，所有对`age=10`的记录的操作都会被阻塞。
+
+- Gap Lock，也就是**间隙锁**，它用于锁定的索引之间的间隙，但是不会包含记录本身。
+
+  比如语句`select * from user where age>1 and age<10 for update`，将会锁住`age`在(1,10)的范围区间，此时其他事务对该区间的操作都会被阻塞。
+
+- **Next-Key Lock**，实际上就是相当于Record Lock+Gap Lock的组合。比如索引有10，20，30几个值，那么被锁住的区间可能会是(-∞,10]，(10,20]，(20,30]，(30,+∞)。
+
+### 如何解决幻读问题？
+
+1、没有索引
+
+操作的行数据没有索引，则存储引擎会将所有记录加锁，并且所有间隙也会加锁，因此相当于把整个表锁住了。
+
+2、普通索引
+
+假设数据库中有10， 20， 30的数据，并且是普通索引，执行`select * from user where age=20 for update`，则会在20上加行锁，在（10， 20）和（20， 30）之间加间隙锁。
+
+3、唯一或主键索引
+
+如果是唯一索引或者主键索引的话，并且是等值查询，实际上会发生锁降级，降级为Record Lock，就不会有间隙锁了。
+
+因为主键或者唯一索引能保证值是唯一的，所以也就不需要再增加间隙锁了。
+
 # 参考文章
 
 1、https://zhuanlan.zhihu.com/p/270331768
+
+2、[拿捏！隔离级别、幻读、Gap Lock、Next-Key Lock](https://zhuanlan.zhihu.com/p/402591869)
+

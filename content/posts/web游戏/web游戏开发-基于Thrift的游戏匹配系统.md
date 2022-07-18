@@ -50,7 +50,7 @@ Thrift 采用**IDL**（Interface Definition Language）来定义通用的服务�
 
 关于其网络栈，在网上找到的图片：
 
-![image.png](https://oss.surfaroundtheworld.top/blog-pictures/6_15/thrift.jpg)
+![image.png](http://oss.surfaroundtheworld.top/blog-pictures/6_15/thrift.jpg)
 
 下面两层为数据传输层：
 

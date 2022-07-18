@@ -7,7 +7,7 @@ cover: http://oss.surfaroundtheworld.top/blog-pictures/butterfly.jpg
 # images:
 #   - /img/cover.jpg
 categories:
-  - 周赛算法题
+  - 算法题整理
 tags:
   - leetcode
   - 算法题

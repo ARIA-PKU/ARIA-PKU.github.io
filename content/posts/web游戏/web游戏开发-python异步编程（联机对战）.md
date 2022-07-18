@@ -21,9 +21,9 @@ draft: false
 
 <!--more-->
 
-# 一、Python的异步编程
+## 一、Python的异步编程
 
-## 1、产生背景
+### 1、产生背景
 
 历史上，Python 并不支持专门的异步编程语法，因为不需要。
 
@@ -33,7 +33,7 @@ draft: false
 
 Python 3.4 引入了 `asyncio` 模块，增加了异步编程，跟 JavaScript 的`async/await` 极为类似，大大方便了异步任务的处理。它受到了开发者的欢迎，成为从 Python 2 升级到 Python 3 的主要理由之一。
 
-## 2、进程、线程与协程
+### 2、进程、线程与协程
 
 举个例子：假设有1个洗衣房，里面有10台洗衣机，有一个洗衣工在负责这10台洗衣机。那么洗衣房就相当于1个进程，洗衣工就相当1个线程。如果有10个洗衣工，就相当于10个线程，1个进程是可以开多线程的。这就是多线程！
 
@@ -41,7 +41,7 @@ Python 3.4 引入了 `asyncio` 模块，增加了异步编程，跟 JavaScript �
 
 在python中，async与await就是协程的一种实现方式。
 
-## 3、async和await的使用
+### 3、async和await的使用
 
 正常的函数在执行时是不会中断的，所以你要写一个能够中断的函数，就需要添加async关键字。
 
@@ -49,15 +49,15 @@ async 用来声明一个函数为异步函数，异步函数的特点是能在�
 
 await 用来用来声明程序挂起，比如异步程序执行到某一步时需要等待的时间很长，就将此挂起，去执行其他的异步程序。await 后面只能跟异步程序或有__await__属性的对象，因为异步程序与一般程序不同。假设有两个异步函数async a，async b，a中的某一步有await，当程序碰到关键字await b()后，异步程序挂起后去执行另一个异步b程序，就是从函数内部跳出去执行其他函数，**当挂起条件消失后，不管b是否执行完，要马上从b程序中跳出来**，回到原程序执行原来的操作。如果await后面跟的b函数不是异步函数，那么操作就只能等b执行完再返回，无法在b执行的过程中返回。如果要在b执行完才返回，也就不需要用await关键字了，直接调用b函数就行。所以这就需要await后面跟的是异步函数了。在一个异步函数中，可以不止一次挂起，也就是可以用多个await。
 
-# 二、Django Channels
+## 二、Django Channels
 
-## 1、概念
+### 1、概念
 
 django的channels在官方文档里有着很详细的介绍，这里只总结一下项目用到的部分。
 
 首先，官方表面整个channels遵循“turtles all the way down” 的原则，搜了一下，发现这背后还有一个典故，大概就是我们的世界是在一个乌龟的背上，而乌龟的下面是一个又一个乌龟驮着的乌龟群。作者这里在后面解释了一下，所有的channels的应用都是一整个有效的，可以自己运行的ASGI（ASGI is the name for the asynchronous server specification that Channels is built on.）应用。
 
-## 2、channels中的消费者
+### 2、channels中的消费者
 
 消费者是 Channels 代码的基本单位。我们称它为*消费者*，因为它 *消费事件*，但您可以将其视为它自己的小应用程序。当一个请求或新套接字进来时，Channels 将遵循它的路由表——我们稍后会看一下——为那个传入连接找到正确的消费者，并启动它的副本。
 
@@ -101,7 +101,7 @@ class PingConsumer(AsyncConsumer):
         })
 ```
 
-## 3、路由
+### 3、路由
 
 您可以将多个使用者（记住，他们自己的 ASGI 应用程序）组合成一个更大的应用程序，使用路由来代表您的项目：
 
@@ -143,11 +143,11 @@ application = ProtocolTypeRouter({
 
 Channels 的目标是让您构建您的 Django 项目以跨现代网络中可能遇到的任何协议或传输方式工作，同时让您使用熟悉的组件和编码风格。
 
-## 4、进程间通信
+### 4、进程间通信
 
 通道层允许您在应用程序的不同实例之间进行对话。如果您不想让所有消息或事件通过数据库传送，它们是制作分布式实时应用程序的有用部分。
 
-#### 1）Redis 通道层
+##### 1）Redis 通道层
 
 [channels_redis](https://pypi.org/project/channels-redis/)是唯一支持生产使用的官方 Django 维护的通道层。该层使用 Redis 作为其后备存储，它支持单服务器和分片配置以及组支持。要使用这一层，您需要安装[channels_redis](https://pypi.org/project/channels-redis/) 包。
 
@@ -166,7 +166,7 @@ CHANNEL_LAYERS = {
 
 同时还支持内存通道层，但是官方建议不要在生产中使用内存通道层的配置，因此一般只会使用Redis通道层。
 
-#### 2）同步函数
+##### 2）同步函数
 
 默认情况下`send()`，`group_send()`、`group_add()`和其他函数是异步函数，这意味着您必须使用`await`它们。如果您需要从同步代码中调用它们，则需要使用方便的 `asgiref.sync.async_to_sync`包装器：
 
@@ -176,7 +176,7 @@ from asgiref.sync import async_to_sync
 async_to_sync(channel_layer.send)("channel_name", {...})
 ```
 
-#### 3）发送消息
+##### 3）发送消息
 
 通道层用于高级应用程序到应用程序的通信。当您发送消息时，它会被另一端收听组或频道的消费者接收。这意味着您应该通过通道层发送高级事件，然后让消费者处理这些事件，并对其连接的客户端进行适当的低级联网。
 
@@ -216,11 +216,7 @@ async def chat_message(self, event):
 
 发送到该通道名称（或通道名称添加到的组）的任何消息都将被消费者接收，就像来自其连接客户端的事件一样，并分派到消费者上的命名方法。该方法的名称将是`type`事件的名称，其中句点替换为下划线 - 因此，例如，通过通道层传入的事件`type`将由`chat.join`该方法处理`chat_join`。
 
-笔记
-
-如果您从`AsyncConsumer`类树继承，您的所有事件处理程序，包括通道层上的事件处理程序，都必须是异步的 ( )。如果您在类树中，则它们都必须是同步的 ( )。`async def``SyncConsumer``def`
-
-#### 4）单通道
+##### 4）单通道
 
 每个应用程序实例 - 例如，每个长时间运行的 HTTP 请求或打开的 WebSocket - 都会产生一个消费者实例，如果您启用了通道层，消费者将为自己生成一个唯一的*通道名称*，并开始监听它事件。
 
@@ -259,7 +255,7 @@ await channel_layer.send("channel_name", {
 })
 ```
 
-#### 5）Groups，通道中的广播机制
+##### 5）Groups，通道中的广播机制
 
 显然，发送到单个channels并不是特别有用 - 在大多数情况下，您希望一次发送到多个channels/消费者作为广播。不仅适用于聊天等情况，您希望将传入消息发送给房间中的每个人，甚至可以发送给可能连接了多个浏览器选项卡或设备的个人用户。
 
@@ -306,7 +302,7 @@ class ChatConsumer(WebsocketConsumer):
         self.send(text_data=event["text"])
 ```
 
-#### 6) 在消费者之外调用通道函数
+##### 6) 在消费者之外调用通道函数
 
 通常希望从消费者范围之外发送到通道层，因此不会有`self.channel_layer`. 在这种情况下，应该使用该`get_channel_layer`函数来检索它：
 
@@ -333,12 +329,12 @@ from asgiref.sync import async_to_sync
 async_to_sync(channel_layer.group_send)("chat", {"type": "chat.force_disconnect"})
 ```
 
-## 6、部署配置
+### 6、部署配置
 
 在~/webapp目录下执行：
 
 `daphne -b 0.0.0.0 -p 5015 acapp.asgi:application`，启动django_channels服务。
 
-# 参考资料
+## 参考资料
 
 1、django channels官方文档： https://channels.readthedocs.io/en/latest/

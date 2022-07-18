@@ -2,10 +2,7 @@
 title: Vscode使用日志
 date: 2022-05-04T15:34:40+08:00
 lastmod: 2022-05-04T15:34:40+08:00
-# author: Author Name
-# avatar: /img/author.jpg
-# authorlink: https://author.site
-cover: https://oss.surfaroundtheworld.top/blog-pictures/snow.jpg
+cover: http://oss.surfaroundtheworld.top/blog-pictures/snow.jpg
 # images:
 #   - /img/cover.jpg
 categories:
