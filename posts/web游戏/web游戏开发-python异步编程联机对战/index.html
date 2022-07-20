@@ -476,8 +476,6 @@
 </div>
 </div><p>任何基于 Channels 的消费者<code>SyncConsumer</code>或<code>AsyncConsumer</code>将自动为您提供一个<code>self.channel_layer</code>and<code>self.channel_name</code> 属性，其中包含指向通道层实例的指针和将分别到达消费者的通道名称。</p>
 <p>发送到该通道名称（或通道名称添加到的组）的任何消息都将被消费者接收，就像来自其连接客户端的事件一样，并分派到消费者上的命名方法。该方法的名称将是<code>type</code>事件的名称，其中句点替换为下划线 - 因此，例如，通过通道层传入的事件<code>type</code>将由<code>chat.join</code>该方法处理<code>chat_join</code>。</p>
-<p>笔记</p>
-<p>如果您从<code>AsyncConsumer</code>类树继承，您的所有事件处理程序，包括通道层上的事件处理程序，都必须是异步的 ( )。如果您在类树中，则它们都必须是同步的 ( )。<code>async def``SyncConsumer``def</code></p>
 <h5 id="4单通道">4）单通道</h5>
 <p>每个应用程序实例 - 例如，每个长时间运行的 HTTP 请求或打开的 WebSocket - 都会产生一个消费者实例，如果您启用了通道层，消费者将为自己生成一个唯一的<em>通道名称</em>，并开始监听它事件。</p>
 <p>这意味着您可以从流程外部（可能来自其他消费者，或来自管理命令）发送这些消费者事件，他们将对它们做出反应并运行代码，就像他们从客户端连接中发送事件一样。</p>
@@ -861,6 +859,10 @@
     
       
     
+      
+    
+      
+    
     
 
     
@@ -966,8 +968,8 @@
           
           
           
-            <a class="ui label" href="/tags/go/" title="go">
-              go
+            <a class="ui label" href="/tags/golang/" title="golang">
+              golang
             </a>
           
           
@@ -1034,6 +1036,12 @@
           
             <a class="ui label" href="/tags/mit6.824/" title="MIT6.824">
               MIT6.824
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/mit6.828/" title="MIT6.828">
+              MIT6.828
             </a>
           
           
@@ -1160,6 +1168,12 @@
           
             <a class="ui label" href="/tags/%E4%BD%8D%E8%BF%90%E7%AE%97/" title="位运算">
               位运算
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81/" title="分布式锁">
+              分布式锁
             </a>
           
           

@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-    <title>Go语言 | Aria&#39;s Blog</title>
+    <title>Golang | Aria&#39;s Blog</title>
 
     
 <link href="/header/icon.jpg" rel="shortcut icon" type="image/x-icon" />
@@ -23,7 +23,7 @@
 <link rel="canonical" href="https://blog.surfaroundtheworld.top/posts/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/go/" />
 
 
-<meta property="og:title" content="Go语言" />
+<meta property="og:title" content="Golang" />
 <meta property="og:description" content="总结一下在go语言的学习与实践中学到的知识" />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://blog.surfaroundtheworld.top/posts/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/go/" /><meta property="og:image" content="http://oss.surfaroundtheworld.top/blog-pictures/6-16/edge_of_planet.jpg"/><meta property="article:section" content="posts" />
@@ -36,7 +36,7 @@
 <meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:image" content="http://oss.surfaroundtheworld.top/blog-pictures/6-16/edge_of_planet.jpg"/>
 
-<meta name="twitter:title" content="Go语言"/>
+<meta name="twitter:title" content="Golang"/>
 <meta name="twitter:description" content="总结一下在go语言的学习与实践中学到的知识"/>
 
 
@@ -152,6 +152,8 @@
         <li><a href="#2defer">2、defer</a></li>
         <li><a href="#3go的并发">3、Go的并发</a></li>
         <li><a href="#4context">4、Context</a></li>
+        <li><a href="#5go中的继承与多态">5、go中的&quot;继承&quot;与多态</a></li>
+        <li><a href="#52通过组合实现多态">5.2、通过组合实现多态</a></li>
       </ul>
     </li>
     <li><a href="#三使用小技巧">三、使用小技巧</a>
@@ -173,7 +175,7 @@
   <div class="sixteen wide mobile sixteen wide tablet ten wide computer column markdown-body dream-single" id="dream-save-post-as-img">
     <section class="ui segment">
       <header>
-        <h1 class="ui large header">Go语言<span class="sub header">
+        <h1 class="ui large header">Golang<span class="sub header">
             <span class="left">
               @
               
@@ -184,7 +186,7 @@
                   <span data-format="luxon">2022-06-15T23:21:48&#43;08:00</span>
                 
 
-              | 16 分钟阅读
+              | 18 分钟阅读
 
               
               | 更新于
@@ -199,7 +201,7 @@
   <a href="#" class="save-as-image" title="保存为图片" onclick="savePostAsImg()">
     <i class="save icon"></i>
   </a>
-  <a href="https://twitter.com/intent/tweet?text=Go%e8%af%ad%e8%a8%80&url=https%3a%2f%2fblog.surfaroundtheworld.top%2fposts%2f%25E7%25BC%2596%25E7%25A8%258B%25E8%25AF%25AD%25E8%25A8%2580%2fgo%2f" title="Twitter">
+  <a href="https://twitter.com/intent/tweet?text=Golang&url=https%3a%2f%2fblog.surfaroundtheworld.top%2fposts%2f%25E7%25BC%2596%25E7%25A8%258B%25E8%25AF%25AD%25E8%25A8%2580%2fgo%2f" title="Twitter">
     <i class="twitter icon"></i>
   </a>
   <a href="https://facebook.com/sharer/sharer.php?u=https%3a%2f%2fblog.surfaroundtheworld.top%2fposts%2f%25E7%25BC%2596%25E7%25A8%258B%25E8%25AF%25AD%25E8%25A8%2580%2fgo%2f" title="Facebook">
@@ -787,7 +789,186 @@
 </span></span></code></pre></td></tr></table>
 </div>
 </div><p>上面的示例代码中，<code>gen</code>函数在单独的goroutine中生成整数并将它们发送到返回的通道。 gen的调用者在使用生成的整数之后需要取消上下文，以免<code>gen</code>启动的内部goroutine发生泄漏。</p>
-<h2 id="三使用小技巧">三、使用小技巧</h2>
+<h3 id="5go中的继承与多态">5、go中的&quot;继承&quot;与多态</h3>
+<p>Go语言中没有类的概念，也不支持类的继承等面向对象的概念。Go中通过结构体内嵌和接口两种方式实现了具有更高扩展性和灵活性的功能。</p>
+<h4 id="51go只有组合没有继承">5.1、go只有组合没有继承</h4>
+<p>go中利用了结构体的组合实现了其他语言中继承的功能，本质上是一种语法糖：</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">23
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">24
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">25
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">26
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">27
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">28
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">29
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>//Animal 动物
+</span></span><span style="display:flex;"><span>type Animal struct {
+</span></span><span style="display:flex;"><span>	name string
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>func (a *Animal) move() {
+</span></span><span style="display:flex;"><span>	fmt.Printf(&#34;%s会动！\n&#34;, a.name)
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>//Dog 狗
+</span></span><span style="display:flex;"><span>type Dog struct {
+</span></span><span style="display:flex;"><span>	Feet    int8
+</span></span><span style="display:flex;"><span>	*Animal //通过嵌套匿名结构体实现继承
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>func (d *Dog) wang() {
+</span></span><span style="display:flex;"><span>	fmt.Printf(&#34;%s会汪汪汪~\n&#34;, d.name)
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>func main() {
+</span></span><span style="display:flex;"><span>	d1 := &amp;Dog{
+</span></span><span style="display:flex;"><span>		Feet: 4,
+</span></span><span style="display:flex;"><span>		Animal: &amp;Animal{ //注意嵌套的是结构体指针
+</span></span><span style="display:flex;"><span>			name: &#34;乐乐&#34;,
+</span></span><span style="display:flex;"><span>		},
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>	d1.wang() //乐乐会汪汪汪~
+</span></span><span style="display:flex;"><span>	d1.move() //乐乐会动！
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="52通过组合实现多态">5.2、通过组合实现多态</h3>
+<p>多态指的是代码可以根据类型的不同执行不同的操作。</p>
+<p>一个类型可以实现多个接口，多个接口实现实现同一类型，根据实际可以灵活应用。</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">23
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">24
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">25
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">26
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">27
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">28
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">29
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">30
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">31
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">32
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">33
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">34
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">35
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">36
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">37
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">38
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">39
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">40
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">41
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">42
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">43
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">44
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">45
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">46
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">47
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">48
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">49
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">50
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">51
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#6272a4">/* 多态行为的例子 */</span>
+</span></span><span style="display:flex;"><span><span style="color:#ff79c6">package</span> main
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#ff79c6">import</span> <span style="color:#f1fa8c">&#34;fmt&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#8be9fd;font-style:italic">type</span> notifer <span style="color:#8be9fd;font-style:italic">interface</span> {
+</span></span><span style="display:flex;"><span>   <span style="color:#50fa7b">notify</span>()
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#8be9fd;font-style:italic">type</span> user <span style="color:#8be9fd;font-style:italic">struct</span> {
+</span></span><span style="display:flex;"><span>   name <span style="color:#8be9fd">string</span>
+</span></span><span style="display:flex;"><span>   email <span style="color:#8be9fd">string</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#8be9fd;font-style:italic">type</span> admin <span style="color:#8be9fd;font-style:italic">struct</span> {
+</span></span><span style="display:flex;"><span>   name <span style="color:#8be9fd">string</span>
+</span></span><span style="display:flex;"><span>   age  <span style="color:#8be9fd">int</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#8be9fd;font-style:italic">type</span> ad <span style="color:#8be9fd;font-style:italic">struct</span> {
+</span></span><span style="display:flex;"><span>   name <span style="color:#8be9fd">string</span>
+</span></span><span style="display:flex;"><span>   age  <span style="color:#8be9fd">int</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#6272a4">//使用指针接收者实现了notofy接口,方法会共享接收者所指向的值user
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span><span style="color:#8be9fd;font-style:italic">func</span> (u <span style="color:#ff79c6">*</span>user) <span style="color:#50fa7b">notify</span>()  {
+</span></span><span style="display:flex;"><span>   fmt.<span style="color:#50fa7b">Println</span>(<span style="color:#f1fa8c">&#34;sendNotify to user&#34;</span>, u.name)
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#6272a4">//使用值接收者实现了notify接口,方法使用u值的副本,对u的修改不会影响原值
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span><span style="color:#8be9fd;font-style:italic">func</span> (u admin) <span style="color:#50fa7b">notify</span>(){
+</span></span><span style="display:flex;"><span>   fmt.<span style="color:#50fa7b">Println</span>(<span style="color:#f1fa8c">&#34;sendNotify to admin:&#34;</span>, u.name)
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#6272a4">//接收一个notifer接口类型的值，如果一个实体类型实现了该接口，
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4">//sendNotify函数会根据实体类型的值类执行notifer接口的notify行为，这个函数具有多态的能力。
+</span></span></span><span style="display:flex;"><span><span style="color:#6272a4"></span><span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">sendNotify</span>(n notifer){
+</span></span><span style="display:flex;"><span>   n.<span style="color:#50fa7b">notify</span>()
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#8be9fd;font-style:italic">func</span> <span style="color:#50fa7b">main</span>()  {
+</span></span><span style="display:flex;"><span>   user1 <span style="color:#ff79c6">:=</span> user{<span style="color:#f1fa8c">&#34;张三&#34;</span>, <span style="color:#f1fa8c">&#34;qq@qq.com&#34;</span>}
+</span></span><span style="display:flex;"><span>   <span style="color:#50fa7b">sendNotify</span>(<span style="color:#ff79c6">&amp;</span>user1)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>   user2 <span style="color:#ff79c6">:=</span> admin{<span style="color:#f1fa8c">&#34;李四&#34;</span>, <span style="color:#bd93f9">25</span>}
+</span></span><span style="display:flex;"><span>   <span style="color:#50fa7b">sendNotify</span>(user2)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>   <span style="color:#8be9fd;font-style:italic">var</span> n notifer
+</span></span><span style="display:flex;"><span>   n = <span style="color:#ff79c6">&amp;</span>user1
+</span></span><span style="display:flex;"><span>   n.<span style="color:#50fa7b">notify</span>()
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="三使用小技巧">三、使用小技巧</h2>
 <h3 id="1空-struct-的用途">1、空 struct{} 的用途</h3>
 <p>使用空结构体 struct{} 可以节省内存，一般作为占位符使用，表明这里并不需要一个值。</p>
 <p>比如使用 map 表示集合时，只关注 key，value 可以使用 struct{} 作为占位符。如果使用其他类型作为占位符，例如 int，bool，不仅浪费了内存，而且容易引起歧义。</p>
@@ -1104,6 +1285,10 @@
     
       
     
+      
+    
+      
+    
     
 
     
@@ -1209,8 +1394,8 @@
           
           
           
-            <a class="ui label" href="/tags/go/" title="go">
-              go
+            <a class="ui label" href="/tags/golang/" title="golang">
+              golang
             </a>
           
           
@@ -1277,6 +1462,12 @@
           
             <a class="ui label" href="/tags/mit6.824/" title="MIT6.824">
               MIT6.824
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/mit6.828/" title="MIT6.828">
+              MIT6.828
             </a>
           
           
@@ -1403,6 +1594,12 @@
           
             <a class="ui label" href="/tags/%E4%BD%8D%E8%BF%90%E7%AE%97/" title="位运算">
               位运算
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81/" title="分布式锁">
+              分布式锁
             </a>
           
           

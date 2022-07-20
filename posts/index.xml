@@ -7,7 +7,25 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-Hans</language>
     <copyright>&lt;a rel=&#34;license&#34; href=&#34;http://creativecommons.org/licenses/by-nc-sa/4.0/&#34;&gt;&lt;img alt=&#34;知识共享许可协议&#34; style=&#34;border-width:0&#34; src=&#34;https://i.creativecommons.org/l/by-nc-sa/4.0/88x31.png&#34; /&gt;&lt;/a&gt;&lt;br /&gt;本作品采用&lt;a rel=&#34;license&#34; href=&#34;http://creativecommons.org/licenses/by-nc-sa/4.0/&#34;&gt;知识共享署名-非商业性使用-相同方式共享 4.0 国际许可协议&lt;/a&gt;进行许可。&lt;br /&gt;</copyright>
-    <lastBuildDate>Thu, 14 Jul 2022 19:36:33 +0800</lastBuildDate><atom:link href="https://blog.surfaroundtheworld.top/posts/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Wed, 20 Jul 2022 13:08:09 +0800</lastBuildDate><atom:link href="https://blog.surfaroundtheworld.top/posts/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>MIT6.828</title>
+      <link>https://blog.surfaroundtheworld.top/posts/os/mit6.828/lab/</link>
+      <pubDate>Wed, 20 Jul 2022 13:08:09 +0800</pubDate>
+      
+      <guid>https://blog.surfaroundtheworld.top/posts/os/mit6.828/lab/</guid>
+      <description>&lt;p&gt;MIT6.828学习笔记&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>Redis的分布式锁</title>
+      <link>https://blog.surfaroundtheworld.top/posts/%E6%95%B0%E6%8D%AE%E5%BA%93%E7%9B%B8%E5%85%B3/redis%E7%9A%84%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81/</link>
+      <pubDate>Sun, 17 Jul 2022 19:50:23 +0800</pubDate>
+      
+      <guid>https://blog.surfaroundtheworld.top/posts/%E6%95%B0%E6%8D%AE%E5%BA%93%E7%9B%B8%E5%85%B3/redis%E7%9A%84%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81/</guid>
+      <description>&lt;p&gt;redis用于分布式锁&lt;/p&gt;</description>
+    </item>
+    
     <item>
       <title>Raft分布式搭建（三）</title>
       <link>https://blog.surfaroundtheworld.top/posts/%E5%88%86%E5%B8%83%E5%BC%8F%E7%9B%B8%E5%85%B3/mit6.824/raft%E5%88%86%E5%B8%83%E5%BC%8F%E6%90%AD%E5%BB%BA%E4%B8%89/</link>
@@ -126,12 +144,12 @@
     </item>
     
     <item>
-      <title>Redis</title>
-      <link>https://blog.surfaroundtheworld.top/posts/%E6%95%B0%E6%8D%AE%E5%BA%93%E7%9B%B8%E5%85%B3/redis/</link>
+      <title>Redis的原理与使用</title>
+      <link>https://blog.surfaroundtheworld.top/posts/%E6%95%B0%E6%8D%AE%E5%BA%93%E7%9B%B8%E5%85%B3/redis%E7%9A%84%E5%8E%9F%E7%90%86%E4%B8%8E%E4%BD%BF%E7%94%A8/</link>
       <pubDate>Thu, 16 Jun 2022 11:13:14 +0800</pubDate>
       
-      <guid>https://blog.surfaroundtheworld.top/posts/%E6%95%B0%E6%8D%AE%E5%BA%93%E7%9B%B8%E5%85%B3/redis/</guid>
-      <description>&lt;p&gt;主要关于redis的原理&lt;/p&gt;</description>
+      <guid>https://blog.surfaroundtheworld.top/posts/%E6%95%B0%E6%8D%AE%E5%BA%93%E7%9B%B8%E5%85%B3/redis%E7%9A%84%E5%8E%9F%E7%90%86%E4%B8%8E%E4%BD%BF%E7%94%A8/</guid>
+      <description>&lt;p&gt;主要关于redis的数据结构，持久化，淘汰机制以及缓存一致性问题的讨论。&lt;/p&gt;</description>
     </item>
     
     <item>
@@ -144,7 +162,7 @@
     </item>
     
     <item>
-      <title>Go语言</title>
+      <title>Golang</title>
       <link>https://blog.surfaroundtheworld.top/posts/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/go/</link>
       <pubDate>Wed, 15 Jun 2022 23:21:48 +0800</pubDate>
       

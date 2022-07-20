@@ -160,6 +160,10 @@
     <li><a href="#减法操作">减法操作</a></li>
     <li><a href="#环形连通分量">环形连通分量</a></li>
   </ul>
+
+  <ul>
+    <li><a href="#吃水果">吃水果</a></li>
+  </ul>
 </nav>
     </div>
     
@@ -181,7 +185,7 @@
                   <span data-format="luxon">2022-05-29T15:35:29&#43;08:00</span>
                 
 
-              | 11 分钟阅读
+              | 12 分钟阅读
 
               
               | 更新于
@@ -1193,6 +1197,66 @@
 </span></span><span style="display:flex;"><span>}
 </span></span></code></pre></td></tr></table>
 </div>
+</div><h1 id="60周周赛">60周周赛</h1>
+<h2 id="吃水果">吃水果</h2>
+<p><strong>题目</strong>：https://www.acwing.com/problem/content/4499/</p>
+<p><strong>题意：</strong></p>
+<p>n 个小朋友站成一排，等着吃水果。</p>
+<p>一共有 m 种水果，每种水果的数量都足够多。</p>
+<p>现在，要给每个小朋友都发一个水果，要求：在所有小朋友都拿到水果后，恰好有 k 个小朋友拿到的水果和其<strong>左边相邻</strong>小朋友拿到的水果<strong>不同</strong>（最左边的小朋友当然<strong>不算数</strong>，即最左边的小朋友不包含在 k 个小朋友内）。</p>
+<p>请你计算，一共有多少种不同的分发水果的方案。</p>
+<p><strong>思路：</strong></p>
+<p>DP解法，数据范围2000，说明一般最优解法为二维。</p>
+<p>定义<code>f[i][j]</code>，定义为前i个人，与左边水果不同的人有j个不同的方案数。考虑状态转移，按照第i个人与左边人（i - 1）所拿水果是否相同分类。与i - 1相同，则对应方案数为<code>f[i - 1][j]</code>；不同则对应方案数为<code>f[i - 1][j - 1]</code>，同时第i个有m - 1中选择。因此，可以得到：<code>f[i][j] = (m - 1)f[i - 1][j - 1] + f[i - 1][j]</code>。</p>
+<p>注意，初始化<code>f[1][0]</code>对应一个人，有m种方案；同时，j = 0时候，当前i不会与右边不同。以及乘法过程的越界情况需要使用long long。</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>#include &lt;iostream&gt;
+</span></span><span style="display:flex;"><span>using namespace std;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>typedef long long LL;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>const int N = 2010, MOD = 998244353;
+</span></span><span style="display:flex;"><span>LL f[N][N];
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>int main() {
+</span></span><span style="display:flex;"><span>    int n, m, k;
+</span></span><span style="display:flex;"><span>    cin &gt;&gt; n &gt;&gt; m &gt;&gt; k;
+</span></span><span style="display:flex;"><span>    f[1][0] = m;
+</span></span><span style="display:flex;"><span>    for (int i = 2; i &lt;= n; i ++) {
+</span></span><span style="display:flex;"><span>        for (int j = 0; j &lt; i &amp;&amp; j &lt;= k; j ++) {
+</span></span><span style="display:flex;"><span>            f[i][j] = f[i - 1][j];
+</span></span><span style="display:flex;"><span>            if (j) f[i][j] = (f[i][j] + f[i - 1][j - 1] * (m - 1LL)) % MOD;  
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    cout &lt;&lt; f[n][k] &lt;&lt; endl;
+</span></span><span style="display:flex;"><span>    return 0;
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></td></tr></table>
+</div>
 </div>
       </article>
     </section>
@@ -1259,6 +1323,10 @@
     
     
     
+    
+      
+    
+      
     
       
     
@@ -1501,8 +1569,8 @@
           
           
           
-            <a class="ui label" href="/tags/go/" title="go">
-              go
+            <a class="ui label" href="/tags/golang/" title="golang">
+              golang
             </a>
           
           
@@ -1569,6 +1637,12 @@
           
             <a class="ui label" href="/tags/mit6.824/" title="MIT6.824">
               MIT6.824
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/mit6.828/" title="MIT6.828">
+              MIT6.828
             </a>
           
           
@@ -1695,6 +1769,12 @@
           
             <a class="ui label" href="/tags/%E4%BD%8D%E8%BF%90%E7%AE%97/" title="位运算">
               位运算
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81/" title="分布式锁">
+              分布式锁
             </a>
           
           
