@@ -1,12 +1,12 @@
 ---
-title: Go语言
+title: Golang
 date: 2022-06-15T23:21:48+08:00
 lastmod: 2022-06-15T23:21:48+08:00
 cover: http://oss.surfaroundtheworld.top/blog-pictures/6_15/go.jpg
 categories:
   - 编程语言
 tags:
-  - go
+  - golang
 # nolastmod: true
 draft: false
 ---
@@ -472,6 +472,108 @@ func main() {
 ```
 
 上面的示例代码中，`gen`函数在单独的goroutine中生成整数并将它们发送到返回的通道。 gen的调用者在使用生成的整数之后需要取消上下文，以免`gen`启动的内部goroutine发生泄漏。
+
+### 5、go中的"继承"与多态
+
+Go语言中没有类的概念，也不支持类的继承等面向对象的概念。Go中通过结构体内嵌和接口两种方式实现了具有更高扩展性和灵活性的功能。
+
+#### 5.1、go只有组合没有继承
+
+go中利用了结构体的组合实现了其他语言中继承的功能，本质上是一种语法糖：
+
+```
+//Animal 动物
+type Animal struct {
+	name string
+}
+
+func (a *Animal) move() {
+	fmt.Printf("%s会动！\n", a.name)
+}
+
+//Dog 狗
+type Dog struct {
+	Feet    int8
+	*Animal //通过嵌套匿名结构体实现继承
+}
+
+func (d *Dog) wang() {
+	fmt.Printf("%s会汪汪汪~\n", d.name)
+}
+
+func main() {
+	d1 := &Dog{
+		Feet: 4,
+		Animal: &Animal{ //注意嵌套的是结构体指针
+			name: "乐乐",
+		},
+	}
+	d1.wang() //乐乐会汪汪汪~
+	d1.move() //乐乐会动！
+}
+```
+
+### 5.2、通过组合实现多态
+
+多态指的是代码可以根据类型的不同执行不同的操作。
+
+一个类型可以实现多个接口，多个接口实现实现同一类型，根据实际可以灵活应用。
+
+```
+/* 多态行为的例子 */
+package main
+
+import "fmt"
+
+type notifer interface {
+   notify()
+}
+
+type user struct {
+   name string
+   email string
+}
+
+type admin struct {
+   name string
+   age  int
+}
+
+type ad struct {
+   name string
+   age  int
+}
+
+//使用指针接收者实现了notofy接口,方法会共享接收者所指向的值user
+func (u *user) notify()  {
+   fmt.Println("sendNotify to user", u.name)
+}
+
+//使用值接收者实现了notify接口,方法使用u值的副本,对u的修改不会影响原值
+func (u admin) notify(){
+   fmt.Println("sendNotify to admin:", u.name)
+}
+
+//接收一个notifer接口类型的值，如果一个实体类型实现了该接口，
+//sendNotify函数会根据实体类型的值类执行notifer接口的notify行为，这个函数具有多态的能力。
+func sendNotify(n notifer){
+   n.notify()
+}
+
+func main()  {
+   user1 := user{"张三", "qq@qq.com"}
+   sendNotify(&user1)
+
+   user2 := admin{"李四", 25}
+   sendNotify(user2)
+
+   var n notifer
+   n = &user1
+   n.notify()
+}
+```
+
+
 
 ## 三、使用小技巧
 

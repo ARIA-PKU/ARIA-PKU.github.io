@@ -156,7 +156,7 @@ order by max总成绩
 
 # 参考文章
 
-1、https://zhuanlan.zhihu.com/p/270331768
+1、[面试官灵魂一问: MySQL 的 delete、truncate、drop 有什么区别?](https://zhuanlan.zhihu.com/p/270331768)
 
 2、[拿捏！隔离级别、幻读、Gap Lock、Next-Key Lock](https://zhuanlan.zhihu.com/p/402591869)
 
