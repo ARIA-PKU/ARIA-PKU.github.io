@@ -2,7 +2,7 @@
 title: Web游戏开发 基于Thrift的游戏匹配系统
 date: 2022-05-20T16:53:05+08:00
 lastmod: 2022-05-20T16:53:05+08:00
-cover: https://oss.surfaroundtheworld.top/blog-pictures/reverse_world.jpg
+cover: https://aria9766.oss-cn-beijing.aliyuncs.com/blog-pictures/reverse_world.jpg
 categories:
   - web游戏开发
 tags:

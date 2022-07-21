@@ -2,7 +2,7 @@
 title: Javascript 常用库
 date: 2022-06-02T00:42:12+08:00
 lastmod: 2022-06-02T00:42:12+08:00
-cover: https://oss.surfaroundtheworld.top/blog-pictures/dolphin.jpg
+cover: https://aria9766.oss-cn-beijing.aliyuncs.com/blog-pictures/cup_blue.jpg
 # images:
 #   - /img/cover.jpg
 categories:

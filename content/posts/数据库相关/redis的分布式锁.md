@@ -3,7 +3,7 @@ title: Redis的分布式锁
 date: 2022-07-17T19:50:23+08:00
 lastmod: 2022-07-17T19:50:23+08:00
 
-cover: https://aria9766.oss-cn-beijing.aliyuncs.com/blog-pictures/7_17/river.jpg
+cover: https://aria9766.oss-cn-beijing.aliyuncs.com/blog-pictures/6_15/sand_of_time.jpg
 # images:
 #   - /img/cover.jpg
 categories:

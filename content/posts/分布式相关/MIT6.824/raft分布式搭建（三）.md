@@ -2,7 +2,7 @@
 title: Raft分布式搭建（三）
 date: 2022-07-14T19:36:33+08:00
 lastmod: 2022-07-14T19:36:33+08:00
-cover: http://oss.surfaroundtheworld.top/blog-pictures/7_1/%E5%A4%9C.jpg
+cover: https://aria9766.oss-cn-beijing.aliyuncs.com/blog-pictures/7_1/%E5%BF%83%E7%A9%BA.jpg
 # images:
 #   - /img/cover.jpg
 categories:

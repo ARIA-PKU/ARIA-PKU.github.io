@@ -2,7 +2,7 @@
 title: Web游戏开发 Jwt
 date: 2022-05-29T16:49:35+08:00
 lastmod: 2022-05-29T16:49:35+08:00
-cover: http://oss.surfaroundtheworld.top/blog-pictures/reverse_world.jpg
+cover: https://aria9766.oss-cn-beijing.aliyuncs.com/blog-pictures/cup_purple.jpg
 categories:
   - web游戏开发
 tags:

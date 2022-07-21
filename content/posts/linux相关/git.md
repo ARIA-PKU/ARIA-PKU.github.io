@@ -3,7 +3,7 @@ title: git的常用操作
 date: 2022-05-02T15:12:22+08:00
 lastmod: 2022-05-02T15:12:22+08:00
 
-cover: http://oss.surfaroundtheworld.top/blog-pictures/cup_ice.jpg
+cover: https://aria9766.oss-cn-beijing.aliyuncs.com/blog-pictures/7_17/river.jpg
 # images:
 #   - /img/cover.jpg
 categories:

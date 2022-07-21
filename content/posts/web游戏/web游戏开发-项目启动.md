@@ -3,7 +3,7 @@ title: Web游戏开发 准备工作
 date: 2022-05-01T21:11:54+08:00
 lastmod: 2022-05-01T21:11:54+08:00
 
-cover: http://oss.surfaroundtheworld.top/blog-pictures/reverse_world.jpg
+cover: https://aria9766.oss-cn-beijing.aliyuncs.com/blog-pictures/niko_palace.jpg
 # images:
 #   - /img/cover.jpg
 categories:

@@ -3,7 +3,7 @@ title: Python
 date: 2022-06-15T23:21:39+08:00
 lastmod: 2022-06-15T23:21:39+08:00
 
-cover: http://oss.surfaroundtheworld.top/blog-pictures/6_15/python.jpg
+cover: https://aria9766.oss-cn-beijing.aliyuncs.com/blog-pictures/6_15/python.jpg
 # images:
 #   - /img/cover.jpg
 categories:

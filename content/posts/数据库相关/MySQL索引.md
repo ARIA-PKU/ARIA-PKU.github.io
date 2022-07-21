@@ -3,7 +3,7 @@ title: MySQL索引
 date: 2022-06-20T15:47:59+08:00
 lastmod: 2022-06-20T15:47:59+08:00
 
-cover: http://oss.surfaroundtheworld.top/blog-pictures/6_20/mysql_2.jpg
+cover: https://aria9766.oss-cn-beijing.aliyuncs.com/blog-pictures/6_15/rainy.jpg
 # images:
 #   - /img/cover.jpg
 categories:

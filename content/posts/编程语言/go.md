@@ -2,7 +2,7 @@
 title: Golang
 date: 2022-06-15T23:21:48+08:00
 lastmod: 2022-06-15T23:21:48+08:00
-cover: http://oss.surfaroundtheworld.top/blog-pictures/6_15/go.jpg
+cover: https://aria9766.oss-cn-beijing.aliyuncs.com/blog-pictures/6_15/go.jpg
 categories:
   - 编程语言
 tags:

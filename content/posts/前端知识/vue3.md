@@ -3,7 +3,7 @@ title: Vue3
 date: 2022-06-10T15:44:37+08:00
 lastmod: 2022-06-10T15:44:37+08:00
 
-cover: https://oss.surfaroundtheworld.top/blog-pictures/sakura_tree.jpg
+cover: https://aria9766.oss-cn-beijing.aliyuncs.com/blog-pictures/cup_ice.jpg
 # images:
 #   - /img/cover.jpg
 categories:

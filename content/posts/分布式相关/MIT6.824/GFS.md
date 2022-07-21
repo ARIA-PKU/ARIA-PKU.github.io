@@ -3,7 +3,7 @@ title: GFS
 date: 2022-06-28T23:43:28+08:00
 lastmod: 2022-06-28T23:43:28+08:00
 
-cover: http://oss.surfaroundtheworld.top/blog-pictures/6_15/whale.jpg
+cover: https://aria9766.oss-cn-beijing.aliyuncs.com/blog-pictures/6_15/boat.jpg
 
 categories:
   - 分布式

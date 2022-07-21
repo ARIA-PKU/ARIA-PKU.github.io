@@ -3,7 +3,7 @@ title: Redis的原理与使用
 date: 2022-06-16T11:13:14+08:00
 lastmod: 2022-06-16T11:13:14+08:00
 
-cover: http://oss.surfaroundtheworld.top/blog-pictures/6_15/redis.jpg
+cover: https://aria9766.oss-cn-beijing.aliyuncs.com/blog-pictures/6_15/redis.jpg
 
 categories:
   - 数据库

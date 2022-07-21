@@ -3,7 +3,7 @@ title: web游戏开发 jquery
 date: 2022-05-10T14:59:42+08:00
 lastmod: 2022-05-10T14:59:42+08:00
 
-cover: http://oss.surfaroundtheworld.top/blog-pictures/reverse_world.jpg
+cover: https://aria9766.oss-cn-beijing.aliyuncs.com/blog-pictures/cup_red.jpg
 # images:
 #   - /img/cover.jpg
 categories:

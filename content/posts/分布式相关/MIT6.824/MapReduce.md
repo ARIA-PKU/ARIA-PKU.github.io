@@ -3,7 +3,7 @@ title: MapReduce
 date: 2022-06-27T23:28:52+08:00
 lastmod: 2022-06-27T23:28:52+08:00
 
-cover: http://oss.surfaroundtheworld.top/blog-pictures/6_15/maple.jpg
+cover: https://aria9766.oss-cn-beijing.aliyuncs.com/blog-pictures/7_1/%E6%B5%81%E6%98%9F.jpg
 # images:
 #   - /img/cover.jpg
 categories:

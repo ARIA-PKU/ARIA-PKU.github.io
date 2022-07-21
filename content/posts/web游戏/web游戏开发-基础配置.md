@@ -4,7 +4,7 @@ date: 2022-05-09T22:35:40+08:00
 lastmod: 2022-05-09T22:35:40+08:00
 # avatar: /img/author.jpg
 # authorlink: https://author.site
-cover: https://oss.surfaroundtheworld.top/blog-pictures/reverse_world.jpg
+cover: https://aria9766.oss-cn-beijing.aliyuncs.com/blog-pictures/sakura_tree.jpg
 # images:
 #   - /img/cover.jpg
 categories:

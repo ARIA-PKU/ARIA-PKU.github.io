@@ -3,7 +3,7 @@ title: Linux常用命令
 date: 2022-05-02T16:55:41+08:00
 lastmod: 2022-05-02T16:55:41+08:00
 
-cover: http://oss.surfaroundtheworld.top/blog-pictures/cup_purple.jpg
+cover: https://aria9766.oss-cn-beijing.aliyuncs.com/blog-pictures/7_17/%E7%BA%A2%E5%8F%B6.jpg
 # images:
 #   - /img/cover.jpg
 categories:
