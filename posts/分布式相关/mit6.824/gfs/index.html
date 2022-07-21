@@ -226,7 +226,7 @@
 </ul>
 <p>一个 GFS 集群同时可以被多个 client（客户）节点访问。</p>
 <p>一个 GFS 集群的架构可以用下图表示：</p>
-<p><img src="http://oss.surfaroundtheworld.top/blog-pictures/6_28/gfs_fig_1_architecture.png" alt=""></p>
+<p><img src="https://aria9766.oss-cn-beijing.aliyuncs.com/blog-pictures/6_28/gfs_fig_1_architecture.png" alt=""></p>
 <h2 id="master节点">Master节点</h2>
 <p>Master 服务器存储 3 种主要类型的元数据，包括：文件和 Chunk 的命名空间、文件和 Chunk 的对应关系、 每个 Chunk 副本的存放地点。</p>
 <p>设计采用的是单一的master节点，其中包含：</p>
@@ -258,7 +258,7 @@
 <p>Master 恢复仅仅需要最新的完整检查点（checkpoint)和后续日志文件。旧的检查点和日志文件可以自由删除，但通常还是会保留了一些近期的日志，以防止意外。</p>
 <h2 id="写操作">写操作</h2>
 <p>在实际应用过程中，系统采用的都是追加写而非覆盖写，这样可以并发操作而避免冲突，论文中给出了以下步骤图：</p>
-<p><img src="http://oss.surfaroundtheworld.top/blog-pictures/6_28/gfs_fig_2.jpeg" alt=""></p>
+<p><img src="https://aria9766.oss-cn-beijing.aliyuncs.com/blog-pictures/6_28/gfs_fig_2.jpeg" alt=""></p>
 <p>1、客户机向 Master 节点询问哪一个 Chunk 服务器持有当前的租约，即Primary节点，以及其它副本的位置。如果没有一个 Chunk 持有租约，Master 节点就选择其中一个副本建立一个租约（这个步骤在图上没有显示）。</p>
 <p>2、Master 节点将主 Chunk 的标识符以及其它副本（又称为 secondary 副本、二级副本）的位置返回给客户 机。客户机缓存这些数据以便后续的操作。只有在主 Chunk 不可用，或者主 Chunk 回复信息表明它已不再持 有租约的时候，客户机才需要重新跟 Master 节点联系。</p>
 <p>3、客户端向所有的 replicas 都推送数据，注意此时客户端可以依靠任意顺序进行推送数据，并没有要求此时必须先给 primary 推送数据。所有的 chunkserver(replicas) 都会将推送来的数据存放在内置的 LRU buffer cacahe，缓存中的数据直到被使用或者超时才会被释放。</p>

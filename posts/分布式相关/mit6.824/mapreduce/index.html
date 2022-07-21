@@ -230,7 +230,7 @@
 <p><strong>倒排索引</strong>：Map 函数分析每个文档输出一个(词,文档号)的列表，Reduce 函数的输入是一个给定词的所有 （词，文档号），排序所有的文档号，输出(词,list（文档号）)。所有的输出集合形成一个简单的倒排索引，它 以一种简单的算法跟踪词在文档中的位置。</p>
 <h2 id="3具体实现">3、具体实现</h2>
 <p>Google 内部广泛使用的运算环境的实现：用以太网交换机连接、由普通 PC 机组成的大型集群。</p>
-<p><img src="http://oss.surfaroundtheworld.top/blog-pictures/6_28/MapReduce.png" alt=""></p>
+<p><img src="https://aria9766.oss-cn-beijing.aliyuncs.com/blog-pictures/6_28/MapReduce.png" alt=""></p>
 <p>执行流程：</p>
 <p>1、用户程序首先调用的 MapReduce 库将输入文件分成 M 个数据片度，每个数据片段的大小一般从 16MB 到 64MB(可以通过可选的参数来控制每个数据片段的大小)。然后用户程序在机群中创建大量 的程序副本。</p>
 <p>2、这些程序副本中的有一个特殊的程序–master。副本中其它的程序都是 worker 程序，由 master 分配 任务。有 M 个 Map 任务和 R 个 Reduce 任务将被分配，master 将一个 Map 任务或 Reduce 任务分配 给一个空闲的 worker。</p>

@@ -318,7 +318,7 @@
 <p>为了解决这个问题，我们需要把内存所做的修改写入到 redo log buffer中，这是内存里的一个缓冲区，用来存在redo日志。</p>
 <p>rodo log记录了你对数据所做的修改，如“将id=1这条数据的name从a变为abc”，物理日志哈，后面会再提一下。<strong>「redo log是顺序写所以比随机写效率高」</strong></p>
 <p><strong>「InnoDB的redo log是固定大小的」</strong>，比如可以配置为一组 4 个文件，每个文件的大小是 1GB，那么总大小为4GB。从头开始写，写到末尾就又回到开头循环写，如下面这个图所示。</p>
-<p><img src="http://oss.surfaroundtheworld.top/blog-pictures/6_20/redolog.png" alt=""></p>
+<p><img src="https://aria9766.oss-cn-beijing.aliyuncs.com/blog-pictures/6_20/redolog.png" alt=""></p>
 <p>write pos是当前要写的位置，checkpoint是要擦除的位置，擦除前要把对应的脏页刷回到磁盘中。write pos和checkpoint中间的位置是可以写的位置。</p>
 <h2 id="binlog主从库之间如何同步数据">binlog：主从库之间如何同步数据？</h2>
 <p>当我们把mysql主库的数据同步到从库，或者其他数据源时，如es，bi库时，只需要订阅主库的binlog即可。</p>
@@ -332,7 +332,7 @@
 </ol>
 <h2 id="两阶段提交">两阶段提交</h2>
 <p>接着我们来看一下将id=2的行c字段加1的执行流程。</p>
-<p><img src="http://oss.surfaroundtheworld.top/blog-pictures/6_20/%E4%B8%A4%E9%98%B6%E6%AE%B5.png" alt=""></p>
+<p><img src="https://aria9766.oss-cn-beijing.aliyuncs.com/blog-pictures/6_20/%E4%B8%A4%E9%98%B6%E6%AE%B5.png" alt=""></p>
 <ol>
 <li>引擎将新数据更新到内存中，将操作记录到redo log中，此时redo log处于prepare状态，然后告知执行器执行完成了，可以提交事务</li>
 <li>执行器生成操作的binlog，并把binlog写入磁盘</li>
@@ -349,7 +349,7 @@
 <p><strong>trx_id</strong>：一个事务每次对某条聚集索引记录进行改动时，都会把该事务的事务id赋值给trx_id隐藏列</p>
 <p><strong>roll_pointer</strong>：每次对某条聚集索引记录进行改动时，都会把旧的版本写入undo日志中。这个隐藏列就相当于一个指针，通过他找到该记录修改前的信息</p>
 <p>如果一个记录的name从貂蝉被依次改为王昭君，西施，会有如下的记录，多个记录构成了一个版本链</p>
-<p><img src="http://oss.surfaroundtheworld.top/blog-pictures/6_20/%E7%89%88%E6%9C%AC%E9%93%BE.png" alt=""></p>
+<p><img src="https://aria9766.oss-cn-beijing.aliyuncs.com/blog-pictures/6_20/%E7%89%88%E6%9C%AC%E9%93%BE.png" alt=""></p>
 <h4 id="通过readview实现mvcc">通过ReadView实现MVCC</h4>
 <p><strong>为了判断版本链中哪个版本对当前事务是可见的，MySQL设计出了ReadView的概念</strong>。4个重要的内容如下</p>
 <p><strong>m_ids</strong>：在生成ReadView时，当前系统中活跃的事务id列表
@@ -359,7 +359,7 @@
 <p>当对表中的记录进行改动时，执行insert，delete，update这些语句时，才会为事务分配唯一的事务id，否则一个事务的事务id值默认为0。</p>
 <p>max_trx_id并不是m_ids中的最大值，事务id是递增分配的。比如现在有事务id为1，2，3这三个事务，之后事务id为3的事务提交了，当有一个新的事务生成ReadView时，m_ids的值就包括1和2，min_trx_id的值就是1，max_trx_id的值就是4</p>
 <p><strong>mvcc判断版本链中哪个版本对当前事务是可见的过程如下</strong></p>
-<p><img src="http://oss.surfaroundtheworld.top/blog-pictures/6_20/readview.png" alt=""></p>
+<p><img src="https://aria9766.oss-cn-beijing.aliyuncs.com/blog-pictures/6_20/readview.png" alt=""></p>
 <p>执行过程如下：</p>
 <ol>
 <li>如果被访问版本的trx_id=creator_id，意味着当前事务在访问它自己修改过的记录，所以该版本可以被当前事务访问</li>

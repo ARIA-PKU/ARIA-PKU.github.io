@@ -229,7 +229,7 @@
 <p><strong>从运行机制上来说</strong>，coroutine 的运行机制属于<strong>协作式任务</strong>处理， 程序需要主动交出控制权，宿主才能获得控制权并将控制权交给其他 coroutine。如果开发者无意间或者故意让应用程序长时间占用 CPU，操作系统也无能为力，表现出来的效果就是计算机很容易失去响应或者死机。goroutine 属于<strong>抢占式任务</strong>处理，已经和现有的多线程和多进程任务处理非常类似， 虽然无法控制自己获取高优先度支持。但如果发现一个应用程序长时间大量地占用 CPU，那么用户有权终止这个任务。</p>
 <h3 id="2gmp模型">2、GMP模型</h3>
 <h4 id="21被淘汰的gm模型">2.1、被淘汰的GM模型</h4>
-<p><img src="http://oss.surfaroundtheworld.top/blog-pictures/6_22/GM.jpg" alt=""></p>
+<p><img src="https://aria9766.oss-cn-beijing.aliyuncs.com/blog-pictures/6_22/GM.jpg" alt=""></p>
 <p>M想要执行、放回G都必须访问全局G队列，并且M有多个，即多线程访问同一资源需要加锁进行保证互斥/同步，所以全局G队列是有互斥锁进行保护的。</p>
 <p>老调度器有几个缺点：</p>
 <ol>
@@ -238,7 +238,7 @@
 <li>系统调用(CPU在M之间的切换)导致频繁的线程阻塞和取消阻塞操作增加了系统开销。</li>
 </ol>
 <h4 id="22gmp">2.2、GMP</h4>
-<p><img src="http://oss.surfaroundtheworld.top/blog-pictures/6_22/gpm.png" alt=""></p>
+<p><img src="https://aria9766.oss-cn-beijing.aliyuncs.com/blog-pictures/6_22/gpm.png" alt=""></p>
 <p>其中：</p>
 <ul>
 <li>G：表示 goroutine，每执行一次<code>go f()</code>就创建一个 G，包含要执行的函数和上下文信息。</li>

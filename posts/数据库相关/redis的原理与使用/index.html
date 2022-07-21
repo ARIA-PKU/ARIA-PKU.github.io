@@ -310,7 +310,7 @@
 <li>文件事件分派器（将 socket 关联到相应的事件处理器）</li>
 <li>事件处理器（连接应答处理器、命令请求处理器、命令回复处理器）</li>
 </ul>
-<p><img src="http://oss.surfaroundtheworld.top/blog-pictures/6-16/redis%E4%BA%8B%E4%BB%B6%E5%A4%84%E7%90%86%E5%99%A8.png" alt=""></p>
+<p><img src="https://aria9766.oss-cn-beijing.aliyuncs.com/blog-pictures/6-16/redis%E4%BA%8B%E4%BB%B6%E5%A4%84%E7%90%86%E5%99%A8.png" alt=""></p>
 <h3 id="redis为什么不采用多线程">Redis为什么不采用多线程</h3>
 <p>虽然说 Redis 是单线程模型，但是， 实际上，<strong>Redis 在 4.0 之后的版本中就已经加入了对多线程的支持。</strong></p>
 <p>不过，Redis 4.0 增加的多线程主要是针对一些大键值对的删除操作的命令，使用这些命令就会使用主处理之外的其他线程来“异步处理”。</p>
@@ -321,7 +321,7 @@
 <h2 id="五redis的过期删除与内存淘汰机制">五、Redis的过期删除与内存淘汰机制</h2>
 <h3 id="过期字典">过期字典</h3>
 <p>Redis 通过一个叫做过期字典（可以看作是 hash 表）来保存数据过期的时间。过期字典的键指向 Redis 数据库中的某个 key(键)，过期字典的值是一个 long long 类型的整数，这个整数保存了 key 所指向的数据库键的过期时间（毫秒精度的 UNIX 时间戳）。</p>
-<p><img src="http://oss.surfaroundtheworld.top/blog-pictures/6-16/redis%E8%BF%87%E6%9C%9F%E6%97%B6%E9%97%B4.png" alt=""></p>
+<p><img src="https://aria9766.oss-cn-beijing.aliyuncs.com/blog-pictures/6-16/redis%E8%BF%87%E6%9C%9F%E6%97%B6%E9%97%B4.png" alt=""></p>
 <h3 id="过期删除策略">过期删除策略</h3>
 <p>常用的过期数据的删除策略就两个（重要！自己造缓存轮子的时候需要格外考虑的东西）：</p>
 <ol>

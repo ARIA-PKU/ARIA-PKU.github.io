@@ -273,7 +273,7 @@
 <li><strong>Follower</strong>：接受并持久化Leader同步的日志，在Leader告之日志可以提交之后，提交日志。</li>
 <li><strong>Candidate</strong>：Leader选举过程中的临时角色。</li>
 </ul>
-<p><img src="http://oss.surfaroundtheworld.top/blog-pictures/6-16/raft.jpg" alt=""></p>
+<p><img src="https://aria9766.oss-cn-beijing.aliyuncs.com/blog-pictures/6-16/raft.jpg" alt=""></p>
 <h2 id="leader选举">Leader选举</h2>
 <p>Raft 使用心跳（heartbeat）触发Leader选举。当服务器启动时，初始化为Follower。Leader向所有Followers周期性发送heartbeat。如果Follower在选举超时时间内没有收到Leader的heartbeat，就会等待一段随机的时间后发起一次Leader选举。</p>
 <p>Follower将其当前term加一然后转换为Candidate。它首先给自己投票并且给集群中的其他服务器发送 RequestVote RPC 。结果有以下三种情况：</p>
@@ -283,7 +283,7 @@
 <li>没有服务器赢得多数的选票，Leader选举失败，等待选举时间超时后发起下一次选举。</li>
 </ul>
 <h2 id="与paxos的不同">与Paxos的不同</h2>
-<p><img src="http://oss.surfaroundtheworld.top/blog-pictures/6-16/raft_paxos.jpg" alt=""></p>
+<p><img src="https://aria9766.oss-cn-beijing.aliyuncs.com/blog-pictures/6-16/raft_paxos.jpg" alt=""></p>
 <p>其他还有很多知识点，但是目前没有接触到实际应用的场景，以后再从参考文章中总结用到的内容。</p>
 <h1 id="参考文章">参考文章</h1>
 <p>1、<a href="https://juejin.im/post/6844903936718012430">神一样的 CAP 理论被应用在何方</a></p>
