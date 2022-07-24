@@ -169,6 +169,16 @@
         <li><a href="#6109-知道秘密的人数httpsleetcodecnproblemsnumber-of-people-aware-of-a-secret"><a href="https://leetcode.cn/problems/number-of-people-aware-of-a-secret/">6109. 知道秘密的人数</a></a></li>
       </ul>
     </li>
+    <li><a href="#83场双周赛">83场双周赛</a>
+      <ul>
+        <li><a href="#6131-不可能得到的最短骰子序列httpsleetcodecnproblemsshortest-impossible-sequence-of-rolls"><a href="https://leetcode.cn/problems/shortest-impossible-sequence-of-rolls/">6131. 不可能得到的最短骰子序列</a></a></li>
+      </ul>
+    </li>
+    <li><a href="#301场周赛">301场周赛</a>
+      <ul>
+        <li><a href="#6127-优质数对的数目httpsleetcodecnproblemsnumber-of-excellent-pairs"><a href="https://leetcode.cn/problems/number-of-excellent-pairs/">6127. 优质数对的数目</a></a></li>
+      </ul>
+    </li>
   </ul>
 </nav>
     </div>
@@ -191,7 +201,7 @@
                   <span data-format="luxon">2022-06-12T14:55:05&#43;08:00</span>
                 
 
-              | 6 分钟阅读
+              | 8 分钟阅读
 
               
               | 更新于
@@ -760,6 +770,114 @@
 </span></span><span style="display:flex;"><span>            }
 </span></span><span style="display:flex;"><span>        }
 </span></span><span style="display:flex;"><span>        return (f[n] + mod) % mod;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>};
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="83场双周赛">83场双周赛</h2>
+<h3 id="6131-不可能得到的最短骰子序列httpsleetcodecnproblemsshortest-impossible-sequence-of-rolls"><a href="https://leetcode.cn/problems/shortest-impossible-sequence-of-rolls/">6131. 不可能得到的最短骰子序列</a></h3>
+<p>给你一个长度为 n 的整数数组 rolls 和一个整数 k 。你扔一个 k 面的骰子 n 次，骰子的每个面分别是 1 到 k ，其中第 i 次扔得到的数字是 rolls[i] 。</p>
+<p>请你返回 无法 从 rolls 中得到的 最短 骰子子序列的长度。</p>
+<p>扔一个 k 面的骰子 len 次得到的是一个长度为 len 的 骰子子序列 。</p>
+<p>注意 ，子序列只需要保持在原数组中的顺序，不需要连续。</p>
+<p>思路：</p>
+<p>贪心思维题。满足长度为1则要在当前数组中找到所有1到k的数字，长度为2则要在长度为1的最后一个数字之后再找到所有1到k的数字，依次类推，只要从头往后遍历一遍数组就能得到答案。</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>class Solution {
+</span></span><span style="display:flex;"><span>public:
+</span></span><span style="display:flex;"><span>    int shortestSequence(vector&lt;int&gt;&amp; rolls, int k) {
+</span></span><span style="display:flex;"><span>        int n = rolls.size(), cnt = 0;
+</span></span><span style="display:flex;"><span>        unordered_set&lt;int&gt; st;
+</span></span><span style="display:flex;"><span>        for (int i = 0; i &lt; n; i ++) {
+</span></span><span style="display:flex;"><span>            int j = i;
+</span></span><span style="display:flex;"><span>            while (j &lt; n &amp;&amp; st.size() &lt; k) st.insert(rolls[j ++]);
+</span></span><span style="display:flex;"><span>            if (st.size() == k) cnt ++;
+</span></span><span style="display:flex;"><span>            st.clear();
+</span></span><span style="display:flex;"><span>            i = j - 1;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        return cnt + 1;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>};
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="301场周赛">301场周赛</h2>
+<h3 id="6127-优质数对的数目httpsleetcodecnproblemsnumber-of-excellent-pairs"><a href="https://leetcode.cn/problems/number-of-excellent-pairs/">6127. 优质数对的数目</a></h3>
+<p>题意：</p>
+<p>给你一个下标从 0 开始的正整数数组 nums 和一个正整数 k 。</p>
+<p>如果满足下述条件，则数对 (num1, num2) 是 优质数对 ：</p>
+<p>num1 和 num2 都 在数组 nums 中存在。
+num1 OR num2 和 num1 AND num2 的二进制表示中值为 1 的位数之和大于等于 k ，其中 OR 是按位 或 操作，而 AND 是按位 与 操作。
+返回 不同 优质数对的数目。</p>
+<p>如果 a != c 或者 b != d ，则认为 (a, b) 和 (c, d) 是不同的两个数对。例如，(1, 2) 和 (2, 1) 不同。</p>
+<p>注意：如果 num1 在数组中至少出现 一次 ，则满足 num1 == num2 的数对 (num1, num2) 也可以是优质数对。</p>
+<p>思路：</p>
+<p>求两个数或和与之后的数的1的个数就是两个数1的个数之和。如果在某一位是1 1 的情况，则或和与结果都为1，+2；如果某一位是1 0 或者0 1，则或会+1，与会+0；同为0，则或和与都为0。</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">23
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>class Solution {
+</span></span><span style="display:flex;"><span>public:
+</span></span><span style="display:flex;"><span>    long long countExcellentPairs(vector&lt;int&gt;&amp; nums, int k) {
+</span></span><span style="display:flex;"><span>        sort(nums.begin(), nums.end());
+</span></span><span style="display:flex;"><span>        nums.erase(unique(nums.begin(), nums.end()), nums.end());
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        int cnt[30] = {0};
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        for (auto&amp; x: nums) {
+</span></span><span style="display:flex;"><span>            int c = 0;
+</span></span><span style="display:flex;"><span>            while (x) c += x &amp; 1, x &gt;&gt;= 1;
+</span></span><span style="display:flex;"><span>            cnt[c] ++;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        long long res = 0;
+</span></span><span style="display:flex;"><span>        for (int i = 0; i &lt; 30; i ++) 
+</span></span><span style="display:flex;"><span>            for (int j = 0; j &lt; 30; j ++)
+</span></span><span style="display:flex;"><span>                if (i + j &gt;= k)
+</span></span><span style="display:flex;"><span>                    res += (long long)cnt[i] * cnt[j];
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        return res; 
 </span></span><span style="display:flex;"><span>    }
 </span></span><span style="display:flex;"><span>};
 </span></span></code></pre></td></tr></table>

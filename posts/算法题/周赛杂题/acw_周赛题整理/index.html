@@ -164,6 +164,10 @@
   <ul>
     <li><a href="#吃水果">吃水果</a></li>
   </ul>
+
+  <ul>
+    <li><a href="#画圆">画圆</a></li>
+  </ul>
 </nav>
     </div>
     
@@ -185,7 +189,7 @@
                   <span data-format="luxon">2022-05-29T15:35:29&#43;08:00</span>
                 
 
-              | 12 分钟阅读
+              | 13 分钟阅读
 
               
               | 更新于
@@ -1253,6 +1257,93 @@
 </span></span><span style="display:flex;"><span>        }
 </span></span><span style="display:flex;"><span>    }
 </span></span><span style="display:flex;"><span>    cout &lt;&lt; f[n][k] &lt;&lt; endl;
+</span></span><span style="display:flex;"><span>    return 0;
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h1 id="61周周赛">61周周赛</h1>
+<h2 id="画圆">画圆</h2>
+<p>题目：https://www.acwing.com/problem/content/4502/</p>
+<p>题意：</p>
+<p>在一个二维平面内，给定一个以 (x1,y1) 为圆心，半径为 R 的圆以及一个坐标为 (x2,y2)的点。</p>
+<p>请你在二维平面上画一个圆，要求：</p>
+<ol>
+<li>平面中不存在点满足既在你画的圆上，又在给定的圆外。</li>
+<li>给定的点不能在你画的圆内（可以在圆上）。</li>
+<li>被给定圆覆盖且不被你画的圆覆盖的区域面积应尽可能小。</li>
+</ol>
+<p>请输出你画的圆的圆心坐标以及半径。</p>
+<p>思路：</p>
+<p>整体分为两种情况，</p>
+<p>一、给定的点在圆外，则直接输出当前的圆即可；</p>
+<p>二、给定的点在圆内，这里存在一种特殊情况是给定点与圆心重合，则随便输出一个半径为R/2的圆。否则，可以通过简单证明发现，满足题意的最大的圆是以给定点与圆心连线到圆上的交点为直接的圆。现在最大圆的半径已经知道，接下来只要求得圆心坐标，利用已知两点确定的单位向量乘上求出的半径便可以获得所要求的圆心坐标。</p>
+<p>计算几何中由于精度问题，通常会用一个自定义的cmp比较大小。</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">23
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">24
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">25
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">26
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">27
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">28
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">29
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">30
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">31
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">32
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>#include &lt;iostream&gt;
+</span></span><span style="display:flex;"><span>#include &lt;cmath&gt;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>using namespace std;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>const double eps = 1e-8;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>int cmp(double x, double y) {
+</span></span><span style="display:flex;"><span>   if (fabs(x - y) &lt;= eps) return 0;
+</span></span><span style="display:flex;"><span>   if (x &lt; y) return -1;
+</span></span><span style="display:flex;"><span>   return 1;
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>int main() {
+</span></span><span style="display:flex;"><span>    double r, x1, y1, x2, y2;
+</span></span><span style="display:flex;"><span>    scanf(&#34;%lf%lf%lf%lf%lf&#34;, &amp;r, &amp;x1, &amp;y1, &amp;x2, &amp;y2);
+</span></span><span style="display:flex;"><span>    double dx = x1 - x2;
+</span></span><span style="display:flex;"><span>    double dy = y1 - y2;
+</span></span><span style="display:flex;"><span>    double d = sqrt(dx * dx + dy * dy);
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    if (cmp(d, r) &gt;= 0) printf(&#34;%lf %lf %lf\n&#34;, x1, y1, r);
+</span></span><span style="display:flex;"><span>    else {
+</span></span><span style="display:flex;"><span>        if (!cmp(x1, x2) &amp;&amp; !cmp(y1, y2)) printf(&#34;%lf %lf %lf\n&#34;, x1 + r / 2, y1, r / 2);
+</span></span><span style="display:flex;"><span>        else {
+</span></span><span style="display:flex;"><span>            double nr = (r + d) / 2;
+</span></span><span style="display:flex;"><span>            double x = x2 + (x1 - x2) / d * nr;
+</span></span><span style="display:flex;"><span>            double y = y2 + (y1 - y2) / d * nr;
+</span></span><span style="display:flex;"><span>            printf(&#34;%lf %lf %lf\n&#34;, x, y, nr);
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
 </span></span><span style="display:flex;"><span>    return 0;
 </span></span><span style="display:flex;"><span>}
 </span></span></code></pre></td></tr></table>

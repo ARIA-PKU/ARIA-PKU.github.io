@@ -152,11 +152,15 @@
         <li><a href="#用户态核心态以及系统调用">用户态、核心态以及系统调用</a></li>
         <li><a href="#内核组织">内核组织</a></li>
         <li><a href="#进程概述">进程概述</a></li>
+        <li><a href="#编译运行kernel">编译运行kernel</a></li>
+        <li><a href="#qemu">QEMU</a></li>
       </ul>
     </li>
     <li><a href="#第三章-页表">第三章 页表</a>
       <ul>
         <li><a href="#页式硬件">页式硬件</a></li>
+        <li><a href="#页表缓存tlb">页表缓存（TLB）</a></li>
+        <li><a href="#kernel-page-table">Kernel Page Table</a></li>
       </ul>
     </li>
   </ul>
@@ -181,7 +185,7 @@
                   <span data-format="luxon">2022-07-20T13:08:09&#43;08:00</span>
                 
 
-              | 5 分钟阅读
+              | 8 分钟阅读
 
               
               | 更新于
@@ -217,7 +221,8 @@
         <p>MIT6.S081学习笔记</p>
 <p>对照课程完成lab中，结合lab记录各个知识点。</p>
 <p>github地址：https://github.com/ARIA-PKU/MIT6.828</p>
-<p>目前进度：lab1</p>
+<p>目前进度：lab1、lab2</p>
+<p>无意中发现github上有人对整个课程的视频内容做了详细<a href="https://github.com/huihongxiao/MIT6.S081">整理</a>，参考该整理做一些建立在自己理解基础上的整理。</p>
 <h2 id="第一章-操作系统接口">第一章 操作系统接口</h2>
 <h3 id="进程与内存">进程与内存</h3>
 <p>fork()用于通过系统调用创建子进程，其在父子进程中都有返回值。在父进程中返回子进程的pid；在子进程中返回0，因此，可以根据返回值判断父子进程。</p>
@@ -336,8 +341,56 @@
 <p>xv6内核为每个进程维护了各自的状态并将其聚集到一个proc结构体中，最重要的三个部分是页表，内核栈区和运行状态。</p>
 <p>线程用于执行进程指令，其状态存储在线程的栈区上。每个进程有两个栈区：用户栈区和内核栈区。内核栈是独立的，不受用户代码的保护，即使进程破坏了其用户栈，内核仍然可以正常运行。</p>
 <p>进程通过执行RISC-V的ecall指令提升硬件特权级别，并将程序计数器（PC）更改为内核定义的入口点，切换到内核态。通过sret指令返回用户空间，降低硬件特权级别，恢复执行用户指令。</p>
+<h3 id="编译运行kernel">编译运行kernel</h3>
+<p>xv6的整个代码结构由kernel、mkfs和user三个部分组成。</p>
+<ul>
+<li>kernel中包含了基本所有的内核文件。因为xv6是一个宏内核结构，所有文件会被编译成一个叫做kernel的二进制文件，然后被运行在kernel mode中。</li>
+<li>user是运行在user mode的程序。</li>
+<li>mkfs会创建一个空的文件镜像并存放在磁盘上，这样就可以直接使用一个空的文件系统。</li>
+</ul>
+<p>接下来，简单介绍内核的编译过程：</p>
+<p>首先，Makefile会读取一个C文件，例如proc.c；之后调用gcc编译器，生成一个文件proc.s，这是RISC-V汇编语言文件；再走到汇编解释器，生成proc.o，这事汇编语言的二进制格式。</p>
+<p>Makefile会为所有内核文件做同样操作；内核加载器（Loader）会收集所有.o文件，链接生成内核文件。</p>
+<p>这里的内核文件就是将在QEMU中运行的文件。</p>
+<h3 id="qemu">QEMU</h3>
+<p>QEMU在利用C程序仿真RISC-V主板，但通过QEMU运行内核时候，可以认为运行在真实的RISC-V主板上。</p>
+<p>QEMU是一个大型的开源C程序，在其内部按以下流程循环：</p>
+<ul>
+<li>读取4字节或8字节的RISC-V指令。</li>
+<li>解析RISC-V指令，找出对应操作码</li>
+<li>在软件中执行相应指令</li>
+</ul>
+<p>为了完成以上操作，QEMU的主循环需要维护寄存器状态，所以QEMU会有以C语言声明的类似X0、X1寄存器等。</p>
+<p>传给QEMU的几个参数：</p>
+<ul>
+<li>-kernel：这里传递的是内核文件（kernel目录下的kernel文件），这是将在QEMU中运行的程序文件。</li>
+<li>-m：这里传递的是RISC-V虚拟机将会使用的内存数量</li>
+<li>-smp：这里传递的是虚拟机可以使用的CPU核数</li>
+<li>-drive：传递的是虚拟机使用的磁盘驱动，这里传入的是fs.img文件</li>
+</ul>
 <h2 id="第三章-页表">第三章 页表</h2>
 <h3 id="页式硬件">页式硬件</h3>
+<p>页表是在硬件中通过处理器和内存管理单元（Memory Management Unit）实现。通过MMU将虚拟地址翻译成物理地址。</p>
+<p>RISC-V中虚拟地址都是64bit，但是高25bit没有使用，供未来使用。剩下的39bit中，27bit用作index，12bit用作offset。因为一个页面的大小是4096字节，所以对应的offset为12bit。</p>
+<p>物理内存地址是56bit，其中44bit是物理页面编号（PPN， Physical Page Number），剩余的12bit继承自虚拟地址。</p>
+<p>RISC-V的page table结构如下，分为了三级页表结构。在Directory中一个条目被称为PTE（Page Table Entry）。前9bit作为L2用于索引最高级page目录，一级9bit，因此可以索引512个entry；再根据L1、L0进行索引。</p>
+<p>其实介绍的就是计算机组成原理中的多级索引，先通过L2索引到2^9个页面作为第一级索引，其中的每个页面可以根据L1再索引到2^9，同理L0也能再索引到2^9个页面。因此，总共可以索引到2^27个页面。比单级索引的好处在于，如果只需要一个页面，单级索引需要的页表大小为2^27个PTE，而三级索引只需要每级一个页面总共3*2^9即可。</p>
+<p><img src="https://aria9766.oss-cn-beijing.aliyuncs.com/blog-pictures/6.S081/page_table/3_2.png" alt=""></p>
+<p>在Figure 3.2中，低10位就是PTE的Flag，记录了一堆标记位：</p>
+<ul>
+<li>Valid，为1则表示该PTE合法，可以用于地址翻译。</li>
+<li>Readable和Writable。表明你是否可以读/写这个page。</li>
+<li>Executable，是否可以从该page中执行指令。</li>
+<li>User表明该page是否可以被用户空间进程访问。</li>
+<li>其他的不太重要，偶尔会出现，前五个最重要。</li>
+</ul>
+<h3 id="页表缓存tlb">页表缓存（TLB）</h3>
+<p>TLB全称是Translation Lookaside Buffer。在三级页表中，当从内存加载或存储数据的时候，需要做三次内存查询。为了降低查询代价，几乎所有的处理器都提供了TLB作为PTE的缓存。</p>
+<p>在第一次查询时，TLB会保存虚拟地址到物理地址的映射关系，下一次访问可以直接走TLB。操作系统也不知道TLB如何工作，但是如果切换了页表，操作系统会告诉处理器当前正在切换页表，处理器会清空TLB，因为TLB中缓存不再有用。</p>
+<h3 id="kernel-page-table">Kernel Page Table</h3>
+<p>在xv6中，下图左边对应的是啮合的虚拟地址空间，右边的上半部分是物理内存或者说是DRAM，右边的下半部分对应的是I/O设备。</p>
+<p>右半部分的设计由硬件设计者决定，操作系统启动，会从地址0x80000000开始运行。在完成从虚拟地址到物理地址翻译后，地址高于0x80000000会进入DRAM芯片，低于0x80000000会走向不同的IO设备。</p>
+<p><img src="https://aria9766.oss-cn-beijing.aliyuncs.com/blog-pictures/6.S081/page_table/3.3.png" alt=""></p>
       </article>
     </section>
 
