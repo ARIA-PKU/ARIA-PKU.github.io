@@ -166,6 +166,22 @@
         <li><a href="#进程地址空间">进程地址空间</a></li>
       </ul>
     </li>
+    <li><a href="#汇编语言与risc-v处理器">汇编语言与RISC-V处理器</a>
+      <ul>
+        <li><a href="#c程序到汇编">C程序到汇编</a></li>
+        <li><a href="#risc-v与x86">RISC-V与x86</a></li>
+        <li><a href="#gdb的小技巧">gdb的小技巧</a></li>
+        <li><a href="#risc-v寄存器">RISC-V寄存器</a></li>
+        <li><a href="#stack">stack</a></li>
+      </ul>
+    </li>
+    <li><a href="#isolationsystem-call-entryexit">Isolation&amp;system call entry/exit</a>
+      <ul>
+        <li><a href="#trap机制">trap机制</a></li>
+        <li><a href="#trap代码执行流程">trap代码执行流程</a></li>
+        <li><a href="#ecall指令">ECALL指令</a></li>
+      </ul>
+    </li>
   </ul>
 </nav>
     </div>
@@ -188,7 +204,7 @@
                   <span data-format="luxon">2022-07-20T13:08:09&#43;08:00</span>
                 
 
-              | 13 分钟阅读
+              | 21 分钟阅读
 
               
               | 更新于
@@ -484,6 +500,94 @@
 <p>图3.4更详细显示了xv6中执行态进程的用户内存布局。栈是单独的一个页面，显示由exec创建后的初始内容。包含命令行参数的字符串以及指向它们的指针数组位于栈的最顶部。再往下是允许程序在<code>main</code>处开始启动的值（即<code>main</code>的地址、<code>argc</code>、<code>argv</code>）。</p>
 <p><img src="https://aria9766.oss-cn-beijing.aliyuncs.com/blog-pictures/6.S081/page_table/3_4.png" alt=""></p>
 <p>通过guard page防止用户栈溢出（其PTE_V为0），试图访问则会返回页面故障，操作系统会自动为其分配更多内存。</p>
+<h2 id="汇编语言与risc-v处理器">汇编语言与RISC-V处理器</h2>
+<p>此处对应lec5中的内容，主要讨论的是汇编语言以及RISC-V的calling convention。</p>
+<h3 id="c程序到汇编">C程序到汇编</h3>
+<p>处理器并不能理解C语言，处理器能理解的是汇编语言，具体来说是二进制编码后的汇编语言。</p>
+<p>对于一个RISC-V处理器，它能够理解RISC-V的指令集，因为它有一个关联的ISA(Instruction Sets Architecture)。ISA就是处理器能够理解的指令集，每一个指令都对应一个二进制编码或者Opcode。</p>
+<p>C程序会通过处理器编译成ASM汇编文件再编译成二进制文件，即.obj或者.o文件。</p>
+<p>在kernel.asm中可以看到汇编语言编译的内容。</p>
+<h3 id="risc-v与x86">RISC-V与x86</h3>
+<p>RISC-V的RISC指的是精简指令集（Reduced Instruction Set Computer），而x86通常被称为CISC，复杂指令集（Complex Instruction Set Computer）。</p>
+<p>二者区别：</p>
+<p>1、指令的数量，RISC更少。</p>
+<p>2、RISC指令更简单。</p>
+<p>3、RISC开源。</p>
+<h3 id="gdb的小技巧">gdb的小技巧</h3>
+<p>通过make qemu-gdb启动QEMU并打开gdb；</p>
+<p>在另一个窗口中输入gdb，打开gdb；</p>
+<p>gdb中输入tui enable可以打开源代码展示窗口；</p>
+<p>gdb下输入：b sum_to，在sum_to函数打断点；</p>
+<p>gdb下输入：c 继续执行</p>
+<h3 id="risc-v寄存器">RISC-V寄存器</h3>
+<p><img src="https://aria9766.oss-cn-beijing.aliyuncs.com/blog-pictures/6.S081/traps/RISC-V_calling_convention.png" alt=""></p>
+<p>上图就是RISC-V的寄存器的使用方式。</p>
+<p>汇编语言是在寄存器上执行的，而非内存。因此经常见到的操作是用load将数据放在寄存器上，数据源可以来自内存也可以来自另一个寄存器。</p>
+<p>使用寄存器的原因是运算和数据读取最快。a0到a7寄存器用来存储函数参数，如果一个函数有超过8个参数就需要使用内存。</p>
+<p>对于上图中的第四列Saver列，简单的记忆方法：</p>
+<ul>
+<li>Caller Saved寄存器在函数调用的时候不会保存</li>
+<li>Callee Saved寄存器在函数调用的时候会保存</li>
+</ul>
+<p>这里的意思是，一个Caller Saved寄存器可能被其他函数重写。假设我们在函数a中调用函数b，任何被函数a使用的并且是Caller Saved寄存器，调用函数b可能重写这些寄存器。我认为一个比较好的例子就是Return address寄存器（注，保存的是函数返回的地址），你可以看到ra寄存器是Caller Saved，这一点很重要，它导致了当函数a调用函数b的时侯，b会重写Return address。所以基本上来说，任何一个Caller Saved寄存器，作为调用方的函数要小心可能的数据可能的变化；任何一个Callee Saved寄存器，作为被调用方的函数要小心寄存器的值不会相应的变化。</p>
+<h3 id="stack">stack</h3>
+<p>栈使得函数变得有组织，正常返回，以下是一个简单的栈的结构图，每一个区域都是一个Stack Frame，每一次调用都会产生一个Stack Frame。</p>
+<p><img src="https://aria9766.oss-cn-beijing.aliyuncs.com/blog-pictures/6.S081/traps/stack.png" alt=""></p>
+<p>对Stack来说，是从高地址到低地址使用，因此，栈是向下增长的。</p>
+<p>有关Stack Frame有两个重要寄存器，第一个是SP（Stack Pointer），它指向Stack的底部，并代表了stack frame的位置。第二个是FP（Frame Pointer），它指向当前Stack Frame的顶部。因为Return address和指向前一个Stack Frame的的指针都在当前Stack Frame的固定位置，所以可以通过当前的FP寄存器寻址到这两个数据。</p>
+<h2 id="isolationsystem-call-entryexit">Isolation&amp;system call entry/exit</h2>
+<h3 id="trap机制">trap机制</h3>
+<p>用户空间和内核空间切换的场景：</p>
+<ul>
+<li>执行系统调用</li>
+<li>出现page fault、运算除以0</li>
+<li>一个设备触发了中断，使得当前程序运行需要响应内核设备驱动</li>
+</ul>
+<p>操作系统的一些high-level的目标能帮我们过滤一些实现选项。其中一个目标是安全和隔离，我们不想让用户代码介入到这里的user/kernel切换，否则有可能会破坏安全性。所以这意味着，trap中涉及到的硬件和内核机制不能依赖任何来自用户空间东西。比如说我们不能依赖32个用户寄存器，它们可能保存的是恶意的数据，所以，XV6的trap机制不会查看这些寄存器，而只是将它们保存起来。</p>
+<p>在supervisor mode下，可以做两件事：</p>
+<ul>
+<li>读写控制寄存器。例如，读写SATP寄存器，也就是page table的指针；STVEC，也就是处理trap的内核指令地址；SEPC，保存当发生trap时的程序计数器；SSCRATCH等等。在supervisor mode你可以读写这些寄存器，而用户代码不能做这样的操作。</li>
+<li>它可以使用PTE_U标志位为0的PTE。当PTE_U标志位为1的时候，表明用户代码可以使用这个页表；如果这个标志位为0，则只有supervisor mode可以使用这个页表。</li>
+</ul>
+<p>需要特别指出的是，supervisor mode中的代码并不能读写任意物理地址。在supervisor mode中，就像普通的用户代码一样，也需要通过page table来访问内存。如果一个虚拟地址并不在当前由SATP指向的page table中，又或者SATP指向的page table中PTE_U=1，那么supervisor mode不能使用那个地址。所以，即使我们在supervisor mode，我们还是受限于当前page table设置的虚拟地址</p>
+<h3 id="trap代码执行流程">trap代码执行流程</h3>
+<p>以write()为例：</p>
+<ul>
+<li>通过ecall指令进行系统调用，切换到内核态；</li>
+<li>执行uservec函数，位于trampoline.s文件中的汇编函数；</li>
+<li>跳转到C语言实现的usertrap中，位于trap.c中；</li>
+<li>执行syscall()函数，该函数会根据传入的数字进行查找，然后执行实现具体功能的函数。这里就是sys_write函数。</li>
+<li>sys_write将显示的数据输出，然后返回给syscall()函数；</li>
+<li>在ecall之后，中断了用户代码的执行，接下来需要恢复用户空间执行。会第哦啊用一个usertrapret函数（trap.c）中，这个函数完成了部分方便在C代码中实现的返回到用户空间的工作。</li>
+<li>还有一些工作只能在汇编语言中完成。这部分工作通过汇编语言实现，存在于trampoline.s文件中的userret函数中。</li>
+<li>最终，在这个汇编函数中会调用机器指令返回到用户空间，并且恢复ECALL之后的用户程序的执行。</li>
+</ul>
+<p><img src="https://aria9766.oss-cn-beijing.aliyuncs.com/blog-pictures/6.S081/traps/write.png" alt=""></p>
+<h3 id="ecall指令">ECALL指令</h3>
+<p>老师在课上，通过gdb调试，一步步分析了该指令的功能，详细在<a href="https://github.com/huihongxiao/MIT6.S081/tree/master/lec06-isolation-and-system-call-entry-exit-robert">笔记总结</a>中可以看到。这里简要概述一下该指令的功能与特性。</p>
+<p>在执行ecall前，查看页表可以发现，最后两条PTE的虚拟地址非常大，接近虚拟地址顶端，这两个page分别是trapframe page和trampoline page。这两个没有设置PTE_U的标志位，只能在内核态访问。</p>
+<p>在执行ecall后，通过查看程序计数器（PC）可以发现，PC的值到了一个很大的地址上。通过PC可以发现，代码在trampoline页的最开始。</p>
+<p>但是page table没有改变；寄存器也没有发生改变，仍然是用户寄存器。寄存器没有改变，则当前无法使用寄存器。</p>
+<p>通过ecall走到trampoline page，而ecall实际上只会改变三件事情：</p>
+<ul>
+<li>将代码陷入内核态。</li>
+<li>ecall将程序计数器的值保存在了SEPC（Supervisor Exception Program Counter）寄存器，在trap的过程中保存程序计数器的值。尽管其他的寄存器还是还是用户寄存器，但是这里的程序计数器明显已经不是用户代码的程序计数器。这里的程序计数器是从STVEC（Supervisor Trap Vector Base Address Register）寄存器拷贝过来的值。STVEC指向了内核中处理trap的指令的起始地址。</li>
+<li>ecall会跳转到STVEC寄存器指向的指令。</li>
+</ul>
+<p>因此，ecall做的工作离执行内核中的C代码还差的很远。接下来还需要做的事情：</p>
+<ul>
+<li>我们需要保存32个用户寄存器的内容，这样当我们想要恢复用户代码执行时，我们才能恢复这些寄存器的内容。</li>
+<li>因为现在我们还在user page table，我们需要切换到kernel page table。</li>
+<li>我们需要创建或者找到一个kernel stack，并将Stack Pointer寄存器的内容指向那个kernel stack。这样才能给C代码提供栈。</li>
+<li>我们还需要跳转到内核中C代码的某些合理的位置。</li>
+</ul>
+<p>实际上，有的机器在执行系统调用时，会在硬件中完成所有这些工作。但是RISC-V并不会，RISC-V秉持了这样一个观点：ecall只完成尽量少必须要完成的工作，其他的工作都交给软件完成。这里的原因是，RISC-V设计者想要为软件和操作系统的程序员提供最大的灵活性，这样他们就能按照他们想要的方式开发操作系统。有以下的一些例子：</p>
+<ul>
+<li>因为这里的ecall是如此的简单，或许某些操作系统可以在不切换page table的前提下，执行部分系统调用。切换page table的代价比较高，如果ecall打包完成了这部分工作，那就不能对一些系统调用进行改进，使其不用在不必要的场景切换page table。</li>
+<li>某些操作系统同时将user和kernel的虚拟地址映射到一个page table中，这样在user和kernel之间切换时根本就不用切换page table。对于这样的操作系统来说，如果ecall切换了page table那将会是一种浪费，并且也减慢了程序的运行。</li>
+<li>或许在一些系统调用过程中，一些寄存器不用保存，而哪些寄存器需要保存，哪些不需要，取决于于软件，编程语言，和编译器。通过不保存所有的32个寄存器或许可以节省大量的程序运行时间，所以你不会想要ecall迫使你保存所有的寄存器。</li>
+<li>最后，对于某些简单的系统调用或许根本就不需要任何stack，所以对于一些非常关注性能的操作系统，ecall不会自动为你完成stack切换是极好的。</li>
+</ul>
       </article>
     </section>
 
