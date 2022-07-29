@@ -139,14 +139,14 @@
     <div class="ui segment toc">
       <nav id="TableOfContents">
   <ul>
-    <li><a href="#第一章-操作系统接口">第一章 操作系统接口</a>
+    <li><a href="#操作系统接口">操作系统接口</a>
       <ul>
         <li><a href="#进程与内存">进程与内存</a></li>
         <li><a href="#io和文件描述符">IO和文件描述符</a></li>
         <li><a href="#管道">管道</a></li>
       </ul>
     </li>
-    <li><a href="#第二章-操作系统架构">第二章 操作系统架构</a>
+    <li><a href="#操作系统架构">操作系统架构</a>
       <ul>
         <li><a href="#抽象系统资源">抽象系统资源</a></li>
         <li><a href="#用户态核心态以及系统调用">用户态、核心态以及系统调用</a></li>
@@ -156,7 +156,7 @@
         <li><a href="#qemu">QEMU</a></li>
       </ul>
     </li>
-    <li><a href="#第三章-页表">第三章 页表</a>
+    <li><a href="#页表">页表</a>
       <ul>
         <li><a href="#页式硬件">页式硬件</a></li>
         <li><a href="#页表缓存tlb">页表缓存（TLB）</a></li>
@@ -178,8 +178,12 @@
     <li><a href="#isolationsystem-call-entryexit">Isolation&amp;system call entry/exit</a>
       <ul>
         <li><a href="#trap机制">trap机制</a></li>
+        <li><a href="#各种寄存器">各种寄存器</a></li>
         <li><a href="#trap代码执行流程">trap代码执行流程</a></li>
         <li><a href="#ecall指令">ECALL指令</a></li>
+        <li><a href="#uservec函数">uservec函数</a></li>
+        <li><a href="#usertrapusertrapret函数">usertrap、usertrapret函数</a></li>
+        <li><a href="#userret函数">userret函数</a></li>
       </ul>
     </li>
   </ul>
@@ -204,7 +208,7 @@
                   <span data-format="luxon">2022-07-20T13:08:09&#43;08:00</span>
                 
 
-              | 21 分钟阅读
+              | 26 分钟阅读
 
               
               | 更新于
@@ -242,7 +246,7 @@
 <p>github地址：https://github.com/ARIA-PKU/MIT6.828</p>
 <p>目前进度：lab1、lab2</p>
 <p>无意中发现github上有人对整个课程的视频内容做了详细<a href="https://github.com/huihongxiao/MIT6.S081">整理</a>，参考该整理做一些建立在自己理解基础上的整理。</p>
-<h2 id="第一章-操作系统接口">第一章 操作系统接口</h2>
+<h2 id="操作系统接口">操作系统接口</h2>
 <h3 id="进程与内存">进程与内存</h3>
 <p>fork()用于通过系统调用创建子进程，其在父子进程中都有返回值。在父进程中返回子进程的pid；在子进程中返回0，因此，可以根据返回值判断父子进程。</p>
 <div class="highlight"><div style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
@@ -339,7 +343,7 @@
 <p><strong>TIPS：0对应的是标准输入， 1对应标准输出， 2对应标准错误输出。</strong></p>
 <p>父进程关闭管道读取端，写入管道，然后关闭写入端。</p>
 <p>在没有数据进来的时候，管道的写端会进入等待，直到有数据写入或所有指向写入端的fd都被关闭。</p>
-<h2 id="第二章-操作系统架构">第二章 操作系统架构</h2>
+<h2 id="操作系统架构">操作系统架构</h2>
 <p>操作系统必须满足的三个要求：多路复用、隔离和交互。</p>
 <h3 id="抽象系统资源">抽象系统资源</h3>
 <p>隔离可以避免应用程序直接访问硬件资源，将资源抽象为服务。例如，可以通过open、read、write和close与系统交互，而不是直接读取磁盘。同时，这在相互竞争的状态下更高效获取资源。</p>
@@ -387,7 +391,7 @@
 <li>-smp：这里传递的是虚拟机可以使用的CPU核数</li>
 <li>-drive：传递的是虚拟机使用的磁盘驱动，这里传入的是fs.img文件</li>
 </ul>
-<h2 id="第三章-页表">第三章 页表</h2>
+<h2 id="页表">页表</h2>
 <h3 id="页式硬件">页式硬件</h3>
 <p>页表是在硬件中通过处理器和内存管理单元（Memory Management Unit）实现。通过MMU将虚拟地址翻译成物理地址。</p>
 <p>RISC-V中虚拟地址都是64bit，但是高25bit没有使用，供未来使用。剩下的39bit中，27bit用作index，12bit用作offset。因为一个页面的大小是4096字节，所以对应的offset为12bit。</p>
@@ -550,6 +554,13 @@
 <li>它可以使用PTE_U标志位为0的PTE。当PTE_U标志位为1的时候，表明用户代码可以使用这个页表；如果这个标志位为0，则只有supervisor mode可以使用这个页表。</li>
 </ul>
 <p>需要特别指出的是，supervisor mode中的代码并不能读写任意物理地址。在supervisor mode中，就像普通的用户代码一样，也需要通过page table来访问内存。如果一个虚拟地址并不在当前由SATP指向的page table中，又或者SATP指向的page table中PTE_U=1，那么supervisor mode不能使用那个地址。所以，即使我们在supervisor mode，我们还是受限于当前page table设置的虚拟地址</p>
+<h3 id="各种寄存器">各种寄存器</h3>
+<ul>
+<li>SATP（Supervisor Address Translation and Protection）寄存器，它包含了指向page table的物理内存地址</li>
+<li>STVEC（Supervisor Trap Vector Base Address Register）寄存器，它指向了内核中处理trap的指令的起始地址。</li>
+<li>SEPC（Supervisor Exception Program Counter）寄存器，在trap的过程中保存程序计数器的值。</li>
+<li>SSRATCH（Supervisor Scratch Register）寄存器，在trampoline 中使用，临时交换用。</li>
+</ul>
 <h3 id="trap代码执行流程">trap代码执行流程</h3>
 <p>以write()为例：</p>
 <ul>
@@ -587,6 +598,191 @@
 <li>某些操作系统同时将user和kernel的虚拟地址映射到一个page table中，这样在user和kernel之间切换时根本就不用切换page table。对于这样的操作系统来说，如果ecall切换了page table那将会是一种浪费，并且也减慢了程序的运行。</li>
 <li>或许在一些系统调用过程中，一些寄存器不用保存，而哪些寄存器需要保存，哪些不需要，取决于于软件，编程语言，和编译器。通过不保存所有的32个寄存器或许可以节省大量的程序运行时间，所以你不会想要ecall迫使你保存所有的寄存器。</li>
 <li>最后，对于某些简单的系统调用或许根本就不需要任何stack，所以对于一些非常关注性能的操作系统，ecall不会自动为你完成stack切换是极好的。</li>
+</ul>
+<h3 id="uservec函数">uservec函数</h3>
+<p>继续上图中write的流程，在ecall之后进入uservec函数。</p>
+<p>首先，需要保存寄存器的内容。在RISC-V中，是不能直接访问物理地址，需要通过页表访问，但是当前的用户态页表可以使用的PTE不多，因此需要内核页表。</p>
+<p>对于保存用户寄存器，XV6在RISC-V的实现包括两个部分：</p>
+<p>一、xv6在每个用户页表映射了trapframe page，这样每个进程都有自己的trapframe page，来保存用户寄存器的32个slot。所以在用户页表中有一个之前kernel设置好的映射关系，指向可以存放进程寄存器的内存位置，该虚拟地址总是0x3ffffffe000。</p>
+<p>在proc.h的trapframe结构体中可以看到trapframe page存放的内容：</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">23
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">24
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">25
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">26
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">27
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">28
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">29
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">30
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">31
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">32
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">33
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">34
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">35
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">36
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">37
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">38
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>struct trapframe {
+</span></span><span style="display:flex;"><span>  /*   0 */ uint64 kernel_satp;   // kernel page table
+</span></span><span style="display:flex;"><span>  /*   8 */ uint64 kernel_sp;     // top of process&#39;s kernel stack
+</span></span><span style="display:flex;"><span>  /*  16 */ uint64 kernel_trap;   // usertrap()
+</span></span><span style="display:flex;"><span>  /*  24 */ uint64 epc;           // saved user program counter
+</span></span><span style="display:flex;"><span>  /*  32 */ uint64 kernel_hartid; // saved kernel tp
+</span></span><span style="display:flex;"><span>  /*  40 */ uint64 ra;
+</span></span><span style="display:flex;"><span>  /*  48 */ uint64 sp;
+</span></span><span style="display:flex;"><span>  /*  56 */ uint64 gp;
+</span></span><span style="display:flex;"><span>  /*  64 */ uint64 tp;
+</span></span><span style="display:flex;"><span>  /*  72 */ uint64 t0;
+</span></span><span style="display:flex;"><span>  /*  80 */ uint64 t1;
+</span></span><span style="display:flex;"><span>  /*  88 */ uint64 t2;
+</span></span><span style="display:flex;"><span>  /*  96 */ uint64 s0;
+</span></span><span style="display:flex;"><span>  /* 104 */ uint64 s1;
+</span></span><span style="display:flex;"><span>  /* 112 */ uint64 a0;
+</span></span><span style="display:flex;"><span>  /* 120 */ uint64 a1;
+</span></span><span style="display:flex;"><span>  /* 128 */ uint64 a2;
+</span></span><span style="display:flex;"><span>  /* 136 */ uint64 a3;
+</span></span><span style="display:flex;"><span>  /* 144 */ uint64 a4;
+</span></span><span style="display:flex;"><span>  /* 152 */ uint64 a5;
+</span></span><span style="display:flex;"><span>  /* 160 */ uint64 a6;
+</span></span><span style="display:flex;"><span>  /* 168 */ uint64 a7;
+</span></span><span style="display:flex;"><span>  /* 176 */ uint64 s2;
+</span></span><span style="display:flex;"><span>  /* 184 */ uint64 s3;
+</span></span><span style="display:flex;"><span>  /* 192 */ uint64 s4;
+</span></span><span style="display:flex;"><span>  /* 200 */ uint64 s5;
+</span></span><span style="display:flex;"><span>  /* 208 */ uint64 s6;
+</span></span><span style="display:flex;"><span>  /* 216 */ uint64 s7;
+</span></span><span style="display:flex;"><span>  /* 224 */ uint64 s8;
+</span></span><span style="display:flex;"><span>  /* 232 */ uint64 s9;
+</span></span><span style="display:flex;"><span>  /* 240 */ uint64 s10;
+</span></span><span style="display:flex;"><span>  /* 248 */ uint64 s11;
+</span></span><span style="display:flex;"><span>  /* 256 */ uint64 t3;
+</span></span><span style="display:flex;"><span>  /* 264 */ uint64 t4;
+</span></span><span style="display:flex;"><span>  /* 272 */ uint64 t5;
+</span></span><span style="display:flex;"><span>  /* 280 */ uint64 t6;
+</span></span><span style="display:flex;"><span>};
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>很多槽位对应了特定的寄存器，最开始的五个数据是内核实现放在trapframe中的数据。比如第一个kernel page table的地址，就是trap处理代码要加载的SATP寄存器内容。</p>
+<p>因此，内核通过trapframe page映射到了每个user page table。</p>
+<p>二、RISC-V中提供了SSCRATCH寄存器，在进入到user space之前，内核会将trapframe page的地址（即0x3fffffe000）保存到该寄存器中。SSCRATCH寄存器的作用就是保存另一个寄存器的值，并将自己的值加载给另一个寄存器。</p>
+<p>在trampoline.S代码中：</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">23
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">24
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">25
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">26
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">27
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">28
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">29
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>.globl trampoline
+</span></span><span style="display:flex;"><span>trampoline:
+</span></span><span style="display:flex;"><span>.align 4
+</span></span><span style="display:flex;"><span>.globl uservec
+</span></span><span style="display:flex;"><span>uservec:    
+</span></span><span style="display:flex;"><span>	#
+</span></span><span style="display:flex;"><span>        # trap.c sets stvec to point here, so
+</span></span><span style="display:flex;"><span>        # traps from user space start here,
+</span></span><span style="display:flex;"><span>        # in supervisor mode, but with a
+</span></span><span style="display:flex;"><span>        # user page table.
+</span></span><span style="display:flex;"><span>        #
+</span></span><span style="display:flex;"><span>        # sscratch points to where the process&#39;s p-&gt;trapframe is
+</span></span><span style="display:flex;"><span>        # mapped into user space, at TRAPFRAME.
+</span></span><span style="display:flex;"><span>        #
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>	# swap a0 and sscratch
+</span></span><span style="display:flex;"><span>        # so that a0 is TRAPFRAME
+</span></span><span style="display:flex;"><span>        csrrw a0, sscratch, a0
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        # save the user registers in TRAPFRAME
+</span></span><span style="display:flex;"><span>        sd ra, 40(a0)
+</span></span><span style="display:flex;"><span>        sd sp, 48(a0)
+</span></span><span style="display:flex;"><span>        sd gp, 56(a0)
+</span></span><span style="display:flex;"><span>        sd tp, 64(a0)
+</span></span><span style="display:flex;"><span>        sd t0, 72(a0)
+</span></span><span style="display:flex;"><span>        sd t1, 80(a0)
+</span></span><span style="display:flex;"><span>        sd t2, 88(a0)
+</span></span><span style="display:flex;"><span>        sd s0, 96(a0)
+</span></span><span style="display:flex;"><span>        sd s1, 104(a0)
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>在该部分，首先执行csrrw指令，交换a0和sscratch两个寄存器内容。此时a0的值为0x3fffffe000，这是trapframe page的虚拟地址，而a0中的内容被保存到了sscratch寄存器中。在trampoline.S接下来的指令中就是将寄存器中的内容通过不同偏移保存在trapframe中。</p>
+<p>然后，通过交换SATP（Supervisor Address Translation and Protection）和t1寄存器，将用户页表切换到内核页表。</p>
+<p>**问题：**为什么代码没有崩溃？毕竟我们在内存中的某个位置执行代码，程序计数器保存的是虚拟地址，如果我们切换了page table，为什么同一个虚拟地址不会通过新的page table寻址走到一些无关的page中？</p>
+<p>答案很简单，因为当前运行在trampoline代码中，之前提到trampoline代码在用户空间和内核空间都映射到同一个位置，是恒等映射。</p>
+<h3 id="usertrapusertrapret函数">usertrap、usertrapret函数</h3>
+<p>usertrap在trap.c中，是C代码实现。该函数用来处理各种中断的情况。</p>
+<p>先将STVEC指向kernelvec变量，指向内核trap处理代码位置；确定当前进程；保存PC；根据usertrap函数的原因触发响应处理。</p>
+<p>当前是系统调用，因此指向sys_call找到sys_write执行。</p>
+<p>最后调用usertrapret函数，该函数用来处理返回用户空间前内核要做的工作。</p>
+<p>它首先关闭了中断。我们之前在系统调用的过程中是打开了中断的，这里关闭中断是因为我们将要更新STVEC寄存器来指向用户空间的trap处理代码。在下一行我们设置了STVEC寄存器指向trampoline代码，在那里最终会执行sret指令返回到用户空间。位于trampoline代码最后的sret指令会重新打开中断。这样，即使我们刚刚关闭了中断，当我们在执行用户代码时中断是打开的。</p>
+<p>接下来的几行填入了trapframe的内容，这些内容对于执行trampoline代码非常有用。这里的代码就是：</p>
+<ul>
+<li>存储了kernel page table的指针</li>
+<li>存储了当前用户进程的kernel stack</li>
+<li>存储了usertrap函数的指针，这样trampoline代码才能跳转到这个函数（注，详见6.5中 <em>ld t0 (16)a0</em> 指令）</li>
+<li>从tp寄存器中读取当前的CPU核编号，并存储在trapframe中，这样trampoline代码才能恢复这个数字，因为用户代码可能会修改这个数字</li>
+</ul>
+<p>现在我们在usertrapret函数中，我们正在设置trapframe中的数据，这样下一次从用户空间转换到内核空间时可以用到这些数据。</p>
+<p>接下来，我们根据user page table地址生成相应的SATP值，这样我们在返回到用户空间的时候才能完成page table的切换。</p>
+<p>最后跳转到地址是tampoline中的userret函数，这个函数包含了所有能将我们带回到用户空间的指令。</p>
+<h3 id="userret函数">userret函数</h3>
+<p>重新回到trampoline函数，切换页表到用户页表，之前保存的寄存器的值加载到对应的各个寄存器中。</p>
+<p>现在trapframe中的a0寄存器是我们执行系统调用的返回值。</p>
+<p>最后，执行sret，sret是我们在kernel中的最后一条指令，当我执行完这条指令：</p>
+<ul>
+<li>程序会切换回user mode</li>
+<li>SEPC寄存器的数值会被拷贝到PC寄存器（程序计数器）</li>
+<li>重新打开中断</li>
 </ul>
       </article>
     </section>

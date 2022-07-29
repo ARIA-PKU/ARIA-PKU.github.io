@@ -148,9 +148,9 @@
         <li><a href="#xargs">xargs</a></li>
       </ul>
     </li>
-    <li><a href="#lab-syscall">lab-syscall</a></li>
-    <li><a href="#trace">trace</a>
+    <li><a href="#lab-syscall">lab-syscall</a>
       <ul>
+        <li><a href="#trace">trace</a></li>
         <li><a href="#sysinfo">Sysinfo</a></li>
       </ul>
     </li>
@@ -183,7 +183,7 @@
                   <span data-format="luxon">2022-07-21T21:28:24&#43;08:00</span>
                 
 
-              | 11 分钟阅读
+              | 13 分钟阅读
 
               
               | 更新于
@@ -889,7 +889,7 @@
 </span></span></code></pre></td></tr></table>
 </div>
 </div><h2 id="lab-syscall">lab-syscall</h2>
-<h2 id="trace">trace</h2>
+<h3 id="trace">trace</h3>
 <p>实现一个trace系统调用的功能，对每个系统调用打印出：进程id，系统调用名称以及返回值。</p>
 <p>提供的trace.c中的代码会先执行trace(int)函数，再execute在trace之后的命令。</p>
 <p>按照notes，先在proc中添加新变量，在proc.h中，proc就是每个进程数据结构的定义，其中包含了pid，页表，栈等，为了实现trace功能，在其中添加trace_mask字段，用来记录系统调用的参数。</p>
@@ -1168,6 +1168,16 @@
 </div><p>最后，要在defs.h中声明前两个函数，并在syscall.c中声明sysinfo。另外，还要在usys.pl中声明sysinfo函数。要想通过最后一个测试，需要加一个time.txt并且写下花了少了小时在这个lab上。</p>
 <h2 id="lab3page-tables">lab3：page tables</h2>
 <h3 id="print-a-page-table">Print a page table</h3>
+<p>老师课上给出的图，能更好分析这个结构。首先每个page table在三级列表中对应的是第一级的页表，因此最低一层对应的就是实际物理页。在pid = 1时，可以根据权限，以及左上角的进程空间分配图分析出各个页表的内容：</p>
+<ul>
+<li>第0个页表，对应的是图中的text 和data部分，xv6中为了简单，将两个放到同一个页面中。</li>
+<li>第1个页表，通过User位可知，在用户态中无法执行，对应的是guard page</li>
+<li>第2个页表，对应的是stack page</li>
+<li>第510个页表，对应的是trap frame</li>
+<li>第511个页表，对应的是trampoline页表</li>
+</ul>
+<p>关于这里二级页表最高位置为什么是255而不是511，xv6中将符号位省略，原则上虚拟地址对应39位，但是xv6中只有38位。</p>
+<p><img src="https://aria9766.oss-cn-beijing.aliyuncs.com/blog-pictures/6.S081/page_table/vm_print.png" alt=""></p>
 <p>第一个任务是打印页表内容，较为容易，按照hints一步步处理：</p>
 <p>1、在exec.c的return argc之前插入<code>if(p-&gt;pid==1) vmprint(p-&gt;pagetable)</code>:</p>
 <div class="highlight"><div style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
@@ -1265,7 +1275,9 @@
 </span></span></code></pre></td></tr></table>
 </div>
 </div><h3 id="a-kernel-page-table-per-process-hard">A kernel page table per process (hard)</h3>
-<p>第二个task和第三个task共同实现了一个功能。</p>
+<p>第二个task和第三个task共同实现了一个功能。在用户与内核之间传递信息的时候，通常有两种做法，一种是在用户态读取页表信息，然后传递给内核态，另一种是在用户态直接传递页表的指针，在内核态通过MMU读取获得页表信息。</p>
+<p>第一种方法有几个明显的劣势。首先，在用户态需要通过walk函数模拟MMU查找PTE内容，效率更低；其次，如果执行write之类的函数，需要进行大规模复制，导致占用空间过高。因此，当前的Linux系统通常采用第二种方式。第二种方式的一个问题在于，用户态的页表与内核态的页表是不同的，用户态的页表无法直接在内核态中使用。</p>
+<p>在第三个task中给出了一些背景知识：用户的虚拟地址范围是不与内核用于自身指令和数据的虚拟地址范围重叠的。用户的虚拟地址从0开始，而内核启动后，XV6的最小地址为0xC000000，即PLIC寄存器的地址。因此，可以在每个进程的数据结构中，添加一个页表，在完整复制内核页表的前提下，在PLIC之下的地址（即第0页）存放当前进程的页表信息。</p>
 <p>xv6中有一个单独用于内核中执行的内核页表，其映射方式是恒等映射。在vm.c中的的以下代码可以看到，通过kvminit维护一个内核页表。</p>
 <div class="highlight"><div style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
 <table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
@@ -1345,7 +1357,7 @@
 </span></span><span style="display:flex;"><span>}
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>xv6中每个进程的用户地址空间还有一个单独的页表，在proc.h中的proc结构体中的pagetable用来维护该页表。该页表只包含进程用户内存的映射，其虚拟地址从0开始。当内核胥耀使用在系统调用中传递的用户指针（例如传递给write()的缓冲区指针）时，内核必须将其转换为物理地址。</p>
+</div><p>xv6中每个进程的用户地址空间还有一个单独的页表，在proc.h中的proc结构体中的pagetable用来维护该页表。该页表只包含进程用户内存的映射，其虚拟地址从0开始。当内核需要使用在系统调用中传递的用户指针（例如传递给write()的缓冲区指针）时，内核必须将其转换为物理地址。</p>
 <p>这两个任务就是要求，复制用户的页表进入内核页表，在调度（scheduler）时，通过切换内核页表实现。</p>
 <p>接下来根据hints中的内容一步一步完成实现：</p>
 <p>1、第一条提示是为进程中的内核页表添加一个字段：</p>
@@ -1364,7 +1376,7 @@
 </span></span></code></pre></td></tr></table>
 </div>
 </div><p>2、模仿kvminit为新进程初始化该字段。这里和最开始的描述略有不同，目标是使得内核页表与进程的页表一致，实现的时候使用的是切换的方式，在需要进行调用时，切换到创建的新结构中，否则仍然使用原来的内核进程（这一点在后面的提示中也有提及）。</p>
-<p>为了维护与全局内核页表一致，先将页表复制过来，然后做相应映射。</p>
+<p>为了维护与全局内核页表一致，先将页表复制过来，然后做相应映射。（这里从第1页开始，是因为在PLIC以上的是内核页表，在进程页表中不会改变）。</p>
 <div class="highlight"><div style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
 <table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
 <pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
@@ -1585,7 +1597,7 @@
 </div>
 </div><h3 id="simplify-copyincopyinstrhard">Simplify <code>copyin</code>/<code>copyinstr</code>（hard）</h3>
 <p>这一步就是在进程的页表变化时，内核页表也要随之更新。按照提示：</p>
-<p>1、替换copyin和copyinstr为copyin_new和copyinstr_new。直接类似以下替换即可。</p>
+<p>1、替换copyin和copyinstr为copyin_new和copyinstr_new。直接类似以下替换即可。这里的新copyin函数实现的是复制指针，而不是先前的复制内容。复制指针，在内核态通过页表来读取这些内容。</p>
 <div class="highlight"><div style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
 <table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
 <pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
@@ -1645,7 +1657,7 @@
 </span></span></code></pre></td></tr></table>
 </div>
 </div><p>然后依次在fork()，exec()和sbrk()中调用该函数。</p>
-<p>fork中，直接从va为0处完全复制：</p>
+<p>fork中，直接从va为0处完全复制，fork这里必须要重新复制一个新的页表，而不能指向父进程的页表，防止父进程中止，页表删除，子进程失去页表：</p>
 <div class="highlight"><div style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
 <table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
 <pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
