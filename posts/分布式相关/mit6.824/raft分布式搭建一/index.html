@@ -213,14 +213,14 @@
 <p>在lab2中，项目要求要实现raft的选举，leader与followers的信息传递与同步以及raft服务器崩溃重启后的服务恢复三大功能。在对raft论文通读之后，需要对教授的课程做好笔记，教授在课堂中讨论的问题基本都是设计系统时的关键要点。在实现过程中还需要结合论文，考虑各个实现细节。</p>
 <h3 id="leader-election是怎么实现的">Leader Election是怎么实现的？</h3>
 <p>在讨论这个问题之前，需要先了解论文中对各个节点的分类。</p>
-<p><img src="http://oss.surfaroundtheworld.top/blog-pictures/raft/figure_4.jpeg" alt=""></p>
+<p><img src="https://aria9766.oss-cn-beijing.aliyuncs.com/blog-pictures/raft/figure_4.jpeg" alt=""></p>
 <p>从上图可以看出，raft将所有节点分类为了三种身份：</p>
 <ul>
 <li>Leader：在一个任期内，集群中至多一个Leader，负责发送心跳，响应客户端，创建日志与同步日志。</li>
 <li>Candidate：是leader选举过程中的过渡状态，由follower转化而来，发起投票竞选leader。</li>
 <li>Follower：接收leader的同步消息，同时为选举投票。</li>
 </ul>
-<p>接下来，还了解Term（任期）的概念：</p>
+<p>接下来，还需要了解Term（任期）的概念：</p>
 <p><img src="https://aria9766.oss-cn-beijing.aliyuncs.com/blog-pictures/raft/figure_5.jpeg" alt=""></p>
 <p>每一个term之前都是一次选举，一个或多个candidate会竞选leader，如果竞选失败会重新竞选。</p>
 <p>每个节点会存储currentTerm，这是一个单调递增的编号。如果一个服务器在通信时候，发现自己的编号小于其他人的的term，则会更新currentTerm到较大值。如果candidate或leader发现自己的term较小，则会退回follwer状态。如果接收到更小的过期term请求，则会拒绝或忽略该请求。</p>
@@ -1124,7 +1124,7 @@
 </div><h3 id="为什么要持久化与如何持久化">为什么要持久化与如何持久化？</h3>
 <p>raft在崩溃之后，需要重新启动，对于一些重要的数据结构是需要持久化来保证raft正常运行。</p>
 <p>在figure 2中给出了需要持久化的三个数据结构：log[]，currentTerm和votedFor。原因在前一篇博客的日志持久化部分也进行了详细整理。</p>
-<p>在6.824中的持久化是在所有修改以上三个数据机构的时候进行持久化，在实际生产中应该会采用wal的方式。</p>
+<p>在6.824中的持久化是在所有修改以上三个数据结构的时候进行持久化，在实际生产中应该会采用wal的方式。</p>
       </article>
     </section>
 

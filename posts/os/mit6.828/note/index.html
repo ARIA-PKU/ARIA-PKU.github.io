@@ -186,6 +186,15 @@
         <li><a href="#userret函数">userret函数</a></li>
       </ul>
     </li>
+    <li><a href="#page-fault">Page Fault</a>
+      <ul>
+        <li><a href="#lazy-page-allocation">lazy page allocation</a></li>
+        <li><a href="#zero-fill-on-demand">Zero Fill On Demand</a></li>
+        <li><a href="#copy-on-write-fork">Copy On Write Fork</a></li>
+        <li><a href="#demand-paging">Demand Paging</a></li>
+        <li><a href="#memory-mapped-files">Memory Mapped Files</a></li>
+      </ul>
+    </li>
   </ul>
 </nav>
     </div>
@@ -208,7 +217,7 @@
                   <span data-format="luxon">2022-07-20T13:08:09&#43;08:00</span>
                 
 
-              | 26 分钟阅读
+              | 32 分钟阅读
 
               
               | 更新于
@@ -411,7 +420,7 @@
 <p>TLB全称是Translation Lookaside Buffer。在三级页表中，当从内存加载或存储数据的时候，需要做三次内存查询。为了降低查询代价，几乎所有的处理器都提供了TLB作为PTE的缓存。</p>
 <p>在第一次查询时，TLB会保存虚拟地址到物理地址的映射关系，下一次访问可以直接走TLB。操作系统也不知道TLB如何工作，但是如果切换了页表，操作系统会告诉处理器当前正在切换页表，处理器会清空TLB，因为TLB中缓存不再有用。</p>
 <h3 id="kernel-page-table">Kernel Page Table</h3>
-<p>在xv6中，下图左边对应的是啮合的虚拟地址空间，右边的上半部分是物理内存或者说是DRAM，右边的下半部分对应的是I/O设备。</p>
+<p>在xv6中，下图左边对应的是内核的虚拟地址空间，右边的上半部分是物理内存或者说是DRAM，右边的下半部分对应的是I/O设备。</p>
 <p>右半部分的设计由硬件设计者决定，操作系统启动，会从地址0x80000000开始运行。在完成从虚拟地址到物理地址翻译后，地址高于0x80000000会进入DRAM芯片，低于0x80000000会走向不同的IO设备。</p>
 <p><img src="https://aria9766.oss-cn-beijing.aliyuncs.com/blog-pictures/6.S081/page_table/3.3.png" alt=""></p>
 <h3 id="地址空间的创建">地址空间的创建</h3>
@@ -784,6 +793,54 @@
 <li>SEPC寄存器的数值会被拷贝到PC寄存器（程序计数器）</li>
 <li>重新打开中断</li>
 </ul>
+<h2 id="page-fault">Page Fault</h2>
+<p>此部分对应lec8内容。通过page fault机制可以实现一系列虚拟内存功能，包括：</p>
+<ul>
+<li>lazy allocation</li>
+<li>copy-on-write fork</li>
+<li>demand paging</li>
+<li>memory mapped files</li>
+</ul>
+<p>几乎所有的操作系统都实现了以上功能，但是在xv6中，均未实现，一旦用户空间的进程触发page fault会导致进程被杀死。</p>
+<p>到目前为止，内存地址的映射相对比较静态，page fault可以使得地址映射变得动态。通过page fault，内核可以更新page table。</p>
+<p>当出现page fault，有三个信息非常重要：</p>
+<ul>
+<li>引起page fault的虚拟地址</li>
+<li>引起page fault的原因类型</li>
+<li>引起page fault的PC值，表明发生在用户空间的位置，便于恢复后返回</li>
+</ul>
+<h3 id="lazy-page-allocation">lazy page allocation</h3>
+<p>sbrk是xv6提供的系统调用，用于扩大自己的heap。当sbrk实际调用时，内核会分配一些物理内存，并将内存映射到用户应用程序的地址空间，并将内存内容初始化为0，再返回sbrk系统调用。同样也可以传入负数，减少内存地址空间。</p>
+<p>xv6中默认的sbrk是eager allocation，一旦调用sbrk，内核会立即分配应用程式所需的物理内存。但是实际上，对于应用程序来说，很难预测自己需要多少内存，因此通常倾向于申请多余自己所需的内存，这意味着内存的消耗增加，并且部分内存永远不会被应用程序用到。</p>
+<p>lazy allocation的核心思想是，在sbrk中，基本不做任何事，只将p-&gt;sz增加n（n为需要新分配的内存page数量）。但是内核并不会分配任何物理内存。在之后应用程序使用到新申请的内存会触发page fault。因为还没有将新的内存映射到page table，此时解析一个大于旧的p-&gt;sz，小于新的p-&gt;sz的虚拟地址，请求内核分配一个内存page，并重新执行指令。</p>
+<h3 id="zero-fill-on-demand">Zero Fill On Demand</h3>
+<p>对一个用户的地址空间，会存在text区（程序的指令），data区（初始化的全局变量）和bss区（未初始化或初始化为0的全局或静态变量）。</p>
+<p>在一个正常的操作系统中，如果执行了exec，会申请地址空间，里面会存放text和data。在bss中所有未初始化的全局变量都是0，而且会有许多page，可以调优的地方在于在物理内存中，只需要分配一个page，该page的内容全部为0，然后将虚拟地址空间全0的page映射到该物理page上，这样至少在程序启动时能节省大量物理内存的分配。</p>
+<p>对于这个page，所有的PTE都是只读的。在修改的时候，会引起page fault，处理这个page fault需要在内存中申请一个新的page，内容置为0；然后更新page的映射关系，PTE可读可写；最后重新执行指令。</p>
+<p>好处：</p>
+<ul>
+<li>类似lazy allocation，节省了空间</li>
+<li>exec中需要做的工作变少了，程序可以更快地启动，更好的交互体验。</li>
+</ul>
+<h3 id="copy-on-write-fork">Copy On Write Fork</h3>
+<p>这是一个非常常见的优化，许多操作系统都实现了copy-on-write fork，也叫COW fork。</p>
+<p>当Shell处理指令时，通过fork创建一个子进程。fork会创建一个进程的拷贝，子进程执行的第一件事就是调用exec运行一些其他程序，例如echo，这会丢掉之前的地址空间，使用包含echo的地址空间，会造成浪费。</p>
+<p>在物理内存中，xv6中的shell 通常有4个page，调用fork时，基本就是创建了4个新的page，并将父进程中的内容拷贝到子进程中的4个page中。但是，调用了exec，又会释放这些page，分配新的page包含echo相关内容。</p>
+<p>因此，对于这个特定场景存在一个非常有效的优化：当创建子进程时，使得子进程直接共享父进程的物理内存page，将子进程的PTE指向父进程对于的物理内存page。同时为了确保进程间的隔离性，将父子进程的PTE都设为只读。</p>
+<p>当父或子进程需要修改内存内容，会得到page fault。这时，分配一个新的page，拷贝相应的物理page，并将新的PTE与之前的PTE都修改成可读可写。最后，重新执行用户指令（指调用userret函数）。</p>
+<p>**Q：**当发生page fault时，我们其实是在向一个只读的地址执行写操作。内核如何能分辨现在是一个copy-on-write fork的场景，而不是应用程序在向一个正常的只读地址写数据？</p>
+<p>**A：**对于PTE的标志位，之前介绍过第0bit到第7bit，但是没有介绍最后两位RSW。这两位保留给supervisor software使用，supervisor softeware指的就是内核。内核可以随意使用这两个bit位。所以可以做的一件事情就是，将bit8标识为当前是一个copy-on-write page。</p>
+<h3 id="demand-paging">Demand Paging</h3>
+<p>在未修改的xv6中，执行exec，操作系统会加载程序内存的text，data区域并以eager的方式加载进page table中。</p>
+<p>但是根据先前的经验，考虑在实际使用的时候再从磁盘中将其加载到内存中。因此在exec中，为text和data分配好地址段，但是相应的PTE不对应任何物理page，将valid置为0。当实际使用的时候，加载进内存。</p>
+<p>这里存在一个问题：内存耗尽该怎么办？</p>
+<p>常见的选择是释放page，将部分page释放，重新分配，执行指令。</p>
+<p>切换page的常用方式是LRU。同时对于dirty page 和non-dirty page通常选择切换non-dirty page。因为如果dirty page再被修改，则需要对它写两次（一次内存，一次文件）。</p>
+<h3 id="memory-mapped-files">Memory Mapped Files</h3>
+<p>核心思想是将完整或者部分文件加载到内存中，这样就可以通过内存地址相关的load或store指令操纵文件。为了执行这个功能，操作系统会提供一个mmap的系统调用。它会接收一个虚拟地址（va），长度（len），protection，一些标志位，一个打开文件的文件描述符以及偏移量。</p>
+<p>这里的语义就是，从文件描述符对应的文件的偏移量的位置开始，映射长度为len的内容到虚拟内存地址VA，同时我们需要加上一些保护，比如只读或者读写。</p>
+<p>假设文件内容是读写并且内核实现mmap的方式是eager方式（不过大部分系统都不会这么做），内核会从文件的offset位置开始，将数据拷贝到内存，设置好PTE指向物理内存的位置。之后应用程序就可以使用load或者store指令来修改内存中对应的文件内容。当完成操作之后，会有一个对应的unmap系统调用，参数是虚拟地址（VA），长度（len）。来表明应用程序已经完成了对文件的操作，在unmap时间点，我们需要将dirty block写回到文件中。我们可以很容易的找到哪些block是dirty的，因为它们在PTE中的dirty bit为1。</p>
+<p>当然，在任何聪明的内存管理机制中，所有的这些都是以lazy的方式实现。你不会立即将文件内容拷贝到内存中，而是先记录一下这个PTE属于这个文件描述符。相应的信息通常在VMA结构体中保存，VMA全称是Virtual Memory Area。例如对于这里的文件f，会有一个VMA，在VMA中我们会记录文件描述符，偏移量等等，这些信息用来表示对应的内存虚拟地址的实际内容在哪，这样当我们得到一个位于VMA地址范围的page fault时，内核可以从磁盘中读数据，并加载到内存中。所以这里回答之前一个问题，dirty bit是很重要的，因为在unmap中，你需要向文件回写dirty block。</p>
       </article>
     </section>
 

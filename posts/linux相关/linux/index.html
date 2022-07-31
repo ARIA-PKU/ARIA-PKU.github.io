@@ -154,6 +154,13 @@
         <li><a href="#举例">举例</a></li>
       </ul>
     </li>
+    <li><a href="#常用命令整理">常用命令整理</a>
+      <ul>
+        <li><a href="#查看主机-cpu-核数">查看主机 CPU 核数</a></li>
+        <li><a href="#查看内存剩余">查看内存剩余</a></li>
+        <li><a href="#查看正在监听-80-端口的进程">查看正在监听 80 端口的进程</a></li>
+      </ul>
+    </li>
   </ul>
 </nav>
     </div>
@@ -176,7 +183,7 @@
                   <span data-format="luxon">2022-05-02T16:55:41&#43;08:00</span>
                 
 
-              | 3 分钟阅读
+              | 5 分钟阅读
 
               
               | 更新于
@@ -327,6 +334,207 @@
 <h3 id="举例">举例</h3>
 <p>统计当前目录下所有python文件的总行数。</p>
 <p><code>find . -name '*.py' | xargs cat | wc -l</code></p>
+<h2 id="常用命令整理">常用命令整理</h2>
+<h3 id="查看主机-cpu-核数">查看主机 CPU 核数</h3>
+<p>cat /proc/cpuinfo，可以看到以下内容（如果想查找内核个数，cat /proc/cpuinfo | grep &ldquo;cpu cores&rdquo;)：</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">23
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">24
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">25
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">26
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>processor       : 0
+</span></span><span style="display:flex;"><span>vendor_id       : GenuineIntel
+</span></span><span style="display:flex;"><span>cpu family      : 6
+</span></span><span style="display:flex;"><span>model           : 79
+</span></span><span style="display:flex;"><span>model name      : Intel(R) Xeon(R) CPU E5-2682 v4 @ 2.50GHz
+</span></span><span style="display:flex;"><span>stepping        : 1
+</span></span><span style="display:flex;"><span>microcode       : 0x1
+</span></span><span style="display:flex;"><span>cpu MHz         : 2494.222
+</span></span><span style="display:flex;"><span>cache size      : 40960 KB
+</span></span><span style="display:flex;"><span>physical id     : 0
+</span></span><span style="display:flex;"><span>siblings        : 1
+</span></span><span style="display:flex;"><span>core id         : 0
+</span></span><span style="display:flex;"><span>cpu cores       : 1
+</span></span><span style="display:flex;"><span>apicid          : 0
+</span></span><span style="display:flex;"><span>initial apicid  : 0
+</span></span><span style="display:flex;"><span>fpu             : yes
+</span></span><span style="display:flex;"><span>fpu_exception   : yes
+</span></span><span style="display:flex;"><span>cpuid level     : 20
+</span></span><span style="display:flex;"><span>wp              : yes
+</span></span><span style="display:flex;"><span>flags           : fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush mmx fxsr sse sse2 ss ht syscall nx pdpe1gb rdtscp lm constant_tsc rep_good nopl nonstop_tsc cpuid tsc_known_freq pni pclmulqdq ssse3 fma cx16 pcid sse4_1 sse4_2 x2apic movbe popcnt tsc_deadline_timer aes xsave avx f16c rdrand hypervisor lahf_lm abm 3dnowprefetch invpcid_single pti ibrs ibpb stibp fsgsbase tsc_adjust bmi1 hle avx2 smep bmi2 erms invpcid rtm rdseed adx smap xsaveopt arat
+</span></span><span style="display:flex;"><span>bugs            : cpu_meltdown spectre_v1 spectre_v2 spec_store_bypass l1tf mds swapgs taa itlb_multihit
+</span></span><span style="display:flex;"><span>bogomips        : 4988.44
+</span></span><span style="display:flex;"><span>clflush size    : 64
+</span></span><span style="display:flex;"><span>cache_alignment : 64
+</span></span><span style="display:flex;"><span>address sizes   : 46 bits physical, 48 bits virtual
+</span></span><span style="display:flex;"><span>power management:
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="查看内存剩余">查看内存剩余</h3>
+<p>free -m</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>              total        used        free      shared  buff/cache   available
+</span></span><span style="display:flex;"><span>Mem:           1987        1065         114           2         807         737
+</span></span><span style="display:flex;"><span>Swap:             0           0           0
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>cat /proc/meminfo</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">23
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">24
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">25
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">26
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">27
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">28
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">29
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">30
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">31
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">32
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">33
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">34
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">35
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">36
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">37
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">38
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">39
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">40
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">41
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">42
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">43
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">44
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">45
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">46
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">47
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">48
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">49
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">50
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">51
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">52
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">53
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>MemTotal:        2035128 kB
+</span></span><span style="display:flex;"><span>MemFree:          116764 kB
+</span></span><span style="display:flex;"><span>MemAvailable:     754360 kB
+</span></span><span style="display:flex;"><span>Buffers:          132424 kB
+</span></span><span style="display:flex;"><span>Cached:           585064 kB
+</span></span><span style="display:flex;"><span>SwapCached:            0 kB
+</span></span><span style="display:flex;"><span>Active:          1536660 kB
+</span></span><span style="display:flex;"><span>Inactive:         174360 kB
+</span></span><span style="display:flex;"><span>Active(anon):     994048 kB
+</span></span><span style="display:flex;"><span>Inactive(anon):     2352 kB
+</span></span><span style="display:flex;"><span>Active(file):     542612 kB
+</span></span><span style="display:flex;"><span>Inactive(file):   172008 kB
+</span></span><span style="display:flex;"><span>Unevictable:           0 kB
+</span></span><span style="display:flex;"><span>Mlocked:               0 kB
+</span></span><span style="display:flex;"><span>SwapTotal:             0 kB
+</span></span><span style="display:flex;"><span>SwapFree:              0 kB
+</span></span><span style="display:flex;"><span>Dirty:                 4 kB
+</span></span><span style="display:flex;"><span>Writeback:             0 kB
+</span></span><span style="display:flex;"><span>AnonPages:        993544 kB
+</span></span><span style="display:flex;"><span>Mapped:            99424 kB
+</span></span><span style="display:flex;"><span>Shmem:              2868 kB
+</span></span><span style="display:flex;"><span>KReclaimable:     109028 kB
+</span></span><span style="display:flex;"><span>Slab:             159488 kB
+</span></span><span style="display:flex;"><span>SReclaimable:     109028 kB
+</span></span><span style="display:flex;"><span>SUnreclaim:        50460 kB
+</span></span><span style="display:flex;"><span>KernelStack:        6092 kB
+</span></span><span style="display:flex;"><span>PageTables:         9488 kB
+</span></span><span style="display:flex;"><span>NFS_Unstable:          0 kB
+</span></span><span style="display:flex;"><span>Bounce:                0 kB
+</span></span><span style="display:flex;"><span>WritebackTmp:          0 kB
+</span></span><span style="display:flex;"><span>CommitLimit:     1017564 kB
+</span></span><span style="display:flex;"><span>Committed_AS:    3689248 kB
+</span></span><span style="display:flex;"><span>VmallocTotal:   34359738367 kB
+</span></span><span style="display:flex;"><span>VmallocUsed:       12928 kB
+</span></span><span style="display:flex;"><span>VmallocChunk:          0 kB
+</span></span><span style="display:flex;"><span>Percpu:             1456 kB
+</span></span><span style="display:flex;"><span>HardwareCorrupted:     0 kB
+</span></span><span style="display:flex;"><span>AnonHugePages:         0 kB
+</span></span><span style="display:flex;"><span>ShmemHugePages:        0 kB
+</span></span><span style="display:flex;"><span>ShmemPmdMapped:        0 kB
+</span></span><span style="display:flex;"><span>FileHugePages:         0 kB
+</span></span><span style="display:flex;"><span>FilePmdMapped:         0 kB
+</span></span><span style="display:flex;"><span>CmaTotal:              0 kB
+</span></span><span style="display:flex;"><span>CmaFree:               0 kB
+</span></span><span style="display:flex;"><span>HugePages_Total:       0
+</span></span><span style="display:flex;"><span>HugePages_Free:        0
+</span></span><span style="display:flex;"><span>HugePages_Rsvd:        0
+</span></span><span style="display:flex;"><span>HugePages_Surp:        0
+</span></span><span style="display:flex;"><span>Hugepagesize:       2048 kB
+</span></span><span style="display:flex;"><span>Hugetlb:               0 kB
+</span></span><span style="display:flex;"><span>DirectMap4k:      522112 kB
+</span></span><span style="display:flex;"><span>DirectMap2M:     1574912 kB
+</span></span><span style="display:flex;"><span>DirectMap1G:           0 kB
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="查看正在监听-80-端口的进程">查看正在监听 80 端口的进程</h3>
+<ul>
+<li>lsof -i : 80</li>
+<li>netstat -tunlp | grep 80
+<ul>
+<li>-t或&ndash;tcp 显示TCP传输协议的连线状况。</li>
+<li>-u或&ndash;udp 显示UDP传输协议的连线状况。</li>
+<li>-a或&ndash;all 显示所有连线中的Socket。</li>
+<li>-l或&ndash;listening 显示监控中的服务器的Socket。</li>
+<li>-p或&ndash;programs 显示正在使用Socket的程序识别码和程序名称。</li>
+</ul>
+</li>
+</ul>
       </article>
     </section>
 
