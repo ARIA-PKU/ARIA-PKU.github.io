@@ -1,0 +1,1232 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>MIT6.S081 | Aria&#39;s Blog</title>
+
+    
+<link href="/header/icon.jpg" rel="shortcut icon" type="image/x-icon" />
+
+
+
+
+<meta name="author" content="Aria" />
+<meta name="description" content="课程MIT6.S081的part2
+" />
+
+
+
+<meta name="generator" content="Hugo 0.98.0" />
+
+<link rel="canonical" href="https://blog.surfaroundtheworld.top/posts/os/mit6.828/note2/" />
+
+
+<meta property="og:title" content="MIT6.S081" />
+<meta property="og:description" content="课程MIT6.S081的part2" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://blog.surfaroundtheworld.top/posts/os/mit6.828/note2/" /><meta property="og:image" content="https://aria9766.oss-cn-beijing.aliyuncs.com/blog-pictures/6-16/edge_of_planet.jpg"/><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2022-08-03T21:30:45+08:00" />
+<meta property="article:modified_time" content="2022-08-03T21:30:45+08:00" />
+
+
+
+
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="https://aria9766.oss-cn-beijing.aliyuncs.com/blog-pictures/6-16/edge_of_planet.jpg"/>
+
+<meta name="twitter:title" content="MIT6.S081"/>
+<meta name="twitter:description" content="课程MIT6.S081的part2"/>
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.css" integrity="sha256-UXesixbeLkB/UYxVTzuj/gg3+LMzgwAmg3zD+C4ZASQ=" crossorigin="anonymous">
+<link rel="stylesheet" href="/css/icomoon.css" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/overlayscrollbars@1.13.1/css/OverlayScrollbars.min.css" integrity="sha256-WKijf8KI68sbq8Znd6yMepIuFF0wdWfIt6gk3JWcQfk=" crossorigin="anonymous">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4.0.0/github-markdown.min.css">
+<link rel="stylesheet" href="/css/site.css" />
+
+<style>
+  .ui.header a:not(.item, .ui.button):hover {
+    text-decoration: underline;
+  }
+
+  
+  a:not(.item, .ui.button) {
+    color: seagreen !important;
+  }
+  
+
+  
+  .inverted a:not(.item, .ui.button) {
+     color: darkseagreen !important;
+  }
+  
+
+  
+  body.default {
+    
+    background-color: #fff;
+    
+
+    
+    background-image: url(https://aria9766.oss-cn-beijing.aliyuncs.com/blog-pictures/6-16/edge_of_planet.jpg);
+    
+  }
+  
+
+  
+  body.dark {
+    
+
+    
+    background-image: url(https://aria9766.oss-cn-beijing.aliyuncs.com/blog-pictures/6-16/edge_of_planet.jpg);
+    
+  }
+  
+</style>
+
+
+    
+
+
+
+
+
+
+
+    
+    <link rel="stylesheet" href="/css/custom.css" />
+    
+  </head>
+
+  <body class="default">
+    
+<nav class="ui secondary menu dream-menu dream-nav">
+
+  <a class="item dream-flip-toggle" title="翻转！">
+    <i class="large link bullseye icon"></i>
+  </a>
+  <a class="item" href="https://blog.surfaroundtheworld.top/" title="首页">
+    <i class="large link home icon"></i>
+  </a>
+  
+  <a class="item" onclick="themeSwitch(event)">
+    <i class="large link icon theme-switch"></i>
+  </a>
+  
+  
+  <a class="item" title="搜索" onclick="toggleSearch(event)">
+    <i class="large link search icon"></i>
+  </a>
+  
+</nav>
+
+    <div class="flip-container">
+      <div class="flipper">
+        <section class="front">
+          <div class="dream-max-width">
+            
+<div class="ui relaxed centered grid dream-grid dream-grid-single">
+  
+  
+  
+  
+
+  
+  <aside class="sixteen wide mobile sixteen wide tablet three wide computer column dream-single-aside">
+    
+    <div class="ui segment toc">
+      <nav id="TableOfContents">
+  <ul>
+    <li><a href="#lec10-多处理器与锁">lec10 多处理器与锁</a>
+      <ul>
+        <li><a href="#什么时候使用锁">什么时候使用锁</a></li>
+        <li><a href="#锁的特性和死锁">锁的特性和死锁</a></li>
+        <li><a href="#自旋锁spin-lock">自旋锁（Spin lock）</a></li>
+      </ul>
+    </li>
+    <li><a href="#lec11线程切换">lec11：线程切换</a>
+      <ul>
+        <li><a href="#线程概述">线程概述</a></li>
+        <li><a href="#xv6的线程调度">xv6的线程调度</a></li>
+        <li><a href="#xv6的线程切换">xv6的线程切换</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+    </div>
+    
+
+    
+  </aside>
+  
+  <div class="sixteen wide mobile sixteen wide tablet ten wide computer column markdown-body dream-single" id="dream-save-post-as-img">
+    <section class="ui segment">
+      <header>
+        <h1 class="ui large header">MIT6.S081<span class="sub header">
+            <span class="left">
+              @
+              
+                Aria
+              
+
+              | 
+                  <span data-format="luxon">2022-08-03T21:30:45&#43;08:00</span>
+                
+
+              | 9 分钟阅读
+
+              
+              | 更新于
+                
+                  <span data-format="luxon">2022-08-03T21:30:45&#43;08:00</span>
+                
+              
+            </span>
+
+            
+            <span class="dream-share">
+  <a href="#" class="save-as-image" title="保存为图片" onclick="savePostAsImg()">
+    <i class="save icon"></i>
+  </a>
+  <a href="https://twitter.com/intent/tweet?text=MIT6.S081&url=https%3a%2f%2fblog.surfaroundtheworld.top%2fposts%2fos%2fmit6.828%2fnote2%2f" title="Twitter">
+    <i class="twitter icon"></i>
+  </a>
+  <a href="https://facebook.com/sharer/sharer.php?u=https%3a%2f%2fblog.surfaroundtheworld.top%2fposts%2fos%2fmit6.828%2fnote2%2f" title="Facebook">
+    <i class="facebook icon"></i>
+  </a>
+</span>
+
+            
+          </span>
+        </h1>
+      </header>
+
+      <article class="main">
+        
+        <img class="cover" src="https://aria9766.oss-cn-beijing.aliyuncs.com/blog-pictures/7_17/%E7%BA%A2%E5%8F%B6.jpg" />
+        
+
+        <p>课程MIT6.S081的part2</p>
+<h2 id="lec10-多处理器与锁">lec10 多处理器与锁</h2>
+<p>为什么应用程序需要使用多个CPU核来提高性能？下面这张经典的图可以解释：</p>
+<p><img src="https://aria9766.oss-cn-beijing.aliyuncs.com/blog-pictures/6.S081/lock/processor_trend.png" alt=""></p>
+<p>X轴为时间，Y轴为单位，具体意义取决于特定的曲线。核心在于，大概从2000年开始，CPU的时钟频率没有增加（绿线），这带来的结果是CPU的单线程性能到达极限（蓝线）；同时CPU的晶体管数量在持续增加（最上深红色线），因此现在为了使得运行更快无法通过提高单核性能，而要通过多核实现（黑线）。</p>
+<p>如果系统调用并行在多个CPU核上，它们可能会并行访问内核中共享的数据结构，为了保证数据的一致性，需要使用锁来控制；同时，锁又反过来限制了性能。</p>
+<p>critical section（临界区）：锁的acquire和release之间的代码，通常会以原子的方式执行共享数据的更新。</p>
+<h3 id="什么时候使用锁">什么时候使用锁</h3>
+<p>一个保守同时又简单的规则：如果两个进程访问了一个共享的数据结构，并且其中一个进程会更新共享的数据结构，则需要对这个共享的数据结构加锁。</p>
+<p>这个规则在有些时候过于严格，因为存在lock-free program，但是更为复杂；</p>
+<p>矛盾的是，有时候这个规则过于宽松：除了共享数据外，其他场合也需要锁，例如printf，尽管这里没有共享数据，但是希望printf的输出是序列化的。</p>
+<p>为每个数据结构自动加锁也会产生问题，比如将一个文件从一个目录d1移动到另一个目录d2。自动加锁则会先对d1加锁，删除文件，释放d1锁；再对d2加锁，增加文件，释放d2锁。</p>
+<p>在完成第一步删除d1下的文件后，未执行第二步之前，其他进程会看到文件不存在，但是文件只是重命名，在任何一个时间点都要存在。因此，正确的解决方法是同时对d1和d2加锁，再删除添加文件，最后释放d1和d2的锁。</p>
+<h3 id="锁的特性和死锁">锁的特性和死锁</h3>
+<p>通常锁有三种作用：</p>
+<ul>
+<li>避免丢失更新。两个进程同时更新一个共享数据结构，可能会发生某个更新操作丢失。</li>
+<li>打包多个操作，使其具有原子性。critical section区域的使用。</li>
+<li>维护共享数据结构的不变性。只在锁内可修改。</li>
+</ul>
+<p>死锁通常情况在于重复请求同一个锁，或者多个锁造成。</p>
+<p>前者一般os可以检测并且panic；后者的解决方案是对锁进行排序，使得所有操作以相同顺序获得锁。</p>
+<h3 id="自旋锁spin-lock">自旋锁（Spin lock）</h3>
+<p>自旋锁常见的实现方法是依赖于一个特殊的硬件指令，保证一次test-and-set操作的原子性。在RISC-V上，这个指令就是amoswap（atomic memory swap）。这个指令接收三个参数，分别是address，寄存器r1和r2。</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">6
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">7
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>amoswap(addr, r1, r2) {
+</span></span><span style="display:flex;"><span>	lock addr;		// 锁住地址
+</span></span><span style="display:flex;"><span>	tmp &lt;- *addr;	// 将地址存放到临时变量（tmp）
+</span></span><span style="display:flex;"><span>	*addr &lt;- r1;	// 将r1写入地址中
+</span></span><span style="display:flex;"><span>	r2 &lt;- tmp;		// 将临时变量中的数据写入r2
+</span></span><span style="display:flex;"><span>	unlock addr;	// 将地址解锁
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>通过这里的加锁，可以确保address中的数据存放于r2，而r1中的数据存放于address中，并且这一系列的指令打包具备原子性。大多数的处理器都有这样的硬件指令，因为这是一个实现锁的方便的方式。这里我们通过将一个软件锁转变为硬件锁最终实现了原子性。不同处理器的具体实现可能会非常不一样，处理器的指令集通常像是一个说明文档，它不会有具体实现的细节，具体的实现依赖于内存系统是如何工作的。</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">23
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">24
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">25
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">26
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>// Acquire the lock.
+</span></span><span style="display:flex;"><span>// Loops (spins) until the lock is acquired.
+</span></span><span style="display:flex;"><span>void
+</span></span><span style="display:flex;"><span>acquire(struct spinlock *lk)
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>  push_off(); // disable interrupts to avoid deadlock.
+</span></span><span style="display:flex;"><span>  if(holding(lk))
+</span></span><span style="display:flex;"><span>    panic(&#34;acquire&#34;);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  // On RISC-V, sync_lock_test_and_set turns into an atomic swap:
+</span></span><span style="display:flex;"><span>  //   a5 = 1
+</span></span><span style="display:flex;"><span>  //   s1 = &amp;lk-&gt;locked
+</span></span><span style="display:flex;"><span>  //   amoswap.w.aq a5, a5, (s1)
+</span></span><span style="display:flex;"><span>  // 这里就是循环查看锁
+</span></span><span style="display:flex;"><span>  while(__sync_lock_test_and_set(&amp;lk-&gt;locked, 1) != 0)
+</span></span><span style="display:flex;"><span>    ;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  // Tell the C compiler and the processor to not move loads or stores
+</span></span><span style="display:flex;"><span>  // past this point, to ensure that the critical section&#39;s memory
+</span></span><span style="display:flex;"><span>  // references happen strictly after the lock is acquired.
+</span></span><span style="display:flex;"><span>  // On RISC-V, this emits a fence instruction.
+</span></span><span style="display:flex;"><span>  __sync_synchronize();
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  // Record info about lock acquisition for holding() and debugging.
+</span></span><span style="display:flex;"><span>  lk-&gt;cpu = mycpu();
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></td></tr></table>
+</div>
+</div><div class="highlight"><div style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">23
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">24
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">25
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">26
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">27
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">28
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>// Release the lock.
+</span></span><span style="display:flex;"><span>void
+</span></span><span style="display:flex;"><span>release(struct spinlock *lk)
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>  if(!holding(lk))
+</span></span><span style="display:flex;"><span>    panic(&#34;release&#34;);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  lk-&gt;cpu = 0;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  // Tell the C compiler and the CPU to not move loads or stores
+</span></span><span style="display:flex;"><span>  // past this point, to ensure that all the stores in the critical
+</span></span><span style="display:flex;"><span>  // section are visible to other CPUs before the lock is released,
+</span></span><span style="display:flex;"><span>  // and that loads in the critical section occur strictly before
+</span></span><span style="display:flex;"><span>  // the lock is released.
+</span></span><span style="display:flex;"><span>  // On RISC-V, this emits a fence instruction.
+</span></span><span style="display:flex;"><span>  __sync_synchronize();
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  // Release the lock, equivalent to lk-&gt;locked = 0.
+</span></span><span style="display:flex;"><span>  // This code doesn&#39;t use a C assignment, since the C standard
+</span></span><span style="display:flex;"><span>  // implies that an assignment might be implemented with
+</span></span><span style="display:flex;"><span>  // multiple store instructions.
+</span></span><span style="display:flex;"><span>  // On RISC-V, sync_lock_release turns into an atomic swap:
+</span></span><span style="display:flex;"><span>  //   s1 = &amp;lk-&gt;locked
+</span></span><span style="display:flex;"><span>  //   amoswap.w zero, zero, (s1)
+</span></span><span style="display:flex;"><span>  __sync_lock_release(&amp;lk-&gt;locked);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  pop_off();
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Q：为什么release函数中不直接使用一个store指令将锁的locked字段写为0？</p>
+<p>A：对于很多人包括我自己来说，经常会认为一个store指令是一个原子操作，但实际并不总是这样，这取决于具体的实现。例如，对于CPU内的缓存，每一个cache line的大小可能大于一个整数，那么store指令实际的过程将会是：首先会加载cache line，之后再更新cache line。所以对于store指令来说，里面包含了两个微指令。这样的话就有可能得到错误的结果。所以为了避免理解硬件实现的所有细节，例如整数操作不是原子的，或者向一个64bit的内存值写数据是不是原子的，我们直接使用一个RISC-V提供的确保原子性的指令来将locked字段写为0。</p>
+<p>Q：在acquire函数的最开始，会先关闭中断。为什么会是这样呢？</p>
+<p>A：spinlock需要处理两类并发，一类是不同CPU之间的并发，一类是相同CPU上中断和普通程序之间的并发。针对后一种情况，我们需要在acquire中关闭中断。中断会在release的结束位置再次打开，因为在这个位置才能再次安全的接收中断。</p>
+<p>Q：编译器或者处理器可能会重排指令以获得更好的性能。这会改变指令流的正确性吗？</p>
+<p>A：串行执行没有问题，但是对于并发执行会是一个灾难。如果我们将critical section与加锁解锁放在不同的CPU执行，将会得到完全错误的结果。所以指令重新排序在并发场景是错误的。为了禁止，或者说为了告诉编译器和硬件不要这样做，我们需要使用memory fence或者叫做synchronize指令，来确定指令的移动范围。对于synchronize指令，任何在它之前的load/store指令，都不能移动到它之后。锁的acquire和release函数都包含了synchronize指令。</p>
+<h2 id="lec11线程切换">lec11：线程切换</h2>
+<h3 id="线程概述">线程概述</h3>
+<p>线程的状态包含：</p>
+<ul>
+<li>程序计数器（PC），表示线程执行指令的位置</li>
+<li>保存变量的寄存器</li>
+<li>程序的栈，每个线程都有属于自己的栈，记录函数调用的内容，反映当前线程的执行点。</li>
+</ul>
+<h3 id="xv6的线程调度">xv6的线程调度</h3>
+<p>对于线程切换，一些线程是自愿保存自己的状态并让其他线程运行。但是如果有一些程序正在执行一些长时间的计算任务，则无法自愿让出CPU给其他线程。</p>
+<p>对于这种运算密集型线程，<strong>具体实现是利用定时器中断，将CPU控制权交给内核；位于内核的定时器中断处理程序，会自愿将CPU让出给线程调度器。</strong></p>
+<p>这样的处理流程称为pre-emptive scheduling（抢占调度），与之相对的是voluntary scheduling（自愿调度）。</p>
+<p>有趣的是，在XV6和其他的操作系统中，线程调度是这么实现的：定时器中断会强制的将CPU控制权从用户进程给到内核，这里是pre-emptive scheduling，之后内核会代表用户进程（注，实际是内核中用户进程对应的内核线程会代表用户进程出让CPU），使用voluntary scheduling。</p>
+<p>常见的线程状态：</p>
+<ul>
+<li>RUNNING，线程当前正在某个CPU上运行（运行态）</li>
+<li>RUNABLE，线程还没有在某个CPU上运行，但是一旦有空闲的CPU就可以运行（就绪态）</li>
+<li>SLEEPING，这节课我们不会介绍，下节课会重点介绍，这个状态意味着线程在等待一些I/O事件，它只会在I/O事件发生了之后运行（等待态）</li>
+</ul>
+<h3 id="xv6的线程切换">xv6的线程切换</h3>
+<p>从一个running的用户空间切换到另一个runable的用户空间的完整过程：</p>
+<p>1、定时器中断强迫CPU从用户空间进程切换到内核，trampoline代码将用户寄存器保存到用户进程对应的trampframe对象中；</p>
+<p>2、内核中运行usertrap，实际执行相应的中断处理程序。CPU开始在进程P1的内核线程和内核栈上执行内核中的C代码；</p>
+<p>3、假设进程P1对应的内核线程决定让出CPU，则会做很多工作，后面再介绍，最后会调用swtch函数（switch是C中关键字，swtch用来避免冲突），这是线程切换的核心函数；</p>
+<p>4、swtch函数会保存用户进程P1对应的内核线程寄存器在context对象。因此目前有两种寄存器：用户寄存器存放于trapframe中，内核线程寄存器存放在context中。</p>
+<p>实际上，swtch函数不是直接从一个内核线程切换到另一个内核线程。xv6中，一个cpu上运行的内核线程可以直接切换到这个CPU对应的调度器线程。因此，如果运行在CPU0上，swtch函数会恢复之前为CPU0的调度器线程保存的寄存器和stack pointer，之后在调度器线程的context下执行scheduler函数。</p>
+<p>在scheduler函数会做一些清理工作，例如将进程P1设为为runable状态；再通过进程表单找到下一个runable进程，假设是P2，scheduler函数会再次调用swtch函数，完成以下步骤：</p>
+<p>1、保存自己的寄存器到调度器线程的context对象；</p>
+<p>2、找到进程P2之前保存的context，恢复其中的寄存器；</p>
+<p>3、P2调用swtch函数，返回到P2所在的系统调用或中断处理程序（注，因为P2进程之前调用swtch函数必然在系统调用或者中断处理程序中；</p>
+<p>4、从用户空间进入内核空间会保存用户寄存器到trapframe。内核程序执行完成，trapframe用户寄存器就会恢复。</p>
+<p>5、最后用户进程P2恢复运行。</p>
+<p>每个CPU都有一个完全不同的调度器线程，调度器线程也是一种内核线程，拥有自己的context对象。任何运行在CPU1上的进程，当它决定出让CPU，它都会切换到CPU1对应的调度器线程，并由调度器线程切换到下一个进程。</p>
+<p>Q：Linux系统上的多线程？</p>
+<p>A：Linux是支持一个进程包含多个线程，Linux的实现比较复杂，或许最简单的解释方式是：几乎可以认为Linux中的每个线程都是一个完整的进程。Linux中，我们平常说一个进程中的多个线程，本质上是共享同一块内存的多个独立进程。所以Linux中一个进程的多个线程仍然是通过一个内存地址空间执行代码。如果你在一个进程创建了2个线程，那基本上是2个进程共享一个地址空间。之后，调度就与XV6是一致的，也就是针对每个进程进行调度。</p>
+<p>Q：用户可以指定将线程绑定在某个CPU上吗？操作系统如何确保一个进程的多个线程不会运行在同一个CPU核上？要不然就违背了多线程的初衷了。</p>
+<p>A：这里其实与XV6非常相似，假设有4个CPU核，Linux会找到4件事情运行在这4个核上。如果并没有太多正在运行的程序的话，或许会将一个进程的4个线程运行在4个核上。或者如果有100个用户登录在Athena机器上，内核会随机为每个CPU核找到一些事情做。</p>
+      </article>
+    </section>
+
+    
+
+    
+    <article class="ui segment utterances-comments" data-html2canvas-ignore>
+      <script
+        src="https://utteranc.es/client.js"
+        repo="ARIA-PKU/ARIA-PKU.github.io"
+        issue-term="og:title"
+        theme="github-light"
+        crossorigin="anonymous"
+        async>
+      </script>
+    </article>
+    
+
+    
+  </div>
+</div>
+
+
+            <footer class="ui basic center aligned segment" style="background-color: transparent;">
+              
+              <p>© 2022 Aria&#39;s Blog</p>
+              
+
+              <p>Powered by <a href="https://gohugo.io/" target="_blank">Hugo</a> with theme <a href="https://github.com/g1eny0ung/hugo-theme-dream" target="_blank">Dream</a>.</p>
+
+              
+            </footer>
+          </div>
+        </section>
+        <section class="back">
+          <div class="dream-max-width">
+            <header class="ui basic very padded segment dream-header">
+  
+  <div class="ui small circular image">
+    <img src="/me/cool.jpg" alt="avatar" />
+  </div>
+  
+
+  <div class="content">
+    <h1 class="ui medium header">Aria&#39;s Blog<span class="sub header">今天不做的事情，今后也不会去做。</span>
+    </h1>
+
+    <article class="ui horizontal list">
+      
+      <a class="item" href="/posts">
+        <i class="archive icon" title="归档"></i>
+      </a>
+      
+      <a class="item" href="/categories">
+        <i class="th list icon" title="所有分类"></i>
+      </a>
+      <a class="item" href="/tags">
+        <i class="tags icon" title="所有标签"></i>
+      </a>
+    </article>
+
+    
+    
+    
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+    
+
+    
+
+    
+
+    
+    
+
+    <div class="tags-with-dropdown">
+      <div class="ui accordion">
+        <div class="title">
+          <div class="ui horizontal list">
+            <a class="item dropdown" href="#">
+              <i class="chevron right icon dropdown-icon"></i>
+            </a>
+          </div>
+          <div class="dream-tags">
+          
+          
+          
+            <a class="ui label" href="/tags/base/" title="BASE">
+              BASE
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/bellman-ford%E7%AE%97%E6%B3%95/" title="Bellman-Ford算法">
+              Bellman-Ford算法
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/c&#43;&#43;%E5%A4%9A%E7%BA%BF%E7%A8%8B%E7%BC%96%E7%A8%8B/" title="c&#43;&#43;多线程编程">
+              c&#43;&#43;多线程编程
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/cap/" title="CAP">
+              CAP
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/css/" title="css">
+              css
+            </a>
+          
+          </div>
+        </div>
+        <div class="content">
+    
+          <div class="dream-tags" style="margin-left: 1.5rem;">
+          
+          
+          
+            <a class="ui label" href="/tags/dfs/" title="DFS">
+              DFS
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/dijkstra/" title="Dijkstra">
+              Dijkstra
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/django/" title="Django">
+              Django
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/django_channel/" title="django_channel">
+              django_channel
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/docker%E5%B8%B8%E7%94%A8%E6%93%8D%E4%BD%9C/" title="Docker常用操作">
+              Docker常用操作
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/floyd%E7%AE%97%E6%B3%95/" title="Floyd算法">
+              Floyd算法
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/gfs/" title="GFS">
+              GFS
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/git/" title="git">
+              git
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/golang/" title="golang">
+              golang
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/html/" title="html">
+              html
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/http/" title="http">
+              http
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/javascript/" title="JavaScript">
+              JavaScript
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/jquery/" title="jquery">
+              jquery
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/js%E5%B8%B8%E7%94%A8%E5%BA%93/" title="Js常用库">
+              Js常用库
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/js%E8%AF%AD%E6%B3%95/" title="Js语法">
+              Js语法
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/jwt/" title="JWT">
+              JWT
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/leetcode/" title="leetcode">
+              leetcode
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/linux/" title="Linux">
+              Linux
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/mapreduce/" title="MapReduce">
+              MapReduce
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/mit6.824/" title="MIT6.824">
+              MIT6.824
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/mit6.s081/" title="MIT6.S081">
+              MIT6.S081
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/mysql/" title="mysql">
+              mysql
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/mysql%E6%9E%B6%E6%9E%84%E4%B8%8E%E6%97%A5%E5%BF%97/" title="mysql架构与日志">
+              mysql架构与日志
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/mysql%E7%B4%A2%E5%BC%95/" title="mysql索引">
+              mysql索引
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/nginx/" title="nginx">
+              nginx
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/python/" title="python">
+              python
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/raft/" title="raft">
+              raft
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/react/" title="React">
+              React
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/redis/" title="redis">
+              redis
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/rest/" title="REST">
+              REST
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/rpc/" title="RPC">
+              RPC
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/spfa%E7%AE%97%E6%B3%95/" title="spfa算法">
+              spfa算法
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/thrift/" title="Thrift">
+              Thrift
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/tmux/" title="tmux">
+              tmux
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/uwsgi/" title="uwsgi">
+              uwsgi
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/vim/" title="vim">
+              vim
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/vscode/" title="vscode">
+              vscode
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/vue3/" title="vue3">
+              vue3
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/websocket/" title="websocket">
+              websocket
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/%E4%BA%8C%E5%88%86%E5%9B%BE/" title="二分图">
+              二分图
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/%E4%BA%8C%E5%88%86%E6%B3%95/" title="二分法">
+              二分法
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/%E4%BD%8D%E8%BF%90%E7%AE%97/" title="位运算">
+              位运算
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81/" title="分布式锁">
+              分布式锁
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/%E5%89%8D%E7%BC%80%E5%92%8C/" title="前缀和">
+              前缀和
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/%E5%89%91%E6%8C%87offer/" title="剑指offer">
+              剑指offer
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92/" title="动态规划">
+              动态规划
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/%E5%8C%BA%E9%97%B4%E5%90%88%E5%B9%B6/" title="区间合并">
+              区间合并
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/%E5%8D%95%E8%B0%83%E6%A0%88/" title="单调栈">
+              单调栈
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/%E5%8D%95%E8%B0%83%E9%98%9F%E5%88%97/" title="单调队列">
+              单调队列
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/%E5%8F%8C%E6%8C%87%E9%92%88%E7%AE%97%E6%B3%95/" title="双指针算法">
+              双指针算法
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/%E5%9B%BE%E8%AE%BA/" title="图论">
+              图论
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/%E5%B7%AE%E5%88%86/" title="差分">
+              差分
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/%E5%BC%82%E6%AD%A5%E7%BC%96%E7%A8%8B/" title="异步编程">
+              异步编程
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/%E5%BD%92%E5%B9%B6%E6%8E%92%E5%BA%8F/" title="归并排序">
+              归并排序
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/%E5%BF%AB%E9%80%9F%E6%8E%92%E5%BA%8F/" title="快速排序">
+              快速排序
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/%E6%95%B0%E5%AD%A6/" title="数学">
+              数学
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/%E6%9C%80%E5%B0%8F%E7%94%9F%E6%88%90%E6%A0%91/" title="最小生成树">
+              最小生成树
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/%E6%9C%80%E7%9F%AD%E8%B7%AF/" title="最短路">
+              最短路
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/%E6%A0%88/" title="栈">
+              栈
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/%E7%A6%BB%E6%95%A3%E5%8C%96/" title="离散化">
+              离散化
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/%E7%AE%97%E6%B3%95%E9%A2%98/" title="算法题">
+              算法题
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/%E9%93%BE%E8%A1%A8/" title="链表">
+              链表
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/%E9%98%9F%E5%88%97/" title="队列">
+              队列
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/%E9%9A%94%E7%A6%BB%E7%BA%A7%E5%88%AB/" title="隔离级别">
+              隔离级别
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/%E9%AB%98%E7%B2%BE%E5%BA%A6%E8%AE%A1%E7%AE%97/" title="高精度计算">
+              高精度计算
+            </a>
+          
+          </div>
+    
+        </div>
+      </div>
+    </div>
+    
+
+    
+  </div>
+</header>
+
+
+<div class="ui relaxed grid dream-grid dream-back">
+  
+  
+  
+
+  <div class="sixteen wide mobile eight wide tablet four wide computer column dream-column">
+    <article class="ui segment">
+      <div class="ui medium header">社交链接</div>
+      <nav class="ui secondary menu dream-menu dream-socials">
+  
+  <a class="item" href="/index.xml">
+    <i class="large rss square icon" title="RSS"></i>
+  </a>
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</nav>
+
+    </article>
+  </div>
+
+  <div class="sixteen wide mobile eight wide tablet four wide computer column dream-column">
+    
+    <article class="ui segment">
+      <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"><img alt="知识共享许可协议" style="border-width:0" src="https://i.creativecommons.org/l/by-nc-sa/4.0/88x31.png" /></a><br />本作品采用<a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/">知识共享署名-非商业性使用-相同方式共享 4.0 国际许可协议</a>进行许可。<br />
+    </article>
+    
+  </div>
+
+  
+</div>
+
+          </div>
+        </section>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.js" integrity="sha256-CgSoWC9w5wNmI1aN8dIMK+6DPelUEtvDr+Bc2m/0Nx8=" crossorigin="anonymous"></script>
+
+    
+    <div class="ui segment" id="dream-search">
+  <div class="ui search">
+    <div class="ui transparent input">
+      <input class="prompt" type="text" placeholder="搜索" />
+    </div>
+    <div class="results"></div>
+  </div>
+</div>
+<script>
+  $(document).ready(function () {
+    $.getJSON('https:\/\/blog.surfaroundtheworld.top\//index.json', function (data) {
+      $('.ui.search').search({
+        source: data,
+        searchFields: ['title'],
+        showNoResults: false,
+      })
+    })
+  })
+</script>
+<script src="/js/search.js"></script>
+
+    
+
+    
+
+    <script>
+  window.background = "#fff"
+  window.defaultDark =  null 
+  window.backgroundDark =  null 
+  window.backgroundImageDark = "https://aria9766.oss-cn-beijing.aliyuncs.com/blog-pictures/6-16/edge_of_planet.jpg"
+  window.darkNav =  true 
+  window.maxTags =  5 
+  window.hasTwitterEmbed =  null 
+  window.fixedNav =  null 
+
+  if (window.hasTwitterEmbed) {
+    
+    window.twttr = (function (d, s, id) {
+      var js,
+        fjs = d.getElementsByTagName(s)[0],
+        t = window.twttr || {}
+      if (d.getElementById(id)) return t
+      js = d.createElement(s)
+      js.id = id
+      js.src = 'https://platform.twitter.com/widgets.js'
+      fjs.parentNode.insertBefore(js, fjs)
+
+      t._e = []
+      t.ready = function (f) {
+        t._e.push(f)
+      }
+
+      return t
+    })(document, 'script', 'twitter-wjs')
+  }
+</script>
+<script src="https://cdn.jsdelivr.net/npm/overlayscrollbars@1.13.1/js/jquery.overlayScrollbars.min.js" integrity="sha256-tBd38uWlvgfps3zHPrUb2ePBg+Z8EjMf0QloFONzpvU=" crossorigin="anonymous"></script>
+<script src="/js/header.js"></script>
+<script src="/js/main.js"></script>
+<script src="/js/theme.js"></script>
+
+    
+
+
+<script src="https://cdn.jsdelivr.net/npm/luxon@1.26.0" integrity="sha256-4sbTzmCCW9LGrIh5OsN8V5Pfdad1F1MwhLAOyXKnsE0=" crossorigin="anonymous"></script>
+<script>
+  format()
+
+  function format() {
+    $('span[data-format="luxon"]').each(function () {
+      var date = $(this).text()
+
+      $(this).text(luxon.DateTime.fromISO(date, { locale: "zh" }).toFormat("yyyy年MM月dd日"))
+    })
+  }
+</script>
+
+
+
+<script src="/js/scrollToTop.js"></script>
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.0.0-rc.1/dist/html2canvas.min.js" integrity="sha256-uacRffSSMP9qpvNWhVmYLykBv9YKMA1d/VSIN1AmfyQ=" crossorigin="anonymous"></script>
+<script src="/js/post.js" defer></script>
+
+
+    
+
+    
+  </body>
+</html>
