@@ -403,7 +403,8 @@
 <h3 id="aof-重写">AOF 重写</h3>
 <p>AOF 重写可以产生一个新的 AOF 文件，这个新的 AOF 文件和原有的 AOF 文件所保存的数据库状态一样，但体积更小。</p>
 <p>AOF 重写是一个有歧义的名字，该功能是通过读取数据库中的键值对来实现的，程序无须对现有 AOF 文件进行任何读入、分析或者写入操作。</p>
-<p>在执行 BGREWRITEAOF 命令时，Redis 服务器会维护一个 AOF 重写缓冲区，该缓冲区会在子进程创建新 AOF 文件期间，记录服务器执行的所有写命令。当子进程完成创建新 AOF 文件的工作之后，服务器会将重写缓冲区中的所有内容追加到新 AOF 文件的末尾，使得新旧两个 AOF 文件所保存的数据库状态一致。最后，服务器用新的 AOF 文件替换旧的 AOF 文件，以此来完成 AOF 文件重写操作</p>
+<p>在执行 BGREWRITEAOF 命令时，Redis 服务器会维护一个 AOF 重写缓冲区，该缓冲区会在子进程创建新 AOF 文件期间，记录服务器执行的所有写命令。当子进程完成创建新 AOF 文件的工作之后，服务器会将重写缓冲区中的所有内容追加到新 AOF 文件的末尾，使得新旧两个 AOF 文件所保存的数据库状态一致。最后，服务器用新的 AOF 文件替换旧的 AOF 文件，以此来完成 AOF 文件重写操作。</p>
+<p>与RDB的区别在于AOF存储的是执行指令，而RDB存储的是二进制文件状态。</p>
 <h2 id="七redis的事务">七、Redis的事务</h2>
 <p>Redis 可以通过 <strong><code>MULTI</code>，<code>EXEC</code>，<code>DISCARD</code> 和 <code>WATCH</code></strong> 等命令来实现事务(transaction)功能。</p>
 <p>但是，Redis 的事务和我们平时理解的关系型数据库的事务不同。我们知道事务具有四大特性： <strong>1. 原子性</strong>，<strong>2. 隔离性</strong>，<strong>3. 持久性</strong>，<strong>4. 一致性</strong>。</p>
@@ -578,6 +579,8 @@
     
     
     
+    
+      
     
       
     
@@ -1144,6 +1147,12 @@
           
             <a class="ui label" href="/tags/%E9%93%BE%E8%A1%A8/" title="链表">
               链表
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/%E9%94%81/" title="锁">
+              锁
             </a>
           
           

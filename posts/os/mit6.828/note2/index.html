@@ -153,6 +153,19 @@
         <li><a href="#xv6的线程切换">xv6的线程切换</a></li>
       </ul>
     </li>
+    <li><a href="#lec13-睡眠和唤醒">lec13 睡眠和唤醒</a>
+      <ul>
+        <li><a href="#exit的实现过程">exit的实现过程</a></li>
+        <li><a href="#wait的系统调用">wait的系统调用</a></li>
+        <li><a href="#kill系统调用">kill系统调用</a></li>
+      </ul>
+    </li>
+    <li><a href="#lec14-文件系统">lec14 文件系统</a>
+      <ul>
+        <li><a href="#文件系统如何使用底层磁盘">文件系统如何使用底层磁盘</a></li>
+        <li><a href="#inode">inode</a></li>
+      </ul>
+    </li>
   </ul>
 </nav>
     </div>
@@ -175,7 +188,7 @@
                   <span data-format="luxon">2022-08-03T21:30:45&#43;08:00</span>
                 
 
-              | 9 分钟阅读
+              | 16 分钟阅读
 
               
               | 更新于
@@ -416,6 +429,406 @@
 <p>A：Linux是支持一个进程包含多个线程，Linux的实现比较复杂，或许最简单的解释方式是：几乎可以认为Linux中的每个线程都是一个完整的进程。Linux中，我们平常说一个进程中的多个线程，本质上是共享同一块内存的多个独立进程。所以Linux中一个进程的多个线程仍然是通过一个内存地址空间执行代码。如果你在一个进程创建了2个线程，那基本上是2个进程共享一个地址空间。之后，调度就与XV6是一致的，也就是针对每个进程进行调度。</p>
 <p>Q：用户可以指定将线程绑定在某个CPU上吗？操作系统如何确保一个进程的多个线程不会运行在同一个CPU核上？要不然就违背了多线程的初衷了。</p>
 <p>A：这里其实与XV6非常相似，假设有4个CPU核，Linux会找到4件事情运行在这4个核上。如果并没有太多正在运行的程序的话，或许会将一个进程的4个线程运行在4个核上。或者如果有100个用户登录在Athena机器上，内核会随机为每个CPU核找到一些事情做。</p>
+<h2 id="lec13-睡眠和唤醒">lec13 睡眠和唤醒</h2>
+<p>XV6的线程切换中，不允许进程在执行switch函数的过程中，持有任何其他的锁。所以，进程在调用switch函数的过程中，必须要持有p-&gt;lock（注，也就是进程对应的proc结构体中的锁），但是同时又不能持有任何其他的锁。这也是包含了Sleep在内的很多设计的限制条件之一。</p>
+<h3 id="exit的实现过程">exit的实现过程</h3>
+<p>需要先明确的是，exit的系统调用最终要实现的是释放进程的内存和page table，关闭已经打开的文件。</p>
+<p>通过proc.c中的代码进行分析：</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">23
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">24
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">25
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">26
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">27
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">28
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">29
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">30
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">31
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">32
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">33
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">34
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">35
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">36
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">37
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">38
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">39
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">40
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">41
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">42
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">43
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">44
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">45
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">46
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">47
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">48
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">49
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">50
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">51
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">52
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">53
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">54
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">55
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">56
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">57
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">58
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">59
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">60
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">61
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">62
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">63
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">64
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">65
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>// Exit the current process.  Does not return.
+</span></span><span style="display:flex;"><span>// An exited process remains in the zombie state
+</span></span><span style="display:flex;"><span>// until its parent calls wait().
+</span></span><span style="display:flex;"><span>void
+</span></span><span style="display:flex;"><span>exit(int status)
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>  struct proc *p = myproc();
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  if(p == initproc)
+</span></span><span style="display:flex;"><span>    panic(&#34;init exiting&#34;);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  // Close all open files.
+</span></span><span style="display:flex;"><span>  for(int fd = 0; fd &lt; NOFILE; fd++){
+</span></span><span style="display:flex;"><span>    if(p-&gt;ofile[fd]){
+</span></span><span style="display:flex;"><span>      struct file *f = p-&gt;ofile[fd];
+</span></span><span style="display:flex;"><span>      fileclose(f);
+</span></span><span style="display:flex;"><span>      p-&gt;ofile[fd] = 0;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>  }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  begin_op();
+</span></span><span style="display:flex;"><span>  iput(p-&gt;cwd);
+</span></span><span style="display:flex;"><span>  end_op();
+</span></span><span style="display:flex;"><span>  p-&gt;cwd = 0;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  // we might re-parent a child to init. we can&#39;t be precise about
+</span></span><span style="display:flex;"><span>  // waking up init, since we can&#39;t acquire its lock once we&#39;ve
+</span></span><span style="display:flex;"><span>  // acquired any other proc lock. so wake up init whether that&#39;s
+</span></span><span style="display:flex;"><span>  // necessary or not. init may miss this wakeup, but that seems
+</span></span><span style="display:flex;"><span>  // harmless.
+</span></span><span style="display:flex;"><span>  acquire(&amp;initproc-&gt;lock);
+</span></span><span style="display:flex;"><span>  wakeup1(initproc);
+</span></span><span style="display:flex;"><span>  release(&amp;initproc-&gt;lock);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  // grab a copy of p-&gt;parent, to ensure that we unlock the same
+</span></span><span style="display:flex;"><span>  // parent we locked. in case our parent gives us away to init while
+</span></span><span style="display:flex;"><span>  // we&#39;re waiting for the parent lock. we may then race with an
+</span></span><span style="display:flex;"><span>  // exiting parent, but the result will be a harmless spurious wakeup
+</span></span><span style="display:flex;"><span>  // to a dead or wrong process; proc structs are never re-allocated
+</span></span><span style="display:flex;"><span>  // as anything else.
+</span></span><span style="display:flex;"><span>  acquire(&amp;p-&gt;lock);
+</span></span><span style="display:flex;"><span>  struct proc *original_parent = p-&gt;parent;
+</span></span><span style="display:flex;"><span>  release(&amp;p-&gt;lock);
+</span></span><span style="display:flex;"><span>  
+</span></span><span style="display:flex;"><span>  // we need the parent&#39;s lock in order to wake it up from wait().
+</span></span><span style="display:flex;"><span>  // the parent-then-child rule says we have to lock it first.
+</span></span><span style="display:flex;"><span>  acquire(&amp;original_parent-&gt;lock);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  acquire(&amp;p-&gt;lock);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  // Give any children to init.
+</span></span><span style="display:flex;"><span>  reparent(p);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  // Parent might be sleeping in wait().
+</span></span><span style="display:flex;"><span>  wakeup1(original_parent);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  p-&gt;xstate = status;
+</span></span><span style="display:flex;"><span>  p-&gt;state = ZOMBIE;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  release(&amp;original_parent-&gt;lock);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  // Jump into the scheduler, never to return.
+</span></span><span style="display:flex;"><span>  sched();
+</span></span><span style="display:flex;"><span>  panic(&#34;zombie exit&#34;);
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>从上面的代码看到，首先exit函数关闭了所有已经打开的文件。关闭文件系统中的文件涉及到引用计数，较为复杂；接下来，会将进程中对当前目录的记录释放。</p>
+<p>对于进程的子进程，首先需要将子进程的父进程设置为init；所有进程退出的最后几步是由父进程的wait系统调用实现，将子进程的父进程设为init，可以由init调用wait完成最后几步。</p>
+<p>然后，需要调用wakeup唤醒当前进程的父进程，父进程中的wait正在等待当前进程的返回，再将当前进程的状态设置为ZOMBIE。此时，进程还没有释放所有资源。最后通过sched进入调度器线程。</p>
+<h3 id="wait的系统调用">wait的系统调用</h3>
+<p>在上面exit之后，进程的资源还没有回收，需要在父进程中调用wait回收子进程的资源。</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">23
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">24
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">25
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">26
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">27
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">28
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">29
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">30
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">31
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">32
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">33
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">34
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">35
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">36
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">37
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">38
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">39
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">40
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">41
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">42
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">43
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">44
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">45
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">46
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">47
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">48
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">49
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">50
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">51
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">52
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">53
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>// Wait for a child process to exit and return its pid.
+</span></span><span style="display:flex;"><span>// Return -1 if this process has no children.
+</span></span><span style="display:flex;"><span>int
+</span></span><span style="display:flex;"><span>wait(uint64 addr)
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>  struct proc *np;
+</span></span><span style="display:flex;"><span>  int havekids, pid;
+</span></span><span style="display:flex;"><span>  struct proc *p = myproc();
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  // hold p-&gt;lock for the whole time to avoid lost
+</span></span><span style="display:flex;"><span>  // wakeups from a child&#39;s exit().
+</span></span><span style="display:flex;"><span>  acquire(&amp;p-&gt;lock);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  for(;;){
+</span></span><span style="display:flex;"><span>    // Scan through table looking for exited children.
+</span></span><span style="display:flex;"><span>    havekids = 0;
+</span></span><span style="display:flex;"><span>    for(np = proc; np &lt; &amp;proc[NPROC]; np++){
+</span></span><span style="display:flex;"><span>      // this code uses np-&gt;parent without holding np-&gt;lock.
+</span></span><span style="display:flex;"><span>      // acquiring the lock first would cause a deadlock,
+</span></span><span style="display:flex;"><span>      // since np might be an ancestor, and we already hold p-&gt;lock.
+</span></span><span style="display:flex;"><span>      if(np-&gt;parent == p){
+</span></span><span style="display:flex;"><span>        // np-&gt;parent can&#39;t change between the check and the acquire()
+</span></span><span style="display:flex;"><span>        // because only the parent changes it, and we&#39;re the parent.
+</span></span><span style="display:flex;"><span>        acquire(&amp;np-&gt;lock);
+</span></span><span style="display:flex;"><span>        havekids = 1;
+</span></span><span style="display:flex;"><span>        if(np-&gt;state == ZOMBIE){
+</span></span><span style="display:flex;"><span>          // Found one.
+</span></span><span style="display:flex;"><span>          pid = np-&gt;pid;
+</span></span><span style="display:flex;"><span>          if(addr != 0 &amp;&amp; copyout(p-&gt;pagetable, addr, (char *)&amp;np-&gt;xstate,
+</span></span><span style="display:flex;"><span>                                  sizeof(np-&gt;xstate)) &lt; 0) {
+</span></span><span style="display:flex;"><span>            release(&amp;np-&gt;lock);
+</span></span><span style="display:flex;"><span>            release(&amp;p-&gt;lock);
+</span></span><span style="display:flex;"><span>            return -1;
+</span></span><span style="display:flex;"><span>          }
+</span></span><span style="display:flex;"><span>          freeproc(np);
+</span></span><span style="display:flex;"><span>          release(&amp;np-&gt;lock);
+</span></span><span style="display:flex;"><span>          release(&amp;p-&gt;lock);
+</span></span><span style="display:flex;"><span>          return pid;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        release(&amp;np-&gt;lock);
+</span></span><span style="display:flex;"><span>      }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    // No point waiting if we don&#39;t have any children.
+</span></span><span style="display:flex;"><span>    if(!havekids || p-&gt;killed){
+</span></span><span style="display:flex;"><span>      release(&amp;p-&gt;lock);
+</span></span><span style="display:flex;"><span>      return -1;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    // Wait for a child to exit.
+</span></span><span style="display:flex;"><span>    sleep(p, &amp;p-&gt;lock);  //DOC: wait-sleep
+</span></span><span style="display:flex;"><span>  }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>在里面包含一个死循环，它会不断扫描进程表单，找到父进程是自己而且状态是ZOMBIE的进程。然后调用freeproc函数完成释放进程的最后几个步骤：</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>static void
+</span></span><span style="display:flex;"><span>freeproc(struct proc *p)
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>  if(p-&gt;trapframe)
+</span></span><span style="display:flex;"><span>    kfree((void*)p-&gt;trapframe);
+</span></span><span style="display:flex;"><span>  p-&gt;trapframe = 0;
+</span></span><span style="display:flex;"><span>  if(p-&gt;pagetable)
+</span></span><span style="display:flex;"><span>    proc_freepagetable(p-&gt;pagetable, p-&gt;sz);
+</span></span><span style="display:flex;"><span>  p-&gt;pagetable = 0;
+</span></span><span style="display:flex;"><span>  p-&gt;sz = 0;
+</span></span><span style="display:flex;"><span>  p-&gt;pid = 0;
+</span></span><span style="display:flex;"><span>  p-&gt;parent = 0;
+</span></span><span style="display:flex;"><span>  p-&gt;name[0] = 0;
+</span></span><span style="display:flex;"><span>  p-&gt;chan = 0;
+</span></span><span style="display:flex;"><span>  p-&gt;killed = 0;
+</span></span><span style="display:flex;"><span>  p-&gt;xstate = 0;
+</span></span><span style="display:flex;"><span>  p-&gt;state = UNUSED;
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>wait不仅是为了父进程方便直到子进程退出，实际上也是进程退出的一个重要组成部分。init进程的工作就是在一个循环不断调用wait，清理进程资源。</p>
+<p>当父进程清理进程的所有资源，子进程的状态会被设置成UNUSED。之后，fork系统调用才能重用进程在进程表单的位置。</p>
+<h3 id="kill系统调用">kill系统调用</h3>
+<p>如果kill直接终止还在内核执行代码的进程，会使得需要多步完成的操作只执行了一部分。实际上kill系统调用基本上不做任何事。</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
+</span><span style="white-space:pre;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#282a36;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>int
+</span></span><span style="display:flex;"><span>kill(int pid)
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>  struct proc *p;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  for(p = proc; p &lt; &amp;proc[NPROC]; p++){
+</span></span><span style="display:flex;"><span>    acquire(&amp;p-&gt;lock);
+</span></span><span style="display:flex;"><span>    if(p-&gt;pid == pid){
+</span></span><span style="display:flex;"><span>      p-&gt;killed = 1;
+</span></span><span style="display:flex;"><span>      if(p-&gt;state == SLEEPING){
+</span></span><span style="display:flex;"><span>        // Wake process from sleep().
+</span></span><span style="display:flex;"><span>        p-&gt;state = RUNNABLE;
+</span></span><span style="display:flex;"><span>      }
+</span></span><span style="display:flex;"><span>      release(&amp;p-&gt;lock);
+</span></span><span style="display:flex;"><span>      return 0;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    release(&amp;p-&gt;lock);
+</span></span><span style="display:flex;"><span>  }
+</span></span><span style="display:flex;"><span>  return -1;
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>如上代码，先扫描进程的表单，找到目标进程，将结构体的proc结构体中killed标志位设置为1，如果进程还在SLEEPING状态，将其设置为RUNNABLE。这里只是将killed标志位设置为1，并没有停止进程运行。</p>
+<p>当目标进程运行到内核代码能安全停止运行的位置，检查killed标志位，如果设置为1，目标进程会自愿执行exit系统调用。在usertrap函数中可以看到安全退出位置。</p>
+<p>所以kill系统调用并不是真正的立即停止进程的运行，它更像是这样：如果进程在用户空间，那么下一次它执行系统调用它就会退出，又或者目标进程正在执行用户代码，当时下一次定时器中断或者其他中断触发了，进程才会退出。所以从一个进程调用kill，到另一个进程真正退出，中间可能有很明显的延时。</p>
+<p>对于SLEEPING状态的进程，如果它被kill了，它会被直接唤醒，包装了sleep的循环会检查进程的killed标志位，最后再调用exit。</p>
+<h2 id="lec14-文件系统">lec14 文件系统</h2>
+<p>文件系统中核心的数据结构是inode和file descriptor。</p>
+<p>inode代表一个文件的对象，不依赖于文件名，通过自身编号区分。file descriptor主要用于与用户进程交换，记录offset之类。</p>
+<p>很多文件系统都有以下的分层结构：</p>
+<ul>
+<li>最底层的磁盘，提供持久化存储</li>
+<li>buffer cache，比卖你频繁读写磁盘，将数据保存在内存中</li>
+<li>logging层，为了保证持久性</li>
+<li>inode cache，主要为了同步</li>
+<li>inode，实现了write/read</li>
+<li>文件名和文件描述符操作</li>
+</ul>
+<p><img src="https://aria9766.oss-cn-beijing.aliyuncs.com/blog-pictures/6.S081/file_system/file_system.png" alt=""></p>
+<h3 id="文件系统如何使用底层磁盘">文件系统如何使用底层磁盘</h3>
+<p>比较常见的两种存储设备是SSD和HDD。SSD通常是0.1到1毫秒的访问时间，HDD通常在10毫秒量级完成读写一个disk block。</p>
+<p>sector通常是磁盘驱动可以读写的最小单元，通常是512字节。block通常是操作系统或者文件系统视角的数据。它由文件系统定义，在XV6中它是1024字节。所以XV6中一个block对应两个sector。通常来说一个block对应了一个或者多个sector。</p>
+<p>有的时候，人们也将磁盘上的sector称为block。所以这里的术语也不是很精确。</p>
+<p>而文件系统的工作就是将所有的数据结构以一种能够在重启之后重新构建文件系统的方式，存放在磁盘上。虽然有不同的方式，但是XV6使用了一种非常简单，但是还挺常见的布局结构。</p>
+<p>通常来说：</p>
+<ul>
+<li>block0要么没有用，要么被用作boot sector来启动操作系统。</li>
+<li>block1通常被称为super block，它描述了文件系统。它可能包含磁盘上有多少个block共同构成了文件系统这样的信息。我们之后会看到XV6在里面会存更多的信息，你可以通过block1构造出大部分的文件系统信息。</li>
+<li>在XV6中，log从block2开始，到block32结束。实际上log的大小可能不同，这里在super block中会定义log就是30个block。</li>
+<li>接下来在block32到block45之间，XV6存储了inode。我之前说过多个inode会打包存在一个block中，一个inode是64字节。</li>
+<li>之后是bitmap block，这是我们构建文件系统的默认方法，它只占据一个block。它记录了数据block是否空闲。</li>
+<li>之后就全是数据block了，数据block存储了文件的内容和目录的内容。</li>
+</ul>
+<p><img src="https://aria9766.oss-cn-beijing.aliyuncs.com/blog-pictures/6.S081/file_system/block.png" alt=""></p>
+<h3 id="inode">inode</h3>
+<p>一个inode是一个64字节的数据结构。通常包含以下内容：</p>
+<ul>
+<li>type，表明inode是文件还是目录。</li>
+<li>nlink，link计数器</li>
+<li>size，文件数据包含多少字节</li>
+<li>direct block，不同文件系统中的表达方式可能不一样，不过在XV6中接下来是一些block的编号，例如编号0，编号1，等等。XV6的inode中总共有12个block编号。这些被称为direct block number。这12个block编号指向了构成文件的前12个block。举个例子，如果文件只有2个字节，那么只会有一个block编号0，它包含的数字是磁盘上文件前2个字节的block的位置。</li>
+<li>indirect block number，对应磁盘上的一个block，包含256个block。每个编号是4个字节，1024/4 = 256。</li>
+</ul>
+<p><img src="https://aria9766.oss-cn-beijing.aliyuncs.com/blog-pictures/6.S081/file_system/inode.png" alt=""></p>
+<p>读取文件的第多少个字节可以通过偏移量求得。因此，inode中的信息足够用来实现read/write系统调用，至少可以找到对应的执行的block。</p>
+<p>通过目录（directory）可以访问其他文件，对大部分Unix文件系统，一个目录本质上是一个文件加上一些文件系统能够理解的结构。在xv6中每个目录包含一个directory entries，每条entry有固定的格式：</p>
+<ul>
+<li>前2个字节包含目录中的文件或子目录的inode编号；</li>
+<li>后14个字节包含文件或子目录名</li>
+</ul>
+<p>一个entry共16个字节。</p>
       </article>
     </section>
 
@@ -481,6 +894,8 @@
     
     
     
+    
+      
     
       
     
@@ -1047,6 +1462,12 @@
           
             <a class="ui label" href="/tags/%E9%93%BE%E8%A1%A8/" title="链表">
               链表
+            </a>
+          
+          
+          
+            <a class="ui label" href="/tags/%E9%94%81/" title="锁">
+              锁
             </a>
           
           
