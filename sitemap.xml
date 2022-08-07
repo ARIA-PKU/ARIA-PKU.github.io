@@ -3,18 +3,27 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>https://blog.surfaroundtheworld.top/</loc>
-    <lastmod>2022-08-07T16:21:07+08:00</lastmod>
+    <lastmod>2022-08-07T23:09:35+08:00</lastmod>
   </url><url>
     <loc>https://blog.surfaroundtheworld.top/categories/</loc>
-    <lastmod>2022-08-07T16:21:07+08:00</lastmod>
-  </url><url>
-    <loc>https://blog.surfaroundtheworld.top/categories/os/</loc>
-    <lastmod>2022-08-07T16:21:07+08:00</lastmod>
+    <lastmod>2022-08-07T23:09:35+08:00</lastmod>
   </url><url>
     <loc>https://blog.surfaroundtheworld.top/posts/</loc>
-    <lastmod>2022-08-07T16:21:07+08:00</lastmod>
+    <lastmod>2022-08-07T23:09:35+08:00</lastmod>
   </url><url>
     <loc>https://blog.surfaroundtheworld.top/tags/</loc>
+    <lastmod>2022-08-07T23:09:35+08:00</lastmod>
+  </url><url>
+    <loc>https://blog.surfaroundtheworld.top/categories/%E5%88%86%E5%B8%83%E5%BC%8F/</loc>
+    <lastmod>2022-08-07T23:09:35+08:00</lastmod>
+  </url><url>
+    <loc>https://blog.surfaroundtheworld.top/posts/%E5%88%86%E5%B8%83%E5%BC%8F%E7%9B%B8%E5%85%B3/%E5%88%86%E5%B8%83%E5%BC%8F%E4%B8%AD%E7%9A%84%E4%B8%80%E8%87%B4%E6%80%A7/</loc>
+    <lastmod>2022-08-07T23:09:35+08:00</lastmod>
+  </url><url>
+    <loc>https://blog.surfaroundtheworld.top/tags/%E4%B8%80%E8%87%B4%E6%80%A7%E9%97%AE%E9%A2%98/</loc>
+    <lastmod>2022-08-07T23:09:35+08:00</lastmod>
+  </url><url>
+    <loc>https://blog.surfaroundtheworld.top/categories/os/</loc>
     <lastmod>2022-08-07T16:21:07+08:00</lastmod>
   </url><url>
     <loc>https://blog.surfaroundtheworld.top/tags/%E9%94%81/</loc>
@@ -51,9 +60,6 @@
     <lastmod>2022-07-14T19:36:33+08:00</lastmod>
   </url><url>
     <loc>https://blog.surfaroundtheworld.top/posts/%E5%88%86%E5%B8%83%E5%BC%8F%E7%9B%B8%E5%85%B3/mit6.824/raft%E5%88%86%E5%B8%83%E5%BC%8F%E6%90%AD%E5%BB%BA%E4%B8%89/</loc>
-    <lastmod>2022-07-14T19:36:33+08:00</lastmod>
-  </url><url>
-    <loc>https://blog.surfaroundtheworld.top/categories/%E5%88%86%E5%B8%83%E5%BC%8F/</loc>
     <lastmod>2022-07-14T19:36:33+08:00</lastmod>
   </url><url>
     <loc>https://blog.surfaroundtheworld.top/posts/%E5%88%86%E5%B8%83%E5%BC%8F%E7%9B%B8%E5%85%B3/mit6.824/raft%E5%88%86%E5%B8%83%E5%BC%8F%E6%90%AD%E5%BB%BA%E4%BA%8C/</loc>

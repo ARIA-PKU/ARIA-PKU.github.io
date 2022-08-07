@@ -7,7 +7,16 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-Hans</language>
     <copyright>&lt;a rel=&#34;license&#34; href=&#34;http://creativecommons.org/licenses/by-nc-sa/4.0/&#34;&gt;&lt;img alt=&#34;知识共享许可协议&#34; style=&#34;border-width:0&#34; src=&#34;https://i.creativecommons.org/l/by-nc-sa/4.0/88x31.png&#34; /&gt;&lt;/a&gt;&lt;br /&gt;本作品采用&lt;a rel=&#34;license&#34; href=&#34;http://creativecommons.org/licenses/by-nc-sa/4.0/&#34;&gt;知识共享署名-非商业性使用-相同方式共享 4.0 国际许可协议&lt;/a&gt;进行许可。&lt;br /&gt;</copyright>
-    <lastBuildDate>Sun, 07 Aug 2022 16:21:07 +0800</lastBuildDate><atom:link href="https://blog.surfaroundtheworld.top/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sun, 07 Aug 2022 23:09:35 +0800</lastBuildDate><atom:link href="https://blog.surfaroundtheworld.top/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>分布式相关</title>
+      <link>https://blog.surfaroundtheworld.top/posts/%E5%88%86%E5%B8%83%E5%BC%8F%E7%9B%B8%E5%85%B3/%E5%88%86%E5%B8%83%E5%BC%8F%E4%B8%AD%E7%9A%84%E4%B8%80%E8%87%B4%E6%80%A7/</link>
+      <pubDate>Sun, 07 Aug 2022 23:09:35 +0800</pubDate>
+      
+      <guid>https://blog.surfaroundtheworld.top/posts/%E5%88%86%E5%B8%83%E5%BC%8F%E7%9B%B8%E5%85%B3/%E5%88%86%E5%B8%83%E5%BC%8F%E4%B8%AD%E7%9A%84%E4%B8%80%E8%87%B4%E6%80%A7/</guid>
+      <description>&lt;p&gt;区别强一致性，弱一致性，线性一致性，顺序一致性和最终一致性。&lt;/p&gt;</description>
+    </item>
+    
     <item>
       <title>锁的整理</title>
       <link>https://blog.surfaroundtheworld.top/posts/os/lock/</link>
